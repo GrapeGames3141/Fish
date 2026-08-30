@@ -207,12 +207,12 @@ class FishingView extends Control:
 		draw_style_box(_panel_style(Color(0.03, 0.13, 0.18, 0.72), Color("74b7a8")), Rect2(24, 22, 672, 100)); _text("CAST & CRANK", Vector2(46, 66), 30, Color("fff4d1")); _text("PINE LAKE  •  %s" % s.fish.display_name.to_upper(), Vector2(48, 98), 16, Color("b9e2d3"))
 		draw_circle(Vector2(580, 54), 20, Color("d9bf72")); _text("≡", Vector2(571, 63), 21, Color("173a48")); draw_circle(Vector2(644, 54), 20, Color("d9bf72")); _text("⚙", Vector2(633, 64), 20, Color("173a48"))
 	func _draw_glance_hint(s: FishingSession) -> void:
-		var copy := "COCK BACK, THEN SNAP FORWARD"
+		var copy := "COCK RIGHT, THEN SNAP LEFT"
 		match s.state:
-			FishingSession.State.CAST_ARMED: copy = "SNAP FORWARD"
+			FishingSession.State.CAST_ARMED: copy = "SNAP LEFT"
 			FishingSession.State.LINE_OUT: copy = "LINE OUT  %.0f m" % s.cast_distance_m
-			FishingSession.State.HOOK_WINDOW: copy = "BITE — COCK BACK"
-			FishingSession.State.REELING: copy = "LOWER TO EASE" if s.rod_load >= 0.55 or s.tension >= 0.65 else "PULL BACK SMOOTHLY"
+			FishingSession.State.HOOK_WINDOW: copy = "BITE — PULL RIGHT"
+			FishingSession.State.REELING: copy = "TILT LEFT TO EASE" if s.rod_load >= 0.55 or s.tension >= 0.65 else "TILT RIGHT TO PULL"
 			FishingSession.State.CAUGHT: copy = "BLUEGILL LANDED"
 			FishingSession.State.ESCAPED: copy = "LINE WENT SLACK"
 		draw_style_box(_panel_style(Color(0.02, 0.13, 0.18, 0.78), Color("e1ca77")), Rect2(78, 147, 564, 58)); _text(copy, Vector2(118, 185), 20, Color("fff7dc"))
@@ -236,9 +236,9 @@ class FishingView extends Control:
 		var phase: String = controller.motion.calibration_phase
 		var copy := "Rest the phone flat and still for a moment."
 		if phase.contains("snap"):
-			copy = "Now snap forward to finish this practice cast."
+			copy = "Now snap left to finish this practice cast."
 		elif phase.contains("back"):
-			copy = "Cock back, then snap forward when ready."
+			copy = "Cock right, then snap left when ready."
 		_text(copy, Vector2(90, 510), 21, Color("173a48"))
 		_text("Calibration starts automatically — no buttons.", Vector2(112, 580), 18, Color("416b72"))
 	func _draw_settings() -> void:

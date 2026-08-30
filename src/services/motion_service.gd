@@ -9,9 +9,19 @@ const PROFILE_EXAMPLES := 2
 const FIGHT_LOWER_TRAVEL_DEGREES := 14.0
 const FIGHT_PULL_RETURN_TRAVEL_DEGREES := 10.0
 const FIGHT_RETURN_HYSTERESIS_DEGREES := 3.0
-const FIGHT_RETURN_DIRECTION_DOT := 0.70
 const FIGHT_MIN_TRANSITION_SECONDS := 0.20
 const FIGHT_GYRO_MINIMUM := 0.20
+# Portrait/right-handed contract: physical left is the forward/ease direction,
+# physical right is the cock/pull/hook direction. A future mirror mode can swap
+# these constants without changing the state machines below.
+const RIGHT_HANDED_FORWARD_AXIS := Vector3(-1, 0, 0)
+const RIGHT_HANDED_BACK_AXIS := Vector3(1, 0, 0)
+# A saved/calibration profile must still be recognizably right-handed, but live
+# motion uses the learned 3D axis for direction. These low X gates merely retain
+# polarity so a natural diagonal cock is not forced into a second narrow cone.
+const PROFILE_HANDEDNESS_ALIGNMENT := 0.48
+const CALIBRATION_HANDEDNESS_ALIGNMENT := 0.34
+const RUNTIME_X_POLARITY_ALIGNMENT := 0.18
 
 var sensitivity := 1.0
 var sample_provider: Callable
@@ -92,7 +102,7 @@ static func validate_profile(value: Dictionary) -> bool:
 	if not axis_value is Array or axis_value.size() != 3:
 		return false
 	var axis := Vector3(float(axis_value[0]), float(axis_value[1]), float(axis_value[2]))
-	return axis.length() >= 0.90 and float(value.back_peak) >= 1.2 and float(value.forward_peak) >= 1.4 and float(value.get("gyro_peak", 0.0)) >= 0.08 and float(value.get("transition_seconds", 0.0)) >= MIN_TRANSITION_SECONDS and float(value.get("transition_seconds", 9.0)) <= MAX_TRANSITION_SECONDS and float(value.get("noise_floor", -1.0)) >= 0.0 and float(value.get("direction_tolerance", 0.0)) >= 0.45
+	return axis.length() >= 0.90 and axis.normalized().dot(RIGHT_HANDED_FORWARD_AXIS) >= PROFILE_HANDEDNESS_ALIGNMENT and float(value.back_peak) >= 1.2 and float(value.forward_peak) >= 1.4 and float(value.get("gyro_peak", 0.0)) >= 0.08 and float(value.get("transition_seconds", 0.0)) >= MIN_TRANSITION_SECONDS and float(value.get("transition_seconds", 9.0)) <= MAX_TRANSITION_SECONDS and float(value.get("noise_floor", -1.0)) >= 0.0 and float(value.get("direction_tolerance", 0.0)) >= 0.45
 
 func reset_gesture() -> void:
 	_gesture_elapsed = 0.0
@@ -150,36 +160,38 @@ func _update_fight(delta: float, reading: Dictionary, event: Dictionary) -> void
 		return
 	var pose := gravity.normalized()
 	_fight_transition_elapsed += maxf(delta, 0.0)
-	var pull_angle := rad_to_deg(pose.angle_to(_fight_pull_reference))
-	if fight_phase == "LOWER ROD":
-		# Before the first lower pose is learned, the hook/raised pose is already
-		# a full pull. This lets the fight react continuously from the hook onward.
-		fight_load = clampf(1.0 - pull_angle / FIGHT_LOWER_TRAVEL_DEGREES, 0.0, 1.0)
-		if pull_angle >= FIGHT_LOWER_TRAVEL_DEGREES and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
+	var left_travel := _leftward_pose_travel_degrees(pose, _fight_pull_reference)
+	if _fight_lower_reference.length() < 0.90:
+		# Before the first left/ease pose is learned, the hook/right pose is a full
+		# pull. Pitch/YZ motion or rightward travel must never ease the line.
+		fight_load = clampf(1.0 - maxf(left_travel, 0.0) / FIGHT_LOWER_TRAVEL_DEGREES, 0.0, 1.0)
+		if left_travel >= FIGHT_LOWER_TRAVEL_DEGREES and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
 			_fight_lower_reference = pose
 			fight_phase = "PULL BACK"
 			fight_load = 0.0
 			_fight_transition_elapsed = 0.0
 			event.fight_lower = true
-	elif fight_phase == "PULL BACK" and _fight_lower_reference.length() >= 0.90:
-		var lower_angle := rad_to_deg(pose.angle_to(_fight_lower_reference))
-		var reference_span := rad_to_deg(_fight_lower_reference.angle_to(_fight_pull_reference))
-		# Pose load is continuous between the learned lower and pull references.
-		# Equal angular distance is a neutral load; moving toward the raised pull
-		# reference drives progress and tension without requiring a perfect return.
-		var raw_fight_load := clampf((lower_angle - pull_angle + reference_span) / maxf(2.0 * reference_span, 0.01), 0.0, 1.0)
+	else:
+		var reference_span := _leftward_pose_travel_degrees(_fight_lower_reference, _fight_pull_reference)
+		var rightward_return := _rightward_pose_travel_degrees(pose, _fight_lower_reference)
+		# Pose load is signed: left/lower is 0, and only return toward physical
+		# right/pull increases it. Y/Z-only shakes stay at zero regardless of angle.
+		var raw_fight_load := clampf(rightward_return / maxf(reference_span, 0.01), 0.0, 1.0)
 		# Natural returns commonly stop short of the hook pose. Square-root response
 		# preserves exact lower/pull anchors while making useful partial cock-backs
 		# contribute enough continuous load to meet the physical timing target.
 		fight_load = sqrt(raw_fight_load)
-		var return_axis := (_fight_pull_reference - _fight_lower_reference).normalized()
-		var pose_axis := (pose - _fight_lower_reference).normalized()
-		var return_alignment := return_axis.dot(pose_axis)
-		var clearly_toward_pull := pull_angle + FIGHT_RETURN_HYSTERESIS_DEGREES < lower_angle
-		if lower_angle >= FIGHT_PULL_RETURN_TRAVEL_DEGREES and clearly_toward_pull and return_alignment >= FIGHT_RETURN_DIRECTION_DOT and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
+		var clearly_toward_pull := rightward_return >= FIGHT_PULL_RETURN_TRAVEL_DEGREES + FIGHT_RETURN_HYSTERESIS_DEGREES
+		if fight_phase == "PULL BACK" and clearly_toward_pull and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
 			fight_phase = "LOWER ROD"
 			_fight_transition_elapsed = 0.0
 			event.fight_pull = true
+		elif fight_phase == "LOWER ROD" and left_travel >= FIGHT_LOWER_TRAVEL_DEGREES and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
+			_fight_lower_reference = pose
+			fight_phase = "PULL BACK"
+			fight_load = 0.0
+			_fight_transition_elapsed = 0.0
+			event.fight_lower = true
 	event.fight_load = fight_load
 	event.fight_phase = fight_phase
 
@@ -196,7 +208,7 @@ func _update_calibration(delta: float, reading: Dictionary) -> Dictionary:
 			calibration_phase = "practice_%d_back" % (calibration_progress + 1)
 		return event
 	if _back_axis == Vector3.ZERO:
-		if linear.length() >= 2.0 / maxf(sensitivity, 0.5) and gyro.length() >= 0.16:
+		if linear.length() >= 2.0 / maxf(sensitivity, 0.5) and linear.normalized().dot(RIGHT_HANDED_BACK_AXIS) >= CALIBRATION_HANDEDNESS_ALIGNMENT and gyro.length() >= 0.16:
 			_back_axis = linear.normalized()
 			_back_peak = linear.length()
 			_back_gyro_peak = gyro.length()
@@ -210,7 +222,8 @@ func _update_calibration(delta: float, reading: Dictionary) -> Dictionary:
 		return event
 	var forward_projection := linear.dot(-_back_axis)
 	var forward_match := linear.normalized().dot(-_back_axis) if linear.length() > 0.0 else -1.0
-	if forward_projection >= maxf(2.4 / maxf(sensitivity, 0.5), _back_peak * 0.72) and forward_match >= 0.62 and gyro.length() >= 0.16:
+	var handed_match := linear.normalized().dot(RIGHT_HANDED_FORWARD_AXIS) if linear.length() > 0.0 else -1.0
+	if forward_projection >= maxf(2.4 / maxf(sensitivity, 0.5), _back_peak * 0.72) and forward_match >= 0.62 and handed_match >= CALIBRATION_HANDEDNESS_ALIGNMENT and gyro.length() >= 0.16:
 		_accept_calibration_example(forward_projection, gyro.length())
 		if calibration_progress >= PROFILE_EXAMPLES:
 			event.calibration_complete = _finish_calibration()
@@ -239,6 +252,9 @@ func _finish_calibration() -> bool:
 		begin_calibration()
 		return false
 	axis = axis.normalized()
+	if axis.dot(RIGHT_HANDED_FORWARD_AXIS) < PROFILE_HANDEDNESS_ALIGNMENT:
+		begin_calibration()
+		return false
 	for example in _calibration_examples:
 		if _array_to_vector(example.forward_axis).normalized().dot(axis) < 0.70:
 			begin_calibration()
@@ -271,7 +287,8 @@ func _update_cast(delta: float, reading: Dictionary, event: Dictionary) -> void:
 	if _back_axis == Vector3.ZERO:
 		var back_projection := -linear.dot(axis)
 		var back_match := -linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
-		if back_projection >= _back_threshold() and back_match >= float(profile.direction_tolerance) and gyro.length() >= _gyro_threshold():
+		var handed_match := linear.normalized().dot(RIGHT_HANDED_BACK_AXIS) if linear.length() > 0.0 else -1.0
+		if back_projection >= _back_threshold() and back_match >= float(profile.direction_tolerance) and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold():
 			_back_axis = -axis
 			_back_peak = back_projection
 			_back_gyro_peak = gyro.length()
@@ -284,7 +301,8 @@ func _update_cast(delta: float, reading: Dictionary, event: Dictionary) -> void:
 		return
 	var forward_projection := linear.dot(axis)
 	var forward_match := linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
-	if forward_projection >= _forward_threshold() and forward_match >= float(profile.direction_tolerance) and gyro.length() >= _gyro_threshold():
+	var handed_match := linear.normalized().dot(RIGHT_HANDED_FORWARD_AXIS) if linear.length() > 0.0 else -1.0
+	if forward_projection >= _forward_threshold() and forward_match >= float(profile.direction_tolerance) and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold():
 		event.cast_quality = _cast_quality(forward_projection)
 		reset_gesture()
 		_cooldown_elapsed = GESTURE_COOLDOWN_SECONDS
@@ -301,7 +319,8 @@ func _detect_hook(reading: Dictionary) -> bool:
 	var gyro: Vector3 = reading.gyro
 	var back_projection: float = -linear.dot(axis)
 	var back_match := -linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
-	if back_projection >= _hook_threshold() and back_match >= float(profile.direction_tolerance) * 0.82 and gyro.length() >= _gyro_threshold() * 0.72:
+	var handed_match := linear.normalized().dot(RIGHT_HANDED_BACK_AXIS) if linear.length() > 0.0 else -1.0
+	if back_projection >= _hook_threshold() and back_match >= float(profile.direction_tolerance) * 0.82 and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold() * 0.72:
 		_cooldown_elapsed = GESTURE_COOLDOWN_SECONDS
 		return true
 	return false
@@ -322,6 +341,14 @@ func _cast_quality(forward_projection: float) -> float:
 	var threshold := _forward_threshold()
 	var peak := maxf(float(profile.forward_peak), threshold + 0.01)
 	return clampf(0.35 + (forward_projection - threshold) / maxf(peak * 0.80, 0.1) * 0.65, 0.35, 1.0)
+
+func _leftward_pose_travel_degrees(pose: Vector3, reference: Vector3) -> float:
+	var signed_component := (pose - reference).dot(RIGHT_HANDED_FORWARD_AXIS)
+	return rad_to_deg(asin(clampf(signed_component, -1.0, 1.0)))
+
+func _rightward_pose_travel_degrees(pose: Vector3, reference: Vector3) -> float:
+	var signed_component := (pose - reference).dot(RIGHT_HANDED_BACK_AXIS)
+	return rad_to_deg(asin(clampf(signed_component, -1.0, 1.0)))
 
 static func _vector_to_array(value: Vector3) -> Array:
 	return [value.x, value.y, value.z]
