@@ -69,3 +69,29 @@ The user authorized generation and integration of this first ImageGen UI pass. H
 - Implemented for the next build: restore v18's `4.5%` / `5.5%` runtime sweep energy and add one Settings-only `RECORD 10 CASTS` workflow. After its countdown, ten automatic 2-second haptic-cued windows collect bounded raw gravity, accelerometer, derived-linear, and gyro samples; normal diagnostics remain derived-only.
 - Signed v20 `0.3.7-capture1` is exported, audited, installed, and cold-launched on the paired Pixel 9 Pro. VIBRATE is granted, the scoped startup log has no fatal/script/parse/SIGSEGV/crash marker, and no raw trace exists before explicit capture starts.
 - Still pending: the completed explicit capture file must be retrieved and reviewed before any further recognition tuning; no physical v20 recognition, distance, or comfort claim is made.
+
+## Android diagnostic autocapture follow-up
+
+- Device evidence: automated gear/record taps on the 960×2142 edge-to-edge Pixel did not create a capture file; the physical gear lies near y≈90 under the top cutout/mandatory gesture inset.
+- Implemented for the next diagnostic build: Android-only, one-shot capture autostart waits for the existing splash to clear, then starts the same ten-cast countdown without any touch dependency. Desktop and scripted capture scenarios are excluded.
+- Superseded outcome: v21 was exported, installed, and its explicit trace was retrieved. The permanent safe-inset/top-chrome gear repair remains separate work; v22 keeps trace capture explicit and awaits device confirmation.
+
+## Physical cock-profile follow-up
+
+- V21 `0.3.8-autocapture1` was exported, installed, and used to retrieve the explicit ten-cast capture `pixel9pro-cast-capture-v21-2026-08-30.json` (SHA-256 `DA61E2A901E70266786D903DEC763132124B6BBB8B89A6B3B6A3DD9E69AD8F70`). The current learned-axis cock replay accepted `1/10` intended windows; its failures were principally cock-axis rather than sweep-energy failures.
+- The deterministic replay's asymmetric candidate keeps the learned 3D snap unchanged and substitutes signed physical right/left X only for cock/hook. Its strict final-amplitude-first `6×` physical cock threshold with `.045` cock impulse accepted and timely armed `10/10` captured windows; snap remains `.055`. The intended-positive trace is not false-positive evidence.
+- Signed v22 `0.3.9-castprofile1` was exported, audited, and installed on the paired Pixel 9 Pro. Two text-only cold launches reproduced a deterministic self-cast/self-hook feedback loop (`MOTION_CAST quality=1.00`, then `MOTION_HOOK`) without a crash; that is regression evidence, not a physical acceptance claim.
+
+## Motion-feedback guard follow-up
+
+- V23 `0.3.10-motionguard1` was exported, audited, and installed after removing the physical cock motor cue, adding explicit `.65s` CAST_ARMED cancellation, and holding BITE for `.42s` before the independent full `1.8s` hook window.
+- Repeated untouched v23 cold-launch dwell still produced false cast/hook behavior, so the build is regression evidence rather than acceptance. Physical cast/hook reliability, haptic feel, false-positive rejection, and safe-inset usability remain pending.
+
+## Feedback-guard v24 follow-up
+
+- V24 `0.3.11-feedbackguard2` was exported, audited, and installed. Its corrected untouched dwell (PID `25744`) still false-cast then self-hooked with derived telemetry `projection=95.62`, `axis=.69`, `polarity=.51`, `gyro=31.11`, `reversal=.115`, `cock=12.46`; no fatal marker was found. This is a false-positive regression, not a physical acceptance result.
+
+## Profile-guard v25 follow-up
+
+- The genuine ten-cast replay has minimum scalar snap axis `.8203` and physical polarity `.6668`. V25 `0.3.12-profileguard3` raises only the runtime snap floors to `.78` / `.62`, retaining all ten recorded intended examples while rejecting the v24 `.69` / `.51` false signature. Hooks now require a deliberate three-sample `.055` sweep and log derived scalar telemetry; haptic settle is `.30s`.
+- V25 was exported, audited, and installed. Two corrected untouched 15-second dwells (PIDs `30931` and `31349`) recorded zero cast, hook, cancel, failure, and fatal markers. This does not establish physical cast/hook feel, comfort, or gameplay acceptance.

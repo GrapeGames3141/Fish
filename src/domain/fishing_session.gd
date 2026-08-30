@@ -3,6 +3,7 @@ extends RefCounted
 
 enum State { READY, CAST_ARMED, LINE_OUT, BITE, HOOK_WINDOW, REELING, CAUGHT, ESCAPED }
 const HOOK_WINDOW_SECONDS := 1.8
+const BITE_CUE_HOLD_SECONDS := 0.42
 const RED_ESCAPE_SECONDS := 1.25
 const CATCH_PROGRESS := 1.0
 const MIN_CAST_DISTANCE_M := 8.0
@@ -32,6 +33,9 @@ func set_location(value: String, roll: float = 0.0) -> bool:
 func arm_cast() -> bool:
 	if state != State.READY: return false
 	state = State.CAST_ARMED; return true
+func cancel_cast() -> bool:
+	if state != State.CAST_ARMED: return false
+	state = State.READY; return true
 func release_cast(quality: float) -> bool:
 	if state != State.CAST_ARMED: return false
 	cast_quality = clampf(quality, 0.0, 1.0); cast_distance_m = lerpf(MIN_CAST_DISTANCE_M, MAX_CAST_DISTANCE_M, cast_quality); state = State.LINE_OUT; elapsed = 0.0; return true
@@ -39,7 +43,10 @@ func tick(delta: float) -> void:
 	if state == State.LINE_OUT:
 		elapsed += delta
 		if elapsed >= fish.bite_delay_seconds: state = State.BITE; bite_elapsed = 0.0
-	elif state == State.BITE: state = State.HOOK_WINDOW; bite_elapsed = 0.0
+	elif state == State.BITE:
+		bite_elapsed += delta
+		if bite_elapsed >= BITE_CUE_HOLD_SECONDS:
+			state = State.HOOK_WINDOW; bite_elapsed = 0.0
 	elif state == State.HOOK_WINDOW:
 		bite_elapsed += delta
 		if bite_elapsed >= HOOK_WINDOW_SECONDS: escape("The %s spit the hook." % fish.display_name)

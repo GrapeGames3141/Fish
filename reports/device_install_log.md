@@ -96,3 +96,15 @@ This proves v8 export/install, permission delivery, and initial cast/hook/lower 
 - After an in-sandbox `adb connect` failure (`10013`), restarting ADB outside the sandbox reconnected the Pixel 9 Pro (`caiman`, `192.168.1.234:43875`). `adb install -r` reported `Success`; `dumpsys` confirms versionCode `10` and VIBRATE `granted=true`.
 - Launch intent was sent. The inspected 400-line log window had no fatal exception, script error, or parse marker.
 - The phone remained locked, so this is not a physical visual, motion, haptic, or timing validation. No phone screenshot was taken or retained for this v10 pass; prior temporary lock-screen captures were deleted locally and from `/sdcard`. C: delivery copies of the APK and ready/reeling evidence match source size and SHA-256 where applicable.
+
+## V24 feedback guard
+
+`0.3.11-feedbackguard2` was exported, audited, and installed on the paired Pixel 9 Pro. The arm64 APK was 44,227,357 bytes (SHA-256 `E06EEA1BA736ADF7DABFD93C48630408551E8FBF6684E70B919F2ECA904068AB`), versionCode 24, min SDK 24, target SDK 36, VIBRATE-present, and v2-signed with the existing debug certificate.
+
+The first dwell wrapper was invalid because PowerShell reserves `$PID`. The corrected untouched dwell on app PID `25744` recorded a false cast and self-hook with derived telemetry `projection=95.62`, `axis=.69`, `polarity=.51`, `gyro=31.11`, `reversal=.115`, and `cock=12.46`; no fatal marker was found. This is regression evidence only, not physical cast/hook acceptance.
+
+## V25 profile guard
+
+`0.3.12-profileguard3` was exported, audited, and installed on the paired Pixel. The arm64 APK was 44,228,117 bytes (SHA-256 `1487E48DEB317D27054C5F5156D22CB6B9C044B9261212F5B2F1E5ABE4CAE784`), versionCode 25, min SDK 24, target SDK 36, VIBRATE-present, 812 entries, zero forbidden entries, and v2-signed with the existing debug certificate.
+
+Two corrected untouched 15-second dwells, app PIDs `30931` and `31349`, recorded zero cast, hook, cancellation, failure, and fatal markers. These text-only dwells do not establish physical cast/hook feel, comfort, or gameplay acceptance. No phone screenshot was taken.

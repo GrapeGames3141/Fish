@@ -48,7 +48,8 @@ func _process(delta: float) -> void:
 	ui_time += delta
 	if loading_active:
 		loading_elapsed += delta
-		if loading_elapsed >= 1.0: loading_active = false
+		if loading_elapsed >= 1.0:
+			loading_active = false
 		view.queue_redraw(); return
 	if cast_capture.is_active():
 		var capture_event := cast_capture.update(delta)
@@ -69,10 +70,14 @@ func _process(delta: float) -> void:
 		view.queue_redraw(); return
 	if view.overlay == "capture_saved": haptics.tick(delta); view.queue_redraw(); return
 	if view.overlay in ["settings", "records", "locations", "diagnostics", "capture"]: view.queue_redraw(); return
-	var motion_event := motion.update(delta, session.state in [FishingSession.State.READY, FishingSession.State.CAST_ARMED], session.state == FishingSession.State.HOOK_WINDOW, session.state == FishingSession.State.REELING)
+	var allow_cast := session.state == FishingSession.State.CAST_ARMED or (session.state == FishingSession.State.READY and not haptics.is_motion_guarded())
+	var allow_hook := session.state == FishingSession.State.HOOK_WINDOW and not haptics.is_motion_guarded()
+	var motion_event := motion.update(delta, allow_cast, allow_hook, session.state == FishingSession.State.REELING)
 	if session.state == FishingSession.State.READY and bool(motion_event.get("cast_arm", false)): _arm_cast()
-	if session.state == FishingSession.State.CAST_ARMED and float(motion_event.get("cast_quality", 0.0)) > 0.0: _cast(float(motion_event.cast_quality))
-	if session.state == FishingSession.State.HOOK_WINDOW and bool(motion_event.get("hook", false)): _hook()
+	if session.state == FishingSession.State.CAST_ARMED and bool(motion_event.get("cast_cancel", false)):
+		if session.cancel_cast(): print("MOTION_CAST_CANCEL reason=timeout")
+	if session.state == FishingSession.State.CAST_ARMED and float(motion_event.get("cast_quality", 0.0)) > 0.0: _cast(float(motion_event.cast_quality), motion_event)
+	if session.state == FishingSession.State.HOOK_WINDOW and bool(motion_event.get("hook", false)): _hook(motion_event)
 	if session.state == FishingSession.State.REELING:
 		session.set_rod_load(float(motion_event.get("fight_load", 0.0)))
 		if bool(motion_event.get("fight_lower", false)): print("MOTION_FIGHT lower tension=%.2f elapsed=%.2f" % [session.tension, session.fight_elapsed])
@@ -107,12 +112,12 @@ func _arm_cast() -> void:
 	# Keep weighting deterministic in FishDefinition; physical casts provide a fresh
 	# runtime roll so every species at the selected water can be encountered.
 	session.set_location(str(save.data.get("selected_location_id", "pine_lake")), randf())
-	if session.arm_cast(): haptics.cue("cock")
-func _cast(quality: float = 0.78) -> void:
-	if session.release_cast(quality): print("MOTION_CAST quality=%.2f distance_m=%.1f" % [session.cast_quality, session.cast_distance_m])
-func _hook() -> void:
+	session.arm_cast()
+func _cast(quality: float = 0.78, motion_event: Dictionary = {}) -> void:
+	if session.release_cast(quality): print("MOTION_CAST quality=%.2f distance_m=%.1f snap_projection=%.2f axis_match=%.2f polarity=%.2f gyro=%.2f reversal_s=%.3f cock_projection=%.2f" % [session.cast_quality, session.cast_distance_m, float(motion_event.get("snap_projection", 0.0)), float(motion_event.get("snap_axis_match", 0.0)), float(motion_event.get("snap_polarity_match", 0.0)), float(motion_event.get("snap_gyro", 0.0)), float(motion_event.get("reversal_seconds", 0.0)), float(motion_event.get("cock_projection", 0.0))])
+func _hook(motion_event: Dictionary = {}) -> void:
 	if session.set_hook():
-		motion.begin_fight(); haptics.cue("hook"); haptics.start_fight(session.fish); print("MOTION_HOOK state=REELING")
+		motion.begin_fight(); haptics.cue("hook"); haptics.start_fight(session.fish); print("MOTION_HOOK state=REELING projection=%.2f alignment=%.2f gyro=%.2f sweep_samples=%d" % [float(motion_event.get("hook_projection", 0.0)), float(motion_event.get("hook_alignment", 0.0)), float(motion_event.get("hook_gyro", 0.0)), int(motion_event.get("hook_sweep_samples", 0))])
 func _record_catch_once() -> void:
 	if caught_recorded or capture_mode: return
 	save.record_catch(session.fish.id, session.catch_length_cm); caught_recorded = true
@@ -148,7 +153,7 @@ func _apply_capture_scenario() -> void:
 	view.overlay = ""
 	match capture_scenario:
 		"loading": pass
-		"bite": session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.HOOK_WINDOW; session.bite_elapsed = 0.35
+		"bite": session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.BITE; session.bite_elapsed = 0.20
 		"reeling": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.63; session.rod_load = 0.55; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"caught": session.state = FishingSession.State.CAUGHT; session.last_reason = "Bluegill landed!"; session.cast_quality = 0.88; session.cast_distance_m = 36.2; caught_recorded = true
 		"cedar_catch": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.last_reason = "%s landed!" % session.fish.display_name; session.cast_quality = 0.88; session.cast_distance_m = 36.2; caught_recorded = true
@@ -174,11 +179,29 @@ class FishingView extends Control:
 	var controller: Node
 	var overlay := ""
 	var synthetic_reserve := 0.0
-	var settings_rect := Rect2(618, 30, 48, 48)
-	var journal_rect := Rect2(556, 30, 48, 48)
+	var settings_rect := Rect2(612, 22, 64, 64)
+	var journal_rect := Rect2(548, 22, 64, 64)
 	var font: Font
 	func _ready() -> void:
-		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); mouse_filter = Control.MOUSE_FILTER_STOP; font = ThemeDB.fallback_font; queue_redraw()
+		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		font = ThemeDB.fallback_font
+		_refresh_top_chrome_hit_rects()
+		queue_redraw()
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_RESIZED:
+			_refresh_top_chrome_hit_rects()
+	func _virtual_safe_top() -> float:
+		var screen_size := DisplayServer.screen_get_size()
+		var safe_area := DisplayServer.get_display_safe_area()
+		var scale_y := 1280.0 / maxf(float(screen_size.y), 1.0)
+		# Keep a conservative virtual cap so malformed desktop safe-area data cannot
+		# push portrait chrome offscreen. Pixel 9 Pro's 153px inset maps to ~91px.
+		return clampf(float(safe_area.position.y) * scale_y, 0.0, 180.0)
+	func _refresh_top_chrome_hit_rects() -> void:
+		var chrome_y := _virtual_safe_top()
+		journal_rect = Rect2(Vector2(580, chrome_y + 54) - Vector2(32, 32), Vector2(64, 64))
+		settings_rect = Rect2(Vector2(644, chrome_y + 54) - Vector2(32, 32), Vector2(64, 64))
 	func _draw() -> void:
 		var size := get_size(); draw_set_transform(Vector2.ZERO, 0.0, Vector2(size.x / 720.0, size.y / 1280.0))
 		if controller.loading_active: _draw_loading()
@@ -239,18 +262,22 @@ class FishingView extends Control:
 			source_tip.y / ROD_FRAME_SIZE.y * ROD_DESTINATION.size.y
 		)
 	func _draw_top_chrome(s: FishingSession) -> void:
-		draw_style_box(_panel_style(Color(0.03, 0.13, 0.18, 0.72), Color("74b7a8")), Rect2(24, 22, 672, 100)); _text("CAST & CRANK", Vector2(46, 66), 30, Color("fff4d1")); _text("%s  •  %s" % [s.location_id.replace("_", " ").to_upper(), s.fish.display_name.to_upper()], Vector2(48, 98), 16, Color("b9e2d3"))
-		draw_circle(Vector2(580, 54), 20, Color("d9bf72")); _text("≡", Vector2(571, 63), 21, Color("173a48")); draw_circle(Vector2(644, 54), 20, Color("d9bf72")); _text("⚙", Vector2(633, 64), 20, Color("173a48"))
+		var chrome_y := _virtual_safe_top()
+		_refresh_top_chrome_hit_rects()
+		draw_style_box(_panel_style(Color(0.03, 0.13, 0.18, 0.72), Color("74b7a8")), Rect2(24, chrome_y + 22, 672, 100)); _text("CAST & CRANK", Vector2(46, chrome_y + 66), 30, Color("fff4d1")); _text("%s  •  %s" % [s.location_id.replace("_", " ").to_upper(), s.fish.display_name.to_upper()], Vector2(48, chrome_y + 98), 16, Color("b9e2d3"))
+		draw_circle(Vector2(580, chrome_y + 54), 20, Color("d9bf72")); _text("≡", Vector2(571, chrome_y + 63), 21, Color("173a48")); draw_circle(Vector2(644, chrome_y + 54), 20, Color("d9bf72")); _text("⚙", Vector2(633, chrome_y + 64), 20, Color("173a48"))
 	func _draw_glance_hint(s: FishingSession) -> void:
 		var copy := "COCK LEFT, THEN SNAP RIGHT" if controller.motion.left_handed else "COCK RIGHT, THEN SNAP LEFT"
 		match s.state:
 			FishingSession.State.CAST_ARMED: copy = "SNAP RIGHT" if controller.motion.left_handed else "SNAP LEFT"
 			FishingSession.State.LINE_OUT: copy = "LINE OUT  %.0f m" % s.cast_distance_m
+			FishingSession.State.BITE: copy = "FISH ON — WAIT FOR THE PULSES"
 			FishingSession.State.HOOK_WINDOW: copy = "BITE — PULL LEFT" if controller.motion.left_handed else "BITE — PULL RIGHT"
 			FishingSession.State.REELING: copy = ("TILT RIGHT TO EASE" if controller.motion.left_handed else "TILT LEFT TO EASE") if s.rod_load >= 0.55 or s.tension >= 0.65 else ("TILT LEFT TO PULL" if controller.motion.left_handed else "TILT RIGHT TO PULL")
 			FishingSession.State.CAUGHT: copy = "%s LANDED" % s.fish.display_name.to_upper()
 			FishingSession.State.ESCAPED: copy = "LINE WENT SLACK"
-		draw_style_box(_panel_style(Color(0.02, 0.13, 0.18, 0.78), Color("e1ca77")), Rect2(78, 147, 564, 58)); _text(copy, Vector2(118, 185), 20, Color("fff7dc"))
+		var hint_y := _virtual_safe_top() + 147.0
+		draw_style_box(_panel_style(Color(0.02, 0.13, 0.18, 0.78), Color("e1ca77")), Rect2(78, hint_y, 564, 58)); _text(copy, Vector2(118, hint_y + 38), 20, Color("fff7dc"))
 	func _draw_fight_status(s: FishingSession) -> void:
 		if s.state != FishingSession.State.REELING: return
 		draw_style_box(_panel_style(Color(0.03, 0.14, 0.20, 0.84), Color("79b9ad")), Rect2(74, 1032, 572, 128)); _text("FIGHT", Vector2(102, 1065), 17, Color("d9efe3")); draw_rect(Rect2(102, 1078, 516, 10), Color("153947")); draw_rect(Rect2(102, 1078, 516 * s.fight_progress, 10), Color("70d5ad")); _text("TENSION", Vector2(102, 1122), 17, Color("d9efe3")); draw_rect(Rect2(102, 1134, 516, 10), Color("321b28")); draw_rect(Rect2(102, 1134, 516 * s.tension, 10), Color("ed695e") if s.tension >= 0.65 else Color("e1c46e"))

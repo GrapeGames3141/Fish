@@ -9,6 +9,7 @@ const MAX_PENDING_PULSES := 3
 const INITIAL_FIGHT_DELAY_SECONDS := 0.22
 const HIGH_WARNING_CYCLE_SECONDS := 0.8
 const RED_WARNING_CYCLE_SECONDS := 0.5
+const MOTION_SETTLE_SECONDS := 0.30
 
 var enabled := true
 var emitter: Callable
@@ -19,6 +20,7 @@ var active_fish: FishDefinition
 var next_phrase_at := 0.0
 var warning_tier := "normal"
 var phrase_started := false
+var _motion_guard_remaining := 0.0
 var _android_vibrator = null
 var _android_vibration_effect = null
 var _android_vibrator_checked := false
@@ -88,13 +90,19 @@ func update_fight(delta: float, fish: FishDefinition, tension: float) -> void:
 
 func tick(delta: float) -> void:
 	elapsed += maxf(delta, 0.0)
+	_motion_guard_remaining = maxf(0.0, _motion_guard_remaining - maxf(delta, 0.0))
 	if not enabled:
 		pending.clear()
+		_motion_guard_remaining = 0.0
 		return
 	_dispatch_due()
 
+func is_motion_guarded() -> bool:
+	return _motion_guard_remaining > 0.0
+
 func stop() -> void:
 	pending.clear()
+	_motion_guard_remaining = 0.0
 	fighting = false
 	active_fish = null
 	warning_tier = "normal"
@@ -137,6 +145,7 @@ func _schedule_phrase(pattern: Array[Dictionary]) -> void:
 func _dispatch_due() -> void:
 	while not pending.is_empty() and float(pending[0].at) <= elapsed:
 		var pulse: Dictionary = pending.pop_front()
+		_motion_guard_remaining = maxf(_motion_guard_remaining, float(pulse.duration) / 1000.0 + MOTION_SETTLE_SECONDS)
 		if emitter.is_valid():
 			emitter.call(int(pulse.duration), float(pulse.amplitude))
 		elif not _try_android_vibrate(int(pulse.duration), float(pulse.amplitude)):
