@@ -55,3 +55,9 @@ This validates installed-package delivery, real sensor calibration/cast/hook mar
 - The landed Bluegill at `66.42 s` missed Gate 1’s 10–20 second target because v6 required return within 8° of the original hook pose; later valid physical returns took `6.5–18.3 s` to meet that overly strict condition. A second fight was abandoned.
 
 This is useful device evidence for v6 gesture recognition, not acceptance of its timing. Version `0.1.6-gate1` changes to tolerant, continuous raised/lowered rod load and is unexported/uninstalled; physical comfort, timing, and haptic acceptance for that new tuning remain pending.
+
+## V7 build available; installation blocked
+
+- Signed `0.1.6-gate1` / versionCode `7` APK: 38,974,951 bytes; SHA-256 `E0DBDF20E0F1318A1DF556659E5187F1D8E4C6485B52E3B477AD606BF0B56B32`.
+- Package audit confirms `com.tak.castandcrank`, minSdk `24`, targetSdk `36`, arm64-only delivery, VIBRATE present, and v2 signing with the existing Android Debug certificate.
+- Wireless ADB was unavailable because no mDNS service was available. The v7 APK was not installed and has no physical validation claim; v6 remains the installed device build.
