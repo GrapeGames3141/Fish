@@ -8,4 +8,4 @@
 | Native AdMob | Pinned adapter + test ID + zero-reserve contract | Requires export/device + UMP validation |
 | Concept direction | `concepts/gate1/pine-lake-reel-concept-v01.png` | Pending human approval |
 | Portrait greybox captures | `screenshots/selected/gate1-{ready,reeling,caught,synthetic-reserve}.png` | Reviewed, code-native Gate 1 evidence |
-| Android export/device | Final process log | APK built but apksigner rejected unsigned artifact; signed retry pending. Physical device unavailable (ADB found none). |
+| Android export/device | `build/android/CastAndCrank-Gate1-debug.apk`; final process log | Signed debug APK verified (v2, Android Debug certificate); physical device remains unavailable (ADB found none). |

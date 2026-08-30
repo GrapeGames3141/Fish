@@ -7,4 +7,4 @@
 - [ ] Pine Lake concept direction is worth promoting into a production asset brief.
 - [ ] The bottom region has no duplicate in-game ad reserve or disclosure.
 - [ ] Device test is scheduled before any claim about real sensors, haptics, or native ads.
-- [ ] Signed Android debug APK is verified before Gate 2; Gate 1's first export artifact was unsigned.
+- [x] Signed Android debug APK is verified: v2 signed Android Debug build, `com.tak.castandcrank`, min SDK 24 / target SDK 36. Physical-device playtest remains required before Gate 2 claims.
