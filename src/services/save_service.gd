@@ -5,16 +5,21 @@ const VERSION := 1
 const PATH := "user://cast_and_crank_save.json"
 
 var data: Dictionary = default_data()
+var path: String
+
+func _init(custom_path: String = PATH) -> void:
+	path = custom_path
 
 static func default_data() -> Dictionary:
 	return {"version": VERSION, "calibrated": false, "settings": {"sensitivity": 1.0, "haptics": true, "audio": true, "reduced_motion": false}, "catches": {"bluegill": 0}, "best_cm": {"bluegill": 0.0}}
 
 func load_data() -> Dictionary:
-	if not FileAccess.file_exists(PATH):
+	if not FileAccess.file_exists(path):
 		data = default_data()
 		return data
-	var file := FileAccess.open(PATH, FileAccess.READ)
+	var file := FileAccess.open(path, FileAccess.READ)
 	var parsed = JSON.parse_string(file.get_as_text())
+	file.close()
 	if typeof(parsed) != TYPE_DICTIONARY:
 		data = default_data()
 		return data
@@ -24,10 +29,11 @@ func load_data() -> Dictionary:
 	return data
 
 func save_data() -> bool:
-	var file := FileAccess.open(PATH, FileAccess.WRITE)
+	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		return false
 	file.store_string(JSON.stringify(data))
+	file.close()
 	return true
 
 func record_bluegill(length_cm: float) -> void:

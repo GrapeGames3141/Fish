@@ -13,9 +13,10 @@ var consent_state := "desktop_inert"
 var diagnostic := ""
 
 func initialize() -> void:
-	available = OS.get_name() == "Android" and Engine.has_singleton("PoingGodotAdMob")
+	available = OS.get_name() == "Android" and Engine.has_singleton("PoingGodotAdMob") and Engine.has_singleton("PoingGodotAdMobConsentInformation") and Engine.has_singleton("PoingGodotAdMobUserMessagingPlatform")
 	if not available:
 		initialized = false
+		diagnostic = "Android AdMob/UMP singleton unavailable; banner remains disabled."
 		return
 	consent_state = "updating"
 	var request_configuration := RequestConfiguration.new()
@@ -55,7 +56,7 @@ func _load_banner_after_consent() -> void:
 	banner = AdView.new(TEST_BANNER_AD_UNIT, size, AdPosition.BOTTOM)
 	banner.load_ad(AdRequest.new())
 	initialized = true
-	consent_state = "banner_loaded"
+	consent_state = "banner_requested"
 
 func refresh_native_banner_diagnostics() -> void:
 	if banner != null:
