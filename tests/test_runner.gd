@@ -65,6 +65,13 @@ func _diagonal_motion() -> MotionService:
 		motion.update(0.18, false, false)
 	return motion
 
+func _left_calibrated_motion() -> MotionService:
+	var motion := MotionService.new(); motion.left_handed = true; motion.begin_calibration()
+	for frame in range(3): motion.queue_sample(_motion_sample(Vector3.ZERO, Vector3.ZERO)); motion.update(0.25, false, false)
+	for pair in [[Vector3(-3.0, 0, 0), Vector3(5.0, 0, 0)], [Vector3(-3.2, 0, 0), Vector3(5.4, 0, 0)]]:
+		motion.queue_sample(_motion_sample(pair[0])); motion.update(0.01, false, false); motion.queue_sample(_motion_sample(pair[1])); motion.update(0.18, false, false)
+	return motion
+
 func _test_state_transitions_and_timing() -> void:
 	var game = FishingSession.new()
 	expect(game.arm_cast(), "READY arms")
@@ -74,10 +81,21 @@ func _test_state_transitions_and_timing() -> void:
 	expect(game.state == FishingSession.State.BITE, "line reaches bite")
 	game.tick(0.01)
 	expect(game.state == FishingSession.State.HOOK_WINDOW, "bite advances to hook window")
-	expect(game.set_hook(), "hook succeeds in 1.5s window")
+	expect(game.set_hook(), "hook succeeds in 1.8s window")
 	expect(game.state == FishingSession.State.REELING, "hook enters reeling")
 	game.reset(); game.arm_cast(); game.release_cast(0.4); game.tick(game.fish.bite_delay_seconds + 0.01); game.tick(0.01); game.tick(FishingSession.HOOK_WINDOW_SECONDS + 0.1)
 	expect(game.state == FishingSession.State.ESCAPED, "hook timeout escapes")
+	var boundary = FishingSession.new(); boundary.arm_cast(); boundary.release_cast(0.5); boundary.tick(boundary.fish.bite_delay_seconds + 0.01); boundary.tick(0.01); boundary.tick(1.79); expect(boundary.state == FishingSession.State.HOOK_WINDOW, "hook remains available just inside 1.8 second window"); boundary.tick(0.02); expect(boundary.state == FishingSession.State.ESCAPED, "hook closes at 1.8 seconds")
+	var pine_rolls := [0.0, 0.60, 0.90]
+	var cedar_rolls := [0.0, 0.65, 0.93]
+	var selected_ids: Array[String] = []
+	for roll in pine_rolls:
+		selected_ids.append(FishDefinition.select_weighted("pine_lake", roll).id)
+	for roll in cedar_rolls:
+		selected_ids.append(FishDefinition.select_weighted("cedar_river", roll).id)
+	expect(selected_ids == ["bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike"], "deterministic weighted boundaries make every planned species reachable across Pine Lake and Cedar River")
+	var pine := FishDefinition.select_weighted("pine_lake", 0.0); var cedar := FishDefinition.select_weighted("cedar_river", 0.99)
+	expect(pine.location_id == "pine_lake" and cedar.id == "northern_pike" and cedar.max_length_cm > pine.max_length_cm, "deterministic weighted location selection exposes distinct species and size ranges")
 
 func _test_pump_and_recover_fight() -> void:
 	var game = FishingSession.new()
@@ -128,13 +146,14 @@ func _test_save_round_trip() -> void:
 	for fish in FishDefinition.all_planned():
 		expect(int(save.data.catches.get(fish.id, -1)) == 0 and float(save.data.best_cm.get(fish.id, -1.0)) == 0.0, "new save has a zero record for " + fish.id)
 	save.data.settings.sensitivity = 1.4
+	save.data.settings.left_handed = true; save.data.selected_location_id = "cedar_river"
 	save.data.motion_profile = _calibrated_motion().get_profile()
 	save.data.calibrated = true
 	save.record_bluegill(24.2)
 	save.record_catch("northern_pike", 74.5)
 	var restored = SaveService.new(path)
 	restored.load_data()
-	expect(float(restored.data.settings.sensitivity) == 1.4, "save restores settings")
+	expect(float(restored.data.settings.sensitivity) == 1.4 and restored.data.settings.left_handed and restored.data.selected_location_id == "cedar_river", "save restores expanded settings and selected location")
 	expect(int(restored.data.catches.bluegill) >= 1, "save restores catch count")
 	expect(float(restored.data.best_cm.bluegill) >= 24.2, "save restores best fish")
 	expect(int(restored.data.catches.northern_pike) == 1 and float(restored.data.best_cm.northern_pike) == 74.5, "generic record_catch persists every planned species")
@@ -161,6 +180,41 @@ func _test_injectable_motion() -> void:
 	expect(MotionService.validate_profile({"forward_axis": [-0.85, 0.27, -0.445], "back_peak": 3.0, "forward_peak": 5.0, "gyro_peak": 0.7, "transition_seconds": 0.2, "noise_floor": 0.1, "direction_tolerance": 0.62}), "existing negative-X saved profile remains valid")
 	expect(MotionService.validate_profile({"forward_axis": [-0.52, -0.80, -0.28], "back_peak": 3.0, "forward_peak": 5.0, "gyro_peak": 0.7, "transition_seconds": 0.2, "noise_floor": 0.1, "direction_tolerance": 0.62}), "clearly left-handed diagonal saved profile remains valid")
 	expect(not MotionService.validate_profile({"forward_axis": [1.0, 0.0, 0.0], "back_peak": 3.0, "forward_peak": 5.0, "gyro_peak": 0.7, "transition_seconds": 0.2, "noise_floor": 0.1, "direction_tolerance": 0.62}), "wrong-handed saved profile is rejected and recalibrates")
+	var left_motion := _left_calibrated_motion()
+	expect(left_motion.is_calibrated() and float(left_motion.profile.get("forward_axis", [0.0])[0]) > 0.70, "left-handed calibration mirrors the saved profile axis profile=%s phase=%s" % [str(left_motion.profile), left_motion.calibration_phase])
+	left_motion.queue_sample(_motion_sample(Vector3(-2.4, 0, 0))); var left_arm := left_motion.update(0.01, true, false); left_motion.queue_sample(_motion_sample(Vector3(5.0, 0, 0))); var left_cast := left_motion.update(0.18, true, false)
+	expect(left_arm.cast_arm and float(left_cast.cast_quality) > 0.0, "left-handed cock-left snap-right cast mirrors right-handed behavior")
+	var thresholds := _calibrated_motion(); thresholds.profile.noise_floor = 1.0; thresholds.profile.back_peak = 4.0; thresholds.profile.forward_peak = 6.0; thresholds.profile.gyro_peak = 4.0; thresholds.sensitivity = 2.0
+	expect(is_equal_approx(thresholds._back_threshold(), 1.0) and is_equal_approx(thresholds._forward_threshold(), 1.5) and is_equal_approx(thresholds._hook_threshold(), 0.8) and is_equal_approx(thresholds._gyro_threshold(), 0.44), "motion thresholds apply sensitivity to complete exact max formulas")
+	thresholds.sensitivity = 0.5; expect(is_equal_approx(thresholds._gyro_threshold(), 0.85), "cast gyro threshold is capped at .85 rad/s")
+	var switched := _calibrated_motion(); switched.set_left_handed(true)
+	expect(switched.left_handed and not switched.is_calibrated() and switched.calibration_phase == "settling", "switching handedness deliberately clears a v3-compatible profile and starts calibration")
+	var robust_gyro := MotionService.new(); robust_gyro._calibration_examples = [{"gyro_peak": 0.42}, {"gyro_peak": 8.0}]
+	expect(is_equal_approx(robust_gyro._robust_gyro_peak(), 0.42), "two practice casts use the lower gyro peak to reject a one-off outlier")
+	var diagnostic_motion := _calibrated_motion(); diagnostic_motion.queue_sample(_motion_sample(Vector3(0, 4.0, 0))); diagnostic_motion.update(0.05, true, false)
+	var diagnostic_counts: Dictionary = diagnostic_motion.get_diagnostics()
+	expect(int(diagnostic_counts.cock_attempts) >= 2 and int(diagnostic_counts.reasons.linear) + int(diagnostic_counts.reasons.axis) + int(diagnostic_counts.reasons.polarity) + int(diagnostic_counts.reasons.gyro) + int(diagnostic_counts.reasons.timeout) >= 1 and not str(diagnostic_counts).contains("Vector3"), "motion diagnostics keep derived counters/reasons without raw sensor vectors")
+	var still_motion := _calibrated_motion(); still_motion.diagnostics = {"cock_attempts": 0, "completed_casts": 0, "hook_attempts": 0, "reasons": {"linear": 0, "axis": 0, "polarity": 0, "gyro": 0, "timeout": 0}}
+	for frame in range(1200): still_motion.queue_sample(_motion_sample(Vector3.ZERO, Vector3.ZERO)); still_motion.update(0.05, true, true)
+	var still_counts: Dictionary = still_motion.get_diagnostics()
+	expect(int(still_counts.cock_attempts) == 0 and int(still_counts.hook_attempts) == 0 and int(still_counts.completed_casts) == 0 and int(still_counts.reasons.linear) + int(still_counts.reasons.axis) + int(still_counts.reasons.polarity) + int(still_counts.reasons.gyro) + int(still_counts.reasons.timeout) == 0, "60 seconds of still samples creates no gesture attempts or failure counts")
+	var burst_motion := _calibrated_motion(); burst_motion.diagnostics = {"cock_attempts": 0, "completed_casts": 0, "hook_attempts": 0, "reasons": {"linear": 0, "axis": 0, "polarity": 0, "gyro": 0, "timeout": 0}}
+	for frame in range(4): burst_motion.queue_sample(_motion_sample(Vector3(0, 4.0, 0))); burst_motion.update(0.05, true, false)
+	var burst_counts: Dictionary = burst_motion.get_diagnostics()
+	expect(int(burst_counts.cock_attempts) == 1 and int(burst_counts.reasons.axis) + int(burst_counts.reasons.polarity) == 1, "one off-axis candidate burst records one attempt/reason across high frames")
+	var hook_burst := _calibrated_motion(); hook_burst.diagnostics = {"cock_attempts": 0, "completed_casts": 0, "hook_attempts": 0, "reasons": {"linear": 0, "axis": 0, "polarity": 0, "gyro": 0, "timeout": 0}}
+	for frame in range(4): hook_burst.queue_sample(_motion_sample(Vector3(1.35, 0, 0), Vector3(0, 0, 0.4))); hook_burst.update(0.05, false, true)
+	expect(int(hook_burst.get_diagnostics().hook_attempts) == 1, "one hook candidate burst counts one hook attempt")
+	var two_window_hook := _calibrated_motion()
+	# The first bite window receives a deliberately wrong-polarity high burst;
+	# ending that window must clear its candidate latch without needing a quiet
+	# sample, so the next window sees its first real hook.
+	two_window_hook.queue_sample(_motion_sample(Vector3(-1.35, 0, 0), Vector3(0, 0, 0.4)))
+	expect(not two_window_hook.update(0.05, false, true).hook, "first hook window rejects a wrong-polarity candidate")
+	two_window_hook.queue_sample(_motion_sample(Vector3(-1.35, 0, 0), Vector3(0, 0, 0.4)))
+	two_window_hook.update(0.05, false, false)
+	two_window_hook.queue_sample(_motion_sample(Vector3(1.35, 0, 0), Vector3(0, 0, 0.4)))
+	expect(two_window_hook.update(0.05, false, true).hook and int(two_window_hook.get_diagnostics().hook_attempts) == 2, "a prior hook-window burst cannot suppress the first real hook candidate in the next window")
 	var calibration_reject := MotionService.new()
 	calibration_reject.begin_calibration()
 	for frame in range(3):
@@ -202,12 +256,15 @@ func _test_injectable_motion() -> void:
 	motion.queue_sample(_motion_sample(Vector3(0.35, 0, 0), Vector3(0, 0, 0.05)))
 	var noise := motion.update(0.05, true, false)
 	expect(not noise.cast_arm and float(noise.cast_quality) == 0.0, "noise does not arm a cast")
+	motion.queue_sample(_motion_sample(Vector3.ZERO, Vector3.ZERO)); motion.update(0.05, true, false)
 	motion.queue_sample(_motion_sample(Vector3(-4.2, 0, 0)))
 	var wrong_order := motion.update(0.05, true, false)
 	expect(not wrong_order.cast_arm and float(wrong_order.cast_quality) == 0.0, "left snap without a right cock is rejected")
+	motion.queue_sample(_motion_sample(Vector3.ZERO, Vector3.ZERO)); motion.update(0.05, true, false)
 	motion.queue_sample(_motion_sample(Vector3(0, 3.5, 0)))
 	var wrong_direction := motion.update(0.05, true, false)
 	expect(not wrong_direction.cast_arm and float(wrong_direction.cast_quality) == 0.0, "off-axis motion is rejected")
+	motion.queue_sample(_motion_sample(Vector3.ZERO, Vector3.ZERO)); motion.update(0.05, true, false)
 	motion.queue_sample(_motion_sample(Vector3(2.2, 0, 0)))
 	var slow_back := motion.update(0.01, true, false)
 	motion.queue_sample(_motion_sample(Vector3(4.2, 0, 0)))
@@ -407,6 +464,10 @@ func _test_haptic_signatures() -> void:
 	terminal_haptics.cue("escaped")
 	terminal_haptics.tick(1.0)
 	expect(terminal.size() == 1 and caught_signature != str(terminal), "escaped terminal cue is distinct")
+	terminal.clear(); terminal_haptics.cue("hook_miss"); terminal_haptics.tick(1.0)
+	expect(terminal.size() == 2 and str(terminal) != caught_signature, "hook miss has a distinct two-pulse cue")
+	terminal.clear(); terminal_haptics.cue("cock"); terminal_haptics.tick(0.1)
+	expect(terminal.size() == 1 and int(terminal[0].duration) == 22, "accepted cast cock has one subtle haptic cue")
 
 func _test_project_source_settings() -> void:
 	var config := ConfigFile.new()
@@ -421,13 +482,13 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 12 and export_config.get_value("preset.0.options", "version/name") == "0.2.3-motion2", "live motion-recognition package version is bumped")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 13 and export_config.get_value("preset.0.options", "version/name") == "0.3.0-expansion1", "reliability/content expansion package version is bumped")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
 	var excluded := str(export_config.get_value("preset.0", "exclude_filter"))
 	expect("build/**" in excluded and "reports/**" in excluded and "art/ui_v1/mockups/**" in excluded and "addons/admob/internal/editor/**" in excluded and "addons/admob/internal/mock/**" in excluded and not "addons/admob/gdscript/src/mediation/**" in excluded, "mockups and non-runtime material are recursively excluded while runtime mediation dependencies remain")
-	expect(config.get_value("application", "config/icon") == "res://art/ui_v1/runtime_source/app-icon-v01.png" and config.get_value("application", "boot_splash/image") == "res://art/ui_v1/runtime_source/loading-splash-v01.png", "ImageGen runtime icon and boot splash are configured")
+	expect(config.get_value("application", "config/icon") == "res://art/ui_v1/runtime_source/app-icon-runtime-512.png" and config.get_value("application", "boot_splash/image") == "res://art/ui_v1/runtime_source/loading-splash-v01.png", "optimized runtime icon and approved splash are configured")
 	var runtime_assets := {
 		"res://art/ui_v1/runtime_source/pine-lake-clean-v01.png": Vector2i(941, 1672),
 		"res://art/ui_v1/runtime_source/rod-bend-strip-v01.png": Vector2i(1536, 1024),
@@ -436,6 +497,7 @@ func _test_project_source_settings() -> void:
 		"res://art/ui_v1/runtime_source/catch-frame-clean-v01.png": Vector2i(941, 1672),
 		"res://art/ui_v1/runtime_source/bluegill-v01.png": Vector2i(1536, 1024),
 		"res://art/ui_v1/runtime_source/app-icon-v01.png": Vector2i(1254, 1254),
+		"res://art/ui_v1/runtime_source/app-icon-runtime-512.png": Vector2i(512, 512),
 		"res://art/ui_v1/runtime_source/loading-splash-v01.png": Vector2i(941, 1672),
 		"res://art/ui_v1/runtime_source/records-screen-v01.png": Vector2i(941, 1672)
 	}
@@ -453,5 +515,6 @@ func _test_project_source_settings() -> void:
 	expect("AndroidRuntime" in haptic_source and "getSystemService(\"vibrator\")" in haptic_source and "VibrationEffect" in haptic_source and "createOneShot" in haptic_source and "Build$VERSION" in haptic_source and "SDK_INT" in haptic_source and "VibrationAttributes" in haptic_source and "createForUsage" in haptic_source and "USAGE_MEDIA" in haptic_source and "AudioAttributes$Builder" in haptic_source and "USAGE_GAME" in haptic_source and "CONTENT_TYPE_SONIFICATION" in haptic_source and "vibrate(effect, _android_vibration_attributes)" in haptic_source and "vibrate(effect, _android_audio_attributes)" in haptic_source and "_android_vibrator.vibrate(maxi(1, duration_ms), _android_audio_attributes)" in haptic_source and "Input.vibrate_handheld" in haptic_source, "Android explicit non-touch attributes with API24 fallback contract retained")
 	var main_source := FileAccess.get_file_as_string("res://src/ui/main.gd")
 	var motion_source := FileAccess.get_file_as_string("res://src/services/motion_service.gd")
-	expect("RIGHT_HANDED_FORWARD_AXIS" in motion_source and "RIGHT_HANDED_BACK_AXIS" in motion_source and "PROFILE_HANDEDNESS_ALIGNMENT" in motion_source and "CALIBRATION_HANDEDNESS_ALIGNMENT" in motion_source and "RUNTIME_X_POLARITY_ALIGNMENT" in motion_source and "_leftward_pose_travel_degrees" in motion_source and "_rightward_pose_travel_degrees" in motion_source and "sqrt(raw_fight_load)" in motion_source, "right-handed learned-axis and signed fight-load contracts retain deliberate polarity gates")
+	expect("randf()" in main_source and "haptics.cue(\"cock\")" in main_source and "haptics.set_enabled(bool(save.data.settings[key]))" in main_source, "physical arm selects a fresh weighted fish, cues cock, and applies haptics immediately")
+	expect("PROFILE_HANDEDNESS_ALIGNMENT" in motion_source and "CALIBRATION_HANDEDNESS_ALIGNMENT" in motion_source and "RUNTIME_X_POLARITY_ALIGNMENT" in motion_source and "LOAD_RESPONSE_SECONDS" in motion_source and "MOTION_FAIL reason=" in motion_source and "sqrt(raw_fight_load)" in motion_source, "mirrored learned-axis motion retains smoothing, bounded diagnostics, and polarity gates")
 	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and not "reel_fallback" in main_source and "COCK RIGHT, THEN SNAP LEFT" in main_source and "BITE — PULL RIGHT" in main_source and "TILT LEFT TO EASE" in main_source and "TILT RIGHT TO PULL" in main_source and "not OS.has_feature(\"android\")" in main_source and "MOTION_FIGHT caught elapsed=" in main_source and "MOTION_FIGHT escaped elapsed=" in main_source and "_record_catch_once" in main_source and "records-screen-v01.png" in main_source and "ROD_TIP_ANCHORS" in main_source and "_rod_tip_for_frame" in main_source and not "draw_line(Vector2(87, 1070)" in main_source, "Android UI retains no touch gameplay paths, explicit right-handed guidance, and tip-anchored rod lines")

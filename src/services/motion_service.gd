@@ -22,8 +22,11 @@ const RIGHT_HANDED_BACK_AXIS := Vector3(1, 0, 0)
 const PROFILE_HANDEDNESS_ALIGNMENT := 0.48
 const CALIBRATION_HANDEDNESS_ALIGNMENT := 0.34
 const RUNTIME_X_POLARITY_ALIGNMENT := 0.18
+const LOAD_RESPONSE_SECONDS := 0.10
+const LOAD_DEADBAND := 0.035
 
 var sensitivity := 1.0
+var left_handed := false
 var sample_provider: Callable
 var queued_samples: Array[Dictionary] = []
 var profile: Dictionary = {}
@@ -38,6 +41,8 @@ var _back_axis := Vector3.ZERO
 var _back_peak := 0.0
 var _back_gyro_peak := 0.0
 var _noise_peak := 0.0
+var _settle_noise_peak := 0.0
+var _settle_gyro_peak := 0.0
 var _simulated_cast_pending := false
 var _simulated_hook_pending := false
 var fight_phase := ""
@@ -47,6 +52,9 @@ var _fight_pull_reference := Vector3.ZERO
 var _fight_lower_reference := Vector3.ZERO
 var _fight_transition_elapsed := 0.0
 var _last_gravity := Vector3.ZERO
+var diagnostics := {"cock_attempts": 0, "completed_casts": 0, "hook_attempts": 0, "reasons": {"linear": 0, "axis": 0, "polarity": 0, "gyro": 0, "timeout": 0}}
+var _diagnostic_elapsed := 0.0
+var _candidate_latched := {"cock": false, "snap": false, "hook": false}
 
 func _init(custom_provider: Callable = Callable()) -> void:
 	sample_provider = custom_provider
@@ -60,6 +68,7 @@ func sample() -> Dictionary:
 
 func update(delta: float, allow_cast: bool, allow_hook: bool, allow_fight: bool = false) -> Dictionary:
 	var reading := _read_once()
+	_diagnostic_elapsed += maxf(delta, 0.0)
 	if calibration_phase != "idle" and calibration_phase != "complete":
 		return _update_calibration(delta, reading)
 	_cooldown_elapsed = maxf(0.0, _cooldown_elapsed - delta)
@@ -68,6 +77,11 @@ func update(delta: float, allow_cast: bool, allow_hook: bool, allow_fight: bool 
 		_update_cast(delta, reading, event)
 	if allow_hook:
 		event.hook = _detect_hook(reading)
+	else:
+		# Hook candidates exist only inside the bounded bite window. Do not let a
+		# rejected/high sample from a completed window suppress the first real
+		# candidate in the next session.
+		_candidate_latched.hook = false
 	if allow_fight:
 		_update_fight(delta, reading, event)
 	return event
@@ -78,13 +92,26 @@ func begin_calibration() -> void:
 	calibration_phase = "settling"
 	calibration_progress = 0
 	_settle_elapsed = 0.0
+	_settle_noise_peak = 0.0
+	_settle_gyro_peak = 0.0
 	reset_gesture()
 
-func is_calibrated() -> bool:
-	return validate_profile(profile)
+func set_left_handed(value: bool) -> bool:
+	if left_handed == value: return false
+	left_handed = value
+	profile = {}
+	begin_calibration()
+	return true
+
+func get_diagnostics() -> Dictionary: return diagnostics.duplicate(true)
+
+func _forward_axis() -> Vector3: return -RIGHT_HANDED_FORWARD_AXIS if left_handed else RIGHT_HANDED_FORWARD_AXIS
+func _back_axis_direction() -> Vector3: return -_forward_axis()
+
+func is_calibrated() -> bool: return validate_profile(profile, left_handed)
 
 func set_profile(value: Dictionary) -> bool:
-	if not validate_profile(value):
+	if not validate_profile(value, left_handed):
 		profile = {}
 		return false
 	profile = value.duplicate(true)
@@ -95,14 +122,15 @@ func set_profile(value: Dictionary) -> bool:
 func get_profile() -> Dictionary:
 	return profile.duplicate(true)
 
-static func validate_profile(value: Dictionary) -> bool:
+static func validate_profile(value: Dictionary, use_left_handed: bool = false) -> bool:
 	if value.is_empty() or not value.has("forward_axis") or not value.has("back_peak") or not value.has("forward_peak"):
 		return false
 	var axis_value = value.forward_axis
 	if not axis_value is Array or axis_value.size() != 3:
 		return false
 	var axis := Vector3(float(axis_value[0]), float(axis_value[1]), float(axis_value[2]))
-	return axis.length() >= 0.90 and axis.normalized().dot(RIGHT_HANDED_FORWARD_AXIS) >= PROFILE_HANDEDNESS_ALIGNMENT and float(value.back_peak) >= 1.2 and float(value.forward_peak) >= 1.4 and float(value.get("gyro_peak", 0.0)) >= 0.08 and float(value.get("transition_seconds", 0.0)) >= MIN_TRANSITION_SECONDS and float(value.get("transition_seconds", 9.0)) <= MAX_TRANSITION_SECONDS and float(value.get("noise_floor", -1.0)) >= 0.0 and float(value.get("direction_tolerance", 0.0)) >= 0.45
+	var forward := -RIGHT_HANDED_FORWARD_AXIS if use_left_handed else RIGHT_HANDED_FORWARD_AXIS
+	return axis.length() >= 0.90 and axis.normalized().dot(forward) >= PROFILE_HANDEDNESS_ALIGNMENT and float(value.back_peak) >= 1.2 and float(value.forward_peak) >= 1.4 and float(value.get("gyro_peak", 0.0)) >= 0.08 and float(value.get("transition_seconds", 0.0)) >= MIN_TRANSITION_SECONDS and float(value.get("transition_seconds", 9.0)) <= MAX_TRANSITION_SECONDS and float(value.get("noise_floor", -1.0)) >= 0.0 and float(value.get("direction_tolerance", 0.0)) >= 0.45
 
 func reset_gesture() -> void:
 	_gesture_elapsed = 0.0
@@ -110,6 +138,9 @@ func reset_gesture() -> void:
 	_back_peak = 0.0
 	_back_gyro_peak = 0.0
 	_noise_peak = 0.0
+	_candidate_latched.cock = false
+	_candidate_latched.snap = false
+	_candidate_latched.hook = false
 
 func begin_fight(pull_gravity: Vector3 = Vector3.ZERO) -> void:
 	var reference := pull_gravity if pull_gravity.length() >= 1.0 else _last_gravity
@@ -160,11 +191,11 @@ func _update_fight(delta: float, reading: Dictionary, event: Dictionary) -> void
 		return
 	var pose := gravity.normalized()
 	_fight_transition_elapsed += maxf(delta, 0.0)
-	var left_travel := _leftward_pose_travel_degrees(pose, _fight_pull_reference)
+	var left_travel := _ease_pose_travel_degrees(pose, _fight_pull_reference)
 	if _fight_lower_reference.length() < 0.90:
 		# Before the first left/ease pose is learned, the hook/right pose is a full
 		# pull. Pitch/YZ motion or rightward travel must never ease the line.
-		fight_load = clampf(1.0 - maxf(left_travel, 0.0) / FIGHT_LOWER_TRAVEL_DEGREES, 0.0, 1.0)
+		_smooth_fight_load(clampf(1.0 - maxf(left_travel, 0.0) / FIGHT_LOWER_TRAVEL_DEGREES, 0.0, 1.0), delta)
 		if left_travel >= FIGHT_LOWER_TRAVEL_DEGREES and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
 			_fight_lower_reference = pose
 			fight_phase = "PULL BACK"
@@ -172,15 +203,15 @@ func _update_fight(delta: float, reading: Dictionary, event: Dictionary) -> void
 			_fight_transition_elapsed = 0.0
 			event.fight_lower = true
 	else:
-		var reference_span := _leftward_pose_travel_degrees(_fight_lower_reference, _fight_pull_reference)
-		var rightward_return := _rightward_pose_travel_degrees(pose, _fight_lower_reference)
+		var reference_span := _ease_pose_travel_degrees(_fight_lower_reference, _fight_pull_reference)
+		var rightward_return := _pull_pose_travel_degrees(pose, _fight_lower_reference)
 		# Pose load is signed: left/lower is 0, and only return toward physical
 		# right/pull increases it. Y/Z-only shakes stay at zero regardless of angle.
 		var raw_fight_load := clampf(rightward_return / maxf(reference_span, 0.01), 0.0, 1.0)
 		# Natural returns commonly stop short of the hook pose. Square-root response
 		# preserves exact lower/pull anchors while making useful partial cock-backs
 		# contribute enough continuous load to meet the physical timing target.
-		fight_load = sqrt(raw_fight_load)
+		_smooth_fight_load(0.0 if raw_fight_load <= LOAD_DEADBAND else sqrt(raw_fight_load), delta)
 		var clearly_toward_pull := rightward_return >= FIGHT_PULL_RETURN_TRAVEL_DEGREES + FIGHT_RETURN_HYSTERESIS_DEGREES
 		if fight_phase == "PULL BACK" and clearly_toward_pull and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
 			fight_phase = "LOWER ROD"
@@ -198,17 +229,20 @@ func _update_fight(delta: float, reading: Dictionary, event: Dictionary) -> void
 func _update_calibration(delta: float, reading: Dictionary) -> Dictionary:
 	var linear: Vector3 = reading.linear
 	var gyro: Vector3 = reading.gyro
-	var event := {"cast_arm": false, "cast_quality": 0.0, "hook": false, "calibration_complete": false}
+	var event := {"cast_arm": false, "cast_quality": 0.0, "hook": false, "calibration_complete": false, "calibration_tick": false}
 	if calibration_phase == "settling":
 		if linear.length() <= 0.75 and gyro.length() <= 0.35:
 			_settle_elapsed += delta
+			_settle_noise_peak = maxf(_settle_noise_peak, linear.length())
+			_settle_gyro_peak = maxf(_settle_gyro_peak, gyro.length())
 		else:
 			_settle_elapsed = 0.0
 		if _settle_elapsed >= SETTLE_DWELL_SECONDS:
 			calibration_phase = "practice_%d_back" % (calibration_progress + 1)
 		return event
 	if _back_axis == Vector3.ZERO:
-		if linear.length() >= 2.0 / maxf(sensitivity, 0.5) and linear.normalized().dot(RIGHT_HANDED_BACK_AXIS) >= CALIBRATION_HANDEDNESS_ALIGNMENT and gyro.length() >= 0.16:
+		if linear.length() >= 2.0 / maxf(sensitivity, 0.5) and linear.normalized().dot(_back_axis_direction()) >= CALIBRATION_HANDEDNESS_ALIGNMENT and gyro.length() >= 0.16:
+			diagnostics.cock_attempts += 1
 			_back_axis = linear.normalized()
 			_back_peak = linear.length()
 			_back_gyro_peak = gyro.length()
@@ -222,14 +256,14 @@ func _update_calibration(delta: float, reading: Dictionary) -> Dictionary:
 		return event
 	var forward_projection := linear.dot(-_back_axis)
 	var forward_match := linear.normalized().dot(-_back_axis) if linear.length() > 0.0 else -1.0
-	var handed_match := linear.normalized().dot(RIGHT_HANDED_FORWARD_AXIS) if linear.length() > 0.0 else -1.0
+	var handed_match := linear.normalized().dot(_forward_axis()) if linear.length() > 0.0 else -1.0
 	if forward_projection >= maxf(2.4 / maxf(sensitivity, 0.5), _back_peak * 0.72) and forward_match >= 0.62 and handed_match >= CALIBRATION_HANDEDNESS_ALIGNMENT and gyro.length() >= 0.16:
 		_accept_calibration_example(forward_projection, gyro.length())
+		event.calibration_tick = true
 		if calibration_progress >= PROFILE_EXAMPLES:
 			event.calibration_complete = _finish_calibration()
 		return event
-	if linear.length() > 0.0 and absf(linear.normalized().dot(_back_axis)) < 0.45:
-		_noise_peak = maxf(_noise_peak, linear.length())
+	if linear.length() > 0.0 and absf(linear.normalized().dot(_back_axis)) < 0.45: _fail("axis")
 	return event
 
 func _retry_calibration_example() -> void:
@@ -237,8 +271,9 @@ func _retry_calibration_example() -> void:
 	calibration_phase = "practice_%d_back" % (calibration_progress + 1)
 
 func _accept_calibration_example(forward_peak: float, gyro_peak: float) -> void:
-	_calibration_examples.append({"forward_axis": _vector_to_array(-_back_axis), "back_peak": _back_peak, "forward_peak": forward_peak, "gyro_peak": maxf(_back_gyro_peak, gyro_peak), "transition_seconds": _gesture_elapsed, "noise_floor": minf(_noise_peak, minf(_back_peak, forward_peak) * 0.30), "direction_tolerance": 0.62})
+	_calibration_examples.append({"forward_axis": _vector_to_array(-_back_axis), "back_peak": _back_peak, "forward_peak": forward_peak, "gyro_peak": maxf(_back_gyro_peak, gyro_peak), "transition_seconds": _gesture_elapsed, "noise_floor": _settle_noise_peak, "direction_tolerance": 0.62})
 	calibration_progress = _calibration_examples.size()
+	diagnostics.completed_casts += 1
 	reset_gesture()
 	calibration_phase = "practice_%d_back" % min(calibration_progress + 1, PROFILE_EXAMPLES)
 
@@ -252,15 +287,15 @@ func _finish_calibration() -> bool:
 		begin_calibration()
 		return false
 	axis = axis.normalized()
-	if axis.dot(RIGHT_HANDED_FORWARD_AXIS) < PROFILE_HANDEDNESS_ALIGNMENT:
+	if axis.dot(_forward_axis()) < PROFILE_HANDEDNESS_ALIGNMENT:
 		begin_calibration()
 		return false
 	for example in _calibration_examples:
 		if _array_to_vector(example.forward_axis).normalized().dot(axis) < 0.70:
 			begin_calibration()
 			return false
-	profile = {"forward_axis": _vector_to_array(axis), "back_peak": _average("back_peak"), "forward_peak": _average("forward_peak"), "gyro_peak": _average("gyro_peak"), "transition_seconds": _average("transition_seconds"), "noise_floor": _average("noise_floor"), "direction_tolerance": 0.62}
-	if not validate_profile(profile):
+	profile = {"forward_axis": _vector_to_array(axis), "back_peak": _average("back_peak"), "forward_peak": _average("forward_peak"), "gyro_peak": _robust_gyro_peak(), "transition_seconds": _average("transition_seconds"), "noise_floor": _average("noise_floor"), "direction_tolerance": 0.62}
+	if not validate_profile(profile, left_handed):
 		begin_calibration()
 		return false
 	calibration_phase = "complete"
@@ -271,6 +306,11 @@ func _average(key: String) -> float:
 	for example in _calibration_examples:
 		total += float(example[key])
 	return total / float(_calibration_examples.size())
+
+func _robust_gyro_peak() -> float:
+	var lowest := INF
+	for example in _calibration_examples: lowest = minf(lowest, float(example.gyro_peak))
+	return lowest
 
 func _update_cast(delta: float, reading: Dictionary, event: Dictionary) -> void:
 	if not is_calibrated() or _cooldown_elapsed > 0.0:
@@ -287,25 +327,24 @@ func _update_cast(delta: float, reading: Dictionary, event: Dictionary) -> void:
 	if _back_axis == Vector3.ZERO:
 		var back_projection := -linear.dot(axis)
 		var back_match := -linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
-		var handed_match := linear.normalized().dot(RIGHT_HANDED_BACK_AXIS) if linear.length() > 0.0 else -1.0
-		if back_projection >= _back_threshold() and back_match >= float(profile.direction_tolerance) and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold():
-			_back_axis = -axis
-			_back_peak = back_projection
-			_back_gyro_peak = gyro.length()
-			_gesture_elapsed = 0.0
-			event.cast_arm = true
+		var handed_match := linear.normalized().dot(_back_axis_direction()) if linear.length() > 0.0 else -1.0
+		if _new_candidate("cock", linear, gyro, _back_threshold()):
+			diagnostics.cock_attempts += 1
+			if back_projection >= _back_threshold() and back_match >= float(profile.direction_tolerance) and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold():
+				_back_axis = -axis; _back_peak = back_projection; _back_gyro_peak = gyro.length(); _gesture_elapsed = 0.0; event.cast_arm = true
+			else: _classify_failure(linear, gyro, back_match, handed_match, _back_threshold(), "cock")
 		return
 	_gesture_elapsed += delta
 	if _gesture_elapsed > MAX_TRANSITION_SECONDS:
-		reset_gesture()
+		_fail("timeout"); reset_gesture()
 		return
 	var forward_projection := linear.dot(axis)
 	var forward_match := linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
-	var handed_match := linear.normalized().dot(RIGHT_HANDED_FORWARD_AXIS) if linear.length() > 0.0 else -1.0
-	if forward_projection >= _forward_threshold() and forward_match >= float(profile.direction_tolerance) and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold():
-		event.cast_quality = _cast_quality(forward_projection)
-		reset_gesture()
-		_cooldown_elapsed = GESTURE_COOLDOWN_SECONDS
+	var handed_match := linear.normalized().dot(_forward_axis()) if linear.length() > 0.0 else -1.0
+	if _new_candidate("snap", linear, gyro, _forward_threshold()):
+		if forward_projection >= _forward_threshold() and forward_match >= float(profile.direction_tolerance) and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold():
+			event.cast_quality = _cast_quality(forward_projection); diagnostics.completed_casts += 1; reset_gesture(); _cooldown_elapsed = GESTURE_COOLDOWN_SECONDS
+		else: _classify_failure(linear, gyro, forward_match, handed_match, _forward_threshold(), "snap")
 
 func _detect_hook(reading: Dictionary) -> bool:
 	if not is_calibrated() or _cooldown_elapsed > 0.0:
@@ -319,36 +358,66 @@ func _detect_hook(reading: Dictionary) -> bool:
 	var gyro: Vector3 = reading.gyro
 	var back_projection: float = -linear.dot(axis)
 	var back_match := -linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
-	var handed_match := linear.normalized().dot(RIGHT_HANDED_BACK_AXIS) if linear.length() > 0.0 else -1.0
+	var handed_match := linear.normalized().dot(_back_axis_direction()) if linear.length() > 0.0 else -1.0
+	if not _new_candidate("hook", linear, gyro, _hook_threshold()): return false
+	diagnostics.hook_attempts += 1
 	if back_projection >= _hook_threshold() and back_match >= float(profile.direction_tolerance) * 0.82 and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold() * 0.72:
 		_cooldown_elapsed = GESTURE_COOLDOWN_SECONDS
 		return true
+	_classify_failure(linear, gyro, back_match, handed_match, _hook_threshold(), "hook")
 	return false
 
 func _back_threshold() -> float:
-	return maxf(float(profile.noise_floor) * 2.6, float(profile.back_peak) * 0.56 / maxf(sensitivity, 0.5))
+	return maxf(float(profile.noise_floor) * 1.8, float(profile.back_peak) * 0.50) / maxf(sensitivity, 0.5)
 
 func _forward_threshold() -> float:
-	return maxf(float(profile.noise_floor) * 2.8, float(profile.forward_peak) * 0.55 / maxf(sensitivity, 0.5))
+	return maxf(float(profile.noise_floor) * 2.2, float(profile.forward_peak) * 0.50) / maxf(sensitivity, 0.5)
 
 func _hook_threshold() -> float:
-	return maxf(float(profile.noise_floor) * 2.2, float(profile.back_peak) * 0.38 / maxf(sensitivity, 0.5))
+	return maxf(float(profile.noise_floor) * 1.6, float(profile.back_peak) * 0.30) / maxf(sensitivity, 0.5)
 
 func _gyro_threshold() -> float:
-	return maxf(0.12, float(profile.gyro_peak) * 0.42 / maxf(sensitivity, 0.5))
+	return clampf(float(profile.gyro_peak) * 0.22 / maxf(sensitivity, 0.5), 0.12, 0.85)
 
 func _cast_quality(forward_projection: float) -> float:
 	var threshold := _forward_threshold()
 	var peak := maxf(float(profile.forward_peak), threshold + 0.01)
 	return clampf(0.35 + (forward_projection - threshold) / maxf(peak * 0.80, 0.1) * 0.65, 0.35, 1.0)
 
-func _leftward_pose_travel_degrees(pose: Vector3, reference: Vector3) -> float:
-	var signed_component := (pose - reference).dot(RIGHT_HANDED_FORWARD_AXIS)
+func _ease_pose_travel_degrees(pose: Vector3, reference: Vector3) -> float:
+	var signed_component := (pose - reference).dot(_forward_axis())
 	return rad_to_deg(asin(clampf(signed_component, -1.0, 1.0)))
 
-func _rightward_pose_travel_degrees(pose: Vector3, reference: Vector3) -> float:
-	var signed_component := (pose - reference).dot(RIGHT_HANDED_BACK_AXIS)
+func _pull_pose_travel_degrees(pose: Vector3, reference: Vector3) -> float:
+	var signed_component := (pose - reference).dot(_back_axis_direction())
 	return rad_to_deg(asin(clampf(signed_component, -1.0, 1.0)))
+
+func _smooth_fight_load(target: float, delta: float) -> void:
+	fight_load = move_toward(fight_load, clampf(target, 0.0, 1.0), maxf(delta, 0.0) / LOAD_RESPONSE_SECONDS)
+
+func _fail(reason: String) -> void:
+	if not diagnostics.reasons.has(reason): return
+	diagnostics.reasons[reason] = int(diagnostics.reasons[reason]) + 1
+	if _diagnostic_elapsed >= 0.75:
+		print("MOTION_FAIL reason=%s count=%d" % [reason, int(diagnostics.reasons[reason])])
+		_diagnostic_elapsed = 0.0
+
+func _classify_failure(linear: Vector3, gyro: Vector3, axis_match: float, polarity_match: float, threshold: float, _stage: String) -> void:
+	if linear.length() < threshold: _fail("linear")
+	elif polarity_match < RUNTIME_X_POLARITY_ALIGNMENT: _fail("polarity")
+	elif axis_match < float(profile.get("direction_tolerance", 0.62)): _fail("axis")
+	elif gyro.length() < _gyro_threshold(): _fail("gyro")
+
+func _new_candidate(stage: String, linear: Vector3, gyro: Vector3, threshold: float) -> bool:
+	var linear_start := maxf(0.35, threshold * 0.30)
+	var gyro_start := maxf(0.08, _gyro_threshold() * 0.50)
+	var active := linear.length() >= linear_start or gyro.length() >= gyro_start
+	if not active:
+		_candidate_latched[stage] = false
+		return false
+	if bool(_candidate_latched.get(stage, false)): return false
+	_candidate_latched[stage] = true
+	return true
 
 static func _vector_to_array(value: Vector3) -> Array:
 	return [value.x, value.y, value.z]

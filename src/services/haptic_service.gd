@@ -44,6 +44,10 @@ func cue(name: String) -> void:
 		pattern = [{"duration": 70, "amplitude": 0.85}, {"duration": 105, "amplitude": 0.95, "gap": 0.17}]
 	elif name == "hook":
 		pattern = [{"duration": 55, "amplitude": 0.6}]
+	elif name == "hook_miss":
+		pattern = [{"duration": 34, "amplitude": 0.28}, {"duration": 34, "amplitude": 0.24, "gap": 0.12}]
+	elif name == "calibration_tick" or name == "cock":
+		pattern = [{"duration": 22, "amplitude": 0.24}]
 	elif name == "caught":
 		pattern = [{"duration": 45, "amplitude": 0.5}, {"duration": 75, "amplitude": 0.75, "gap": 0.1}, {"duration": 120, "amplitude": 0.95, "gap": 0.1}]
 	elif name == "escaped":

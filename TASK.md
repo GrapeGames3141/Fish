@@ -20,3 +20,9 @@
 ## Gate decision
 
 The user authorized generation and integration of this first ImageGen UI pass. Human review applies to the delivered first visual pass before broader art promotion or release.
+
+## Expansion reliability/content checkpoint
+
+- Implemented: mirrored left-handed calibration/motion option, rest-baseline thresholding, compact derived diagnostics, 1.8s hook window, generic species/location selection and records, and code-native non-Bluegill catch silhouettes.
+- Verified headlessly: deterministic threshold, handedness, hook-window, fight, save migration, selection, and haptic-contract tests.
+- Still pending: physical cast/hook rate and comfort, haptic feel, left-handed feel, full fight timing, native ad/UMP visual behavior, and human visual/art approval. No new production art is authorized by this checkpoint.
