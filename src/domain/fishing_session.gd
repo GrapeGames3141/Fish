@@ -6,6 +6,8 @@ enum State { READY, CAST_ARMED, LINE_OUT, BITE, HOOK_WINDOW, REELING, CAUGHT, ES
 const HOOK_WINDOW_SECONDS := 1.5
 const RED_ESCAPE_SECONDS := 1.25
 const CATCH_PROGRESS := 1.0
+const MIN_CAST_DISTANCE_M := 8.0
+const MAX_CAST_DISTANCE_M := 40.0
 
 var state: int = State.READY
 var fish: FishDefinition = FishDefinition.bluegill()
@@ -15,6 +17,7 @@ var tension: float = 0.12
 var red_elapsed: float = 0.0
 var reel_progress: float = 0.0
 var cast_quality: float = 0.0
+var cast_distance_m: float = 0.0
 var last_reason: String = ""
 
 func arm_cast() -> bool:
@@ -27,6 +30,7 @@ func release_cast(quality: float) -> bool:
 	if state != State.CAST_ARMED:
 		return false
 	cast_quality = clampf(quality, 0.0, 1.0)
+	cast_distance_m = lerpf(MIN_CAST_DISTANCE_M, MAX_CAST_DISTANCE_M, cast_quality)
 	state = State.LINE_OUT
 	elapsed = 0.0
 	return true
@@ -86,4 +90,5 @@ func reset() -> void:
 	red_elapsed = 0.0
 	reel_progress = 0.0
 	cast_quality = 0.0
+	cast_distance_m = 0.0
 	last_reason = ""

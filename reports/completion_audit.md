@@ -2,7 +2,8 @@
 
 | Requirement | Evidence | Status |
 | --- | --- | --- |
-| Core fishing state loop | `tests/test_runner.gd`; `gate1-domain-final` logs | Verified headlessly |
+| Core fishing state loop | `tests/test_runner.gd`; motion-only domain final | Verified headlessly, including cast quality-to-distance mapping (8–40 m) |
+| Motion calibration/gesture runtime | Deterministic queued gravity/accelerometer/gyro traces; motion-only domain final | Headlessly verified: automatic stable dwell and two real-cast profile creation, vector back/forward sequence, rejection of noise/wrong-order/slow traces, smaller hook-window-only back gesture, and v1-save recalibration while preserving progress. Physical Pixel calibration, motion feel, sensor behavior, and cast/hook recognition remain pending. |
 | Sensor/haptic runtime | Deterministic motion traces and injected haptic scheduler tests; live Pixel v4 vibration evidence; v5 domain evidence | Unlocked v4 loop produced nine app-attributed vibrator entries with expected durations/amplitudes, but all were `ignored_for_settings` as `usage: TOUCH` while Pixel haptic feedback is disabled. v5 `0.1.4-gate1` passes headless source/config contracts for explicit non-touch media/game attributes; rebuild and device verification remain pending. |
 | Eyes-up haptic cadence | `tests/test_runner.gd`; `gate1-haptic-cadence-domain` stdout/stderr | Verified headlessly: bounded phrase queue, normal/high/red reset, disabled suppression, and distinct terminal cues |
 | Native AdMob | Pinned adapter + test ID + zero-reserve contract; deterministic SDK-completion seam; final v4 package audit | Headless sequencing verified: no banner before SDK completion and one request after it. Final package contains 10 `MediationExtras` entries; foreground UMP/banner validation remains pending. |
