@@ -4,11 +4,14 @@ const FishingSession = preload("res://src/domain/fishing_session.gd")
 const MotionService = preload("res://src/services/motion_service.gd")
 const SaveService = preload("res://src/services/save_service.gd")
 const AdMobService = preload("res://src/services/admob_service.gd")
+const HapticService = preload("res://src/services/haptic_service.gd")
 
 var session: FishingSession
 var motion: MotionService
 var save: SaveService
 var ads: AdMobService
+var haptics: HapticService
+var prior_state := -1
 var view: FishingView
 var calibration_step := 0
 var cast_hold := false
@@ -22,9 +25,11 @@ func _ready() -> void:
 	motion = MotionService.new()
 	save = SaveService.new()
 	ads = AdMobService.new()
+	haptics = HapticService.new()
 	save.load_data()
 	motion.sensitivity = float(save.data.settings.get("sensitivity", 1.0))
 	ads.initialize()
+	haptics.enabled = bool(save.data.settings.get("haptics", true))
 	view = FishingView.new()
 	view.controller = self
 	add_child(view)
@@ -45,9 +50,14 @@ func _process(delta: float) -> void:
 			_cast(quality)
 	elif session.state == FishingSession.State.HOOK_WINDOW and motion.detect_hook():
 		_hook()
-	session.tick(delta)
-	if session.state == FishingSession.State.BITE:
-		_bite_feedback()
+	session.tick(delta); haptics.enabled = bool(save.data.settings.get("haptics", true)); haptics.tick(delta)
+	if prior_state != session.state:
+		if session.state == FishingSession.State.BITE: haptics.enqueue("bite")
+		elif session.state == FishingSession.State.REELING: haptics.enqueue("hook")
+		elif session.state == FishingSession.State.CAUGHT: haptics.enqueue("caught")
+		elif session.state == FishingSession.State.ESCAPED: haptics.enqueue("escaped")
+		prior_state = session.state
+	if session.state == FishingSession.State.REELING: haptics.enqueue("fight", session.fish, session.tension)
 	view.queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -74,13 +84,8 @@ func _cast(quality: float = 0.78) -> void:
 func _hook() -> void:
 	if session.set_hook():
 		has_reel_angle = false
-		if bool(save.data.settings.get("haptics", true)):
-			Input.vibrate_handheld(55, 0.6)
+		haptics.enqueue("hook")
 
-func _bite_feedback() -> void:
-	if bool(save.data.settings.get("haptics", true)):
-		Input.vibrate_handheld(70, 0.85)
-		get_tree().create_timer(0.17).timeout.connect(func(): Input.vibrate_handheld(105, 0.95))
 
 func _finish_catch() -> void:
 	if session.state == FishingSession.State.CAUGHT:
@@ -89,6 +94,7 @@ func _finish_catch() -> void:
 
 func _reset_session() -> void:
 	session.reset()
+	haptics.stop(); prior_state = session.state
 	has_reel_angle = false
 
 func _calibrate_or_bypass() -> void:

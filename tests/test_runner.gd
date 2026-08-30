@@ -4,6 +4,8 @@ const FishingSession = preload("res://src/domain/fishing_session.gd")
 const SaveService = preload("res://src/services/save_service.gd")
 const AdMobService = preload("res://src/services/admob_service.gd")
 const MotionService = preload("res://src/services/motion_service.gd")
+const FishDefinition = preload("res://src/domain/fish_definition.gd")
+const HapticService = preload("res://src/services/haptic_service.gd")
 
 var failures: Array[String] = []
 
@@ -12,6 +14,7 @@ func _init() -> void:
 	_test_reel_geometry_and_tension()
 	_test_save_round_trip()
 	_test_injectable_motion()
+	_test_haptic_signatures()
 	_test_admob_contract()
 	_test_project_source_settings()
 	if failures.is_empty():
@@ -89,6 +92,21 @@ func _test_admob_contract() -> void:
 	expect(ads.TEST_BANNER_AD_UNIT == "ca-app-pub-3940256099942544/6300978111", "Google test banner ID is pinned")
 	expect("desktop fallback" in ads.describe_desktop_fallback(), "desktop fallback is documented")
 	expect(not ads.available and not ads.initialized, "desktop ads remain inert")
+
+func _test_haptic_signatures() -> void:
+	var keys: Dictionary = {}
+	for fish in FishDefinition.all_planned():
+		var signature := str(fish.fight_pulse)
+		expect(not keys.has(signature), "planned fish signatures are unique: " + fish.id)
+		keys[signature] = true
+	var fired: Array[Dictionary] = []
+	var haptics := HapticService.new(func(duration, amplitude): fired.append({"duration": duration, "amplitude": amplitude}))
+	haptics.enqueue("fight", FishDefinition.bluegill(), 0.2); haptics.tick(1.0)
+	expect(fired.size() == 2, "bluegill fight emits deterministic rhythm")
+	fired.clear(); haptics.enqueue("fight", FishDefinition.bluegill(), 0.95); haptics.tick(1.0)
+	expect(fired.size() == 2 and haptics.warning_active, "red warning overrides species rhythm")
+	fired.clear(); haptics.stop(); haptics.enqueue("caught"); haptics.tick(1.0); var caught := fired.size(); fired.clear(); haptics.enqueue("escaped"); haptics.tick(1.0)
+	expect(caught == 3 and fired.size() == 1, "terminal cues are distinct")
 
 func _test_project_source_settings() -> void:
 	var config := ConfigFile.new()
