@@ -3,4 +3,6 @@
 build/
 reports/runtime/*.log
 *.tmp
-addons/admob/assets/*.import
+*.import
+addons/admob/downloads/
+addons/admob/ios/
