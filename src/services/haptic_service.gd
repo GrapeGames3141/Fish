@@ -23,6 +23,8 @@ var _android_vibrator = null
 var _android_vibration_effect = null
 var _android_vibrator_checked := false
 var _android_sdk_int := -1
+var _android_vibration_attributes = null
+var _android_audio_attributes = null
 
 func _init(custom_emitter: Callable = Callable()) -> void:
 	emitter = custom_emitter
@@ -155,13 +157,47 @@ func _try_android_vibrate(duration_ms: int, amplitude: float) -> bool:
 		_android_sdk_int = int(build_version.SDK_INT)
 		if _android_sdk_int >= 26:
 			_android_vibration_effect = JavaClassWrapper.wrap("android.os.VibrationEffect")
+		if _android_sdk_int >= 33:
+			_android_vibration_attributes = _create_vibration_attributes()
+		elif _android_sdk_int >= 24:
+			_android_audio_attributes = _create_audio_attributes()
 	if _android_vibrator == null or _android_sdk_int < 0:
 		return false
 	if _android_sdk_int >= 26:
 		if _android_vibration_effect == null:
 			return false
 		var effect = _android_vibration_effect.createOneShot(maxi(1, duration_ms), android_amplitude(amplitude))
-		_android_vibrator.vibrate(effect)
+		if _android_sdk_int >= 33 and _android_vibration_attributes != null:
+			_android_vibrator.vibrate(effect, _android_vibration_attributes)
+		elif _android_sdk_int >= 24 and _android_audio_attributes != null:
+			_android_vibrator.vibrate(effect, _android_audio_attributes)
+		else:
+			_android_vibrator.vibrate(effect)
 	else:
-		_android_vibrator.vibrate(maxi(1, duration_ms))
+		if _android_audio_attributes != null:
+			_android_vibrator.vibrate(maxi(1, duration_ms), _android_audio_attributes)
+		else:
+			_android_vibrator.vibrate(maxi(1, duration_ms))
 	return true
+
+func _create_vibration_attributes():
+	var attributes_class = JavaClassWrapper.wrap("android.os.VibrationAttributes")
+	if attributes_class == null:
+		return null
+	var attributes = attributes_class.createForUsage(attributes_class.USAGE_MEDIA)
+	if JavaClassWrapper.get_exception() != null:
+		return null
+	return attributes
+
+func _create_audio_attributes():
+	var attributes_class = JavaClassWrapper.wrap("android.media.AudioAttributes")
+	var builder_class = JavaClassWrapper.wrap("android.media.AudioAttributes$Builder")
+	if attributes_class == null or builder_class == null:
+		return null
+	var builder = builder_class.Builder()
+	if builder == null:
+		return null
+	var attributes = builder.setUsage(attributes_class.USAGE_GAME).setContentType(attributes_class.CONTENT_TYPE_SONIFICATION).build()
+	if JavaClassWrapper.get_exception() != null:
+		return null
+	return attributes

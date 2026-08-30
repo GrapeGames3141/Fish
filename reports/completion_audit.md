@@ -3,7 +3,7 @@
 | Requirement | Evidence | Status |
 | --- | --- | --- |
 | Core fishing state loop | `tests/test_runner.gd`; `gate1-domain-final` logs | Verified headlessly |
-| Sensor/haptic runtime | Deterministic motion traces and injected haptic scheduler tests; live Pixel log diagnosis; final v4 package/install evidence | Final v4 package retains two HapticService entries and VIBRATE is granted after install. Pixel remained locked/asleep, so physical vibration remains unvalidated. |
+| Sensor/haptic runtime | Deterministic motion traces and injected haptic scheduler tests; live Pixel v4 vibration evidence; v5 domain evidence | Unlocked v4 loop produced nine app-attributed vibrator entries with expected durations/amplitudes, but all were `ignored_for_settings` as `usage: TOUCH` while Pixel haptic feedback is disabled. v5 `0.1.4-gate1` passes headless source/config contracts for explicit non-touch media/game attributes; rebuild and device verification remain pending. |
 | Eyes-up haptic cadence | `tests/test_runner.gd`; `gate1-haptic-cadence-domain` stdout/stderr | Verified headlessly: bounded phrase queue, normal/high/red reset, disabled suppression, and distinct terminal cues |
 | Native AdMob | Pinned adapter + test ID + zero-reserve contract; deterministic SDK-completion seam; final v4 package audit | Headless sequencing verified: no banner before SDK completion and one request after it. Final package contains 10 `MediationExtras` entries; foreground UMP/banner validation remains pending. |
 | Concept direction | `concepts/gate1/pine-lake-reel-concept-v01.png` | Pending human approval |
