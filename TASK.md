@@ -50,3 +50,10 @@ The user authorized generation and integration of this first ImageGen UI pass. H
 - Implemented for the next build: v17 retains the v16 continuous-burst recovery and timing curve while restoring strict learned-profile snap strength, axis, physical-polarity, and cast-gyro gates.
 - Signed v17 `0.3.4-gaterestore1` is exported, audited, installed, and cold-launched on the paired Pixel 9 Pro. VIBRATE is granted and the scoped startup log has no fatal, script, parse, SIGSEGV, or crash marker.
 - Still pending: physical v17 cast recognition, distance, and comfort validation. No device-feel claim is made for this follow-up.
+
+## Deliberate-sweep follow-up checkpoint
+
+- Physical v17 feedback: strict numerical gates still admitted a hair-trigger cast, with the retained log showing one accepted quality `.36` / `19.5m` near-floor result. The evidence points to momentary qualification rather than an overly low numeric gate.
+- Implemented for the next build: runtime cock and snap now need a deliberate three-sample, capped-time directional impulse sweep before their unchanged strict final gates may recognize; hook remains a quick one-frame gesture.
+- Signed v18 `0.3.5-shapefix1` is exported, audited, installed, and cold-launched on the paired Pixel 9 Pro. VIBRATE is granted and the scoped startup log has no fatal, script, parse, SIGSEGV, or crash marker.
+- Still pending: physical v18 cast recognition, distance, and comfort validation. No device-feel claim is made for this follow-up.

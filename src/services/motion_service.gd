@@ -24,6 +24,11 @@ const CALIBRATION_HANDEDNESS_ALIGNMENT := 0.34
 const RUNTIME_X_POLARITY_ALIGNMENT := 0.18
 const RUNTIME_FULL_REVERSAL_SECONDS := 0.22
 const RUNTIME_MAX_REVERSAL_SECONDS := 0.65
+const RUNTIME_SWEEP_ENTRY_FACTOR := 0.35
+const RUNTIME_SWEEP_MIN_SAMPLES := 3
+const RUNTIME_SWEEP_MAX_DELTA_SECONDS := 0.05
+const RUNTIME_COCK_MIN_IMPULSE_FACTOR := 0.045
+const RUNTIME_SNAP_MIN_IMPULSE_FACTOR := 0.055
 const LOAD_RESPONSE_SECONDS := 0.10
 const LOAD_DEADBAND := 0.035
 
@@ -58,6 +63,8 @@ var diagnostics := {"cock_attempts": 0, "completed_casts": 0, "hook_attempts": 0
 var _diagnostic_elapsed := 0.0
 var _burst_attempt_latched := {"cock": false, "snap": false, "hook": false}
 var _burst_failure_latched := {"cock": false, "snap": false, "hook": false}
+var _sweep_samples := {"cock": 0, "snap": 0}
+var _sweep_impulse := {"cock": 0.0, "snap": 0.0}
 
 func _init(custom_provider: Callable = Callable()) -> void:
 	sample_provider = custom_provider
@@ -331,7 +338,7 @@ func _update_cast(delta: float, reading: Dictionary, event: Dictionary) -> void:
 		var back_projection := -linear.dot(axis)
 		var back_match := -linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
 		var handed_match := linear.normalized().dot(_back_axis_direction()) if linear.length() > 0.0 else -1.0
-		if _new_candidate("cock", back_projection, _back_threshold()):
+		if _sweep_ready("cock", back_projection, _back_threshold(), delta) and _new_candidate("cock", back_projection, _back_threshold()):
 			if back_projection >= _back_threshold() and back_match >= float(profile.direction_tolerance) and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold():
 				_back_axis = -axis; _back_peak = back_projection; _back_gyro_peak = gyro.length(); _gesture_elapsed = 0.0; event.cast_arm = true
 			else:
@@ -344,7 +351,7 @@ func _update_cast(delta: float, reading: Dictionary, event: Dictionary) -> void:
 	var forward_projection := linear.dot(axis)
 	var forward_match := linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
 	var handed_match := linear.normalized().dot(_forward_axis()) if linear.length() > 0.0 else -1.0
-	if _new_candidate("snap", forward_projection, _forward_threshold()):
+	if _sweep_ready("snap", forward_projection, _forward_threshold(), delta) and _new_candidate("snap", forward_projection, _forward_threshold()):
 		if forward_projection >= _forward_threshold() and forward_match >= _snap_axis_tolerance() and handed_match >= _snap_polarity_tolerance() and gyro.length() >= _snap_gyro_threshold():
 			event.cast_quality = _cast_quality(forward_projection, _gesture_elapsed); diagnostics.completed_casts += 1; reset_gesture(); _cooldown_elapsed = GESTURE_COOLDOWN_SECONDS
 		else:
@@ -431,9 +438,9 @@ func _classify_failure(linear: Vector3, gyro: Vector3, axis_match: float, polari
 	elif gyro.length() < gyro_tolerance: _fail(stage, "gyro")
 
 func _new_candidate(stage: String, directed_projection: float, threshold: float) -> bool:
-	# Recognition is independent of the diagnostics latch. Sub-threshold rising
-	# frames stay inert; after final threshold is crossed, each following frame
-	# can recover an axis/gyro miss until quiet or opposite energy ends the burst.
+	# Hook remains intentionally one-frame. Cock/snap call this only after their
+	# deliberate multi-sample sweep is ready. Recognition is independent of the
+	# diagnostics latch, so a later valid frame can recover within one burst.
 	var reset_floor := maxf(0.15, threshold * 0.20)
 	if directed_projection <= reset_floor:
 		_reset_burst(stage)
@@ -446,9 +453,26 @@ func _new_candidate(stage: String, directed_projection: float, threshold: float)
 		elif stage == "hook": diagnostics.hook_attempts += 1
 	return true
 
+func _sweep_ready(stage: String, directed_projection: float, threshold: float, delta: float) -> bool:
+	# Runtime casting rejects a momentary qualified sample. The directional stage
+	# must remain above its entry floor for several capped-time samples and build
+	# a small impulse before final axis/polarity/gyro recognition begins.
+	var entry_floor := maxf(0.15, threshold * RUNTIME_SWEEP_ENTRY_FACTOR)
+	if directed_projection <= entry_floor:
+		_reset_burst(stage)
+		return false
+	_sweep_samples[stage] = int(_sweep_samples.get(stage, 0)) + 1
+	var capped_delta := minf(maxf(delta, 0.0), RUNTIME_SWEEP_MAX_DELTA_SECONDS)
+	_sweep_impulse[stage] = float(_sweep_impulse.get(stage, 0.0)) + maxf(directed_projection - entry_floor, 0.0) * capped_delta
+	var impulse_factor := RUNTIME_COCK_MIN_IMPULSE_FACTOR if stage == "cock" else RUNTIME_SNAP_MIN_IMPULSE_FACTOR
+	return int(_sweep_samples[stage]) >= RUNTIME_SWEEP_MIN_SAMPLES and float(_sweep_impulse[stage]) >= threshold * impulse_factor
+
 func _reset_burst(stage: String) -> void:
 	_burst_attempt_latched[stage] = false
 	_burst_failure_latched[stage] = false
+	if _sweep_samples.has(stage):
+		_sweep_samples[stage] = 0
+		_sweep_impulse[stage] = 0.0
 
 static func _vector_to_array(value: Vector3) -> Array:
 	return [value.x, value.y, value.z]
