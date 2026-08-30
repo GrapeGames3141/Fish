@@ -70,8 +70,12 @@ func _process(delta: float) -> void:
 	haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
 	if prior_state != session.state:
 		if session.state == FishingSession.State.BITE: haptics.cue("bite")
-		elif session.state == FishingSession.State.CAUGHT: haptics.cue("caught")
-		elif session.state == FishingSession.State.ESCAPED: haptics.cue("escaped")
+		elif session.state == FishingSession.State.CAUGHT:
+			haptics.cue("caught")
+			print("MOTION_FIGHT caught elapsed=%.2f progress=%.2f tension=%.2f" % [session.fight_elapsed, session.fight_progress, session.tension])
+		elif session.state == FishingSession.State.ESCAPED:
+			haptics.cue("escaped")
+			print("MOTION_FIGHT escaped elapsed=%.2f progress=%.2f tension=%.2f" % [session.fight_elapsed, session.fight_progress, session.tension])
 		if session.state in [FishingSession.State.CAUGHT, FishingSession.State.ESCAPED]: motion.reset_fight()
 		prior_state = session.state
 	if session.state == FishingSession.State.REELING:

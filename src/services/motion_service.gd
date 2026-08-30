@@ -167,7 +167,11 @@ func _update_fight(delta: float, reading: Dictionary, event: Dictionary) -> void
 		# Pose load is continuous between the learned lower and pull references.
 		# Equal angular distance is a neutral load; moving toward the raised pull
 		# reference drives progress and tension without requiring a perfect return.
-		fight_load = clampf((lower_angle - pull_angle + reference_span) / maxf(2.0 * reference_span, 0.01), 0.0, 1.0)
+		var raw_fight_load := clampf((lower_angle - pull_angle + reference_span) / maxf(2.0 * reference_span, 0.01), 0.0, 1.0)
+		# Natural returns commonly stop short of the hook pose. Square-root response
+		# preserves exact lower/pull anchors while making useful partial cock-backs
+		# contribute enough continuous load to meet the physical timing target.
+		fight_load = sqrt(raw_fight_load)
 		var return_axis := (_fight_pull_reference - _fight_lower_reference).normalized()
 		var pose_axis := (pose - _fight_lower_reference).normalized()
 		var return_alignment := return_axis.dot(pose_axis)

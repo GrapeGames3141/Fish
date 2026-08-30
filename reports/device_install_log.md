@@ -54,10 +54,31 @@ This validates installed-package delivery, real sensor calibration/cast/hook mar
 - Pull markers arrived at `2.03`, `3.83`, `7.62`, `10.03`, `22.58`, `32.05`, `50.62`, `57.53`, and `66.42 s`. Lower recognition itself was prompt (`0.2–1.9 s` in the observed attempts), and correct lowering kept tension mostly low.
 - The landed Bluegill at `66.42 s` missed Gate 1’s 10–20 second target because v6 required return within 8° of the original hook pose; later valid physical returns took `6.5–18.3 s` to meet that overly strict condition. A second fight was abandoned.
 
-This is useful device evidence for v6 gesture recognition, not acceptance of its timing. Version `0.1.6-gate1` changes to tolerant, continuous raised/lowered rod load and is unexported/uninstalled; physical comfort, timing, and haptic acceptance for that new tuning remain pending.
+This is useful device evidence for v6 gesture recognition, not acceptance of its timing. Version `0.1.6-gate1` replaced the strict return with tolerant, continuous raised/lowered rod load; its subsequent physical result is recorded below.
 
-## V7 build available; installation blocked
+## V7 installation and foreground launch
 
 - Signed `0.1.6-gate1` / versionCode `7` APK: 38,974,951 bytes; SHA-256 `E0DBDF20E0F1318A1DF556659E5187F1D8E4C6485B52E3B477AD606BF0B56B32`.
 - Package audit confirms `com.tak.castandcrank`, minSdk `24`, targetSdk `36`, arm64-only delivery, VIBRATE present, and v2 signing with the existing Android Debug certificate.
-- Wireless ADB was unavailable because no mDNS service was available. The v7 APK was not installed and has no physical validation claim; v6 remains the installed device build.
+- Wireless pairing succeeded with the Pixel 9 Pro at `192.168.1.234`; `adb install -r` reported `Success` for versionCode `7` / versionName `0.1.6-gate1`.
+- `dumpsys` confirms `android.permission.VIBRATE` is `granted=true`. The foreground application was PID `17207`, `com.tak.castandcrank/com.godot.game.GodotAppLauncher`; inspected launch output contained no `FATAL EXCEPTION` or `SCRIPT ERROR`.
+- The existing calibration/save persisted across the replacement install.
+
+This proves v7 package installation, permission delivery, foreground process launch, and persistence survival. The subsequent physical fight result is recorded below; UMP/banner geometry, visual comfort, lifecycle, and performance remain unvalidated.
+
+## V7 physical cast/fight timing gate (superseded by the installed v8 response tuning)
+
+- Real v7 sensor markers recorded a cast at `23:17:57.588` with quality `1.00` / `40 m`, then a hook at `23:18:00.554`. Lower/pull markers continued through `1.75 s` of the fight, proving the physical motion path operated after the hook.
+- The persisted save catch count changed from `12` to `13`. Landing markers from `23:18:28.212` through `.723` imply roughly `28.17 s` hook-to-landing, outside the 10–20 second Gate 1 target.
+- Pixel `vibrator_manager` recorded v7 `usage: MEDIA` pulses: normal fish pulses were finished or `cancelled_superseded` at cadence boundaries, and hook/terminal pulses were finished. They were not `ignored_for_settings`.
+
+V7 therefore works physically for cast, hook, fight, landing, persistence, and haptic routing, but natural partial cock-backs made the fight too long. Version `0.1.7-gate1` applies a square-root partial-load response curve and adds terminal `MOTION_FIGHT` device markers; it is installed, but its terminal/timing and sustained-fight physical claims remain pending.
+
+## V8 install and initial physical trace
+
+- Signed `0.1.7-gate1` / versionCode `8` APK: 38,975,163 bytes; SHA-256 `B1AFD6DBDE8B0D6EEF04E0B47615A50FA70FC0E6300D52FAFFE815167484EB17`.
+- Pixel installation with `adb install -r` reported `Success`; VIBRATE is `granted=true`. The app first ran as PID `25900`, then after restart as PID `26711`.
+- A real v8 trace recorded `MOTION_CAST` at `23:41:08.719`, quality `1.00` / `40 m`; hook at `23:41:11.283`; and a lower marker at `23:41:12.149`, tension `0.34`, elapsed `0.87 s`.
+- No caught/escaped terminal `MOTION_FIGHT` marker was captured before further testing was deferred. Catch count reaching `14` across the restart is not timing evidence.
+
+This proves v8 export/install, permission delivery, and initial cast/hook/lower operation only. It does not establish v8 physical landing timing, terminal marker behavior, sustained fight haptics, or user acceptance.

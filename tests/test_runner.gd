@@ -88,6 +88,14 @@ func _test_pump_and_recover_fight() -> void:
 		nominal.set_rod_load(0.05); nominal.tick(0.60)
 		nominal.set_rod_load(0.90); nominal.tick(1.20)
 	expect(nominal.state == FishingSession.State.CAUGHT and nominal.fight_elapsed >= 12.0 and nominal.fight_elapsed <= 14.0, "controlled continuous pull/ease rhythm lands Bluegill in the 12–14 second target")
+	var natural_partial = FishingSession.new(); natural_partial.state = FishingSession.State.REELING; natural_partial.set_rod_load(0.50)
+	var natural_partial_peak: float = natural_partial.tension
+	for frame in range(40):
+		if natural_partial.state != FishingSession.State.REELING:
+			break
+		natural_partial.tick(0.5)
+		natural_partial_peak = maxf(natural_partial_peak, natural_partial.tension)
+	expect(natural_partial.state == FishingSession.State.CAUGHT and natural_partial.fight_elapsed >= FishingSession.MIN_LANDING_SECONDS and natural_partial.fight_elapsed <= 20.0 and natural_partial_peak > 0.30, "quarter-geometric mapped load lands Bluegill in 10–20 seconds while tension rises measurably above calm baseline")
 	var hard_hold = FishingSession.new(); hard_hold.state = FishingSession.State.REELING; hard_hold.set_rod_load(1.0)
 	var hard_hold_peak_tension: float = hard_hold.tension
 	for frame in range(24):
@@ -187,10 +195,16 @@ func _test_injectable_motion() -> void:
 	expect(not no_gyro.fight_lower, "lower pose without gyro corroboration is rejected")
 	fight_motion.queue_sample({"gravity": Vector3(0, -7.0, 6.8), "accelerometer": Vector3(0, -7.0, 6.8), "gyro": Vector3(0, 0, 0.5)})
 	var lowered := fight_motion.update(0.25, false, false, true)
-	expect(lowered.fight_lower and lowered.fight_phase == "PULL BACK" and float(lowered.fight_load) <= 0.1, "first deliberate lower captures a relief reference")
+	expect(lowered.fight_lower and lowered.fight_phase == "PULL BACK" and is_zero_approx(float(lowered.fight_load)), "first deliberate lower captures an exact zero-load relief reference")
+	var lower_pose := Vector3(0, -7.0, 6.8).normalized()
+	var pull_pose := Vector3(0, -9.8, 0).normalized()
+	var quarter_pose: Vector3 = lower_pose.slerp(pull_pose, 0.25) * 9.8
+	fight_motion.queue_sample({"gravity": quarter_pose, "accelerometer": quarter_pose, "gyro": Vector3(0, 0, 0.5)})
+	var quarter_return := fight_motion.update(0.25, false, false, true)
+	expect(not quarter_return.fight_pull and is_equal_approx(float(quarter_return.fight_load), 0.5), "quarter geometric return maps through sqrt response to a useful half load")
 	fight_motion.queue_sample({"gravity": Vector3(0, -8.6, 4.2), "accelerometer": Vector3(0, -8.6, 4.2), "gyro": Vector3(0, 0, 0.5)})
 	var halfway := fight_motion.update(0.25, false, false, true)
-	expect(not halfway.fight_pull and float(halfway.fight_load) > 0.2 and float(halfway.fight_load) < 0.7, "halfway return gives a partial continuous load without claiming a pull marker")
+	expect(not halfway.fight_pull and float(halfway.fight_load) > 0.55 and float(halfway.fight_load) < 0.75, "halfway return gives an amplified partial continuous load without claiming a pull marker")
 	fight_motion.queue_sample({"gravity": Vector3(0, -9.4, 2.4), "accelerometer": Vector3(0, -9.4, 2.4), "gyro": Vector3(0, 0, 0.5)})
 	var partial_return := fight_motion.update(0.25, false, false, true)
 	expect(partial_return.fight_pull and partial_return.fight_phase == "LOWER ROD" and float(partial_return.fight_load) > 0.60, "clearly directional partial return is accepted without an exact original-pose match")
@@ -206,6 +220,13 @@ func _test_injectable_motion() -> void:
 	fight_motion.queue_sample({"gravity": Vector3(0, -9.4, 2.4), "accelerometer": Vector3(0, -9.4, 2.4), "gyro": Vector3(0, 0, 0.5)})
 	var repeated_pull := fight_motion.update(0.25, false, false, true)
 	expect(not repeated_pull.fight_pull, "holding a pull pose without another lower does not repeat its marker")
+	var anchors := _calibrated_motion()
+	anchors.begin_fight(Vector3(0, -9.8, 0))
+	anchors.queue_sample({"gravity": Vector3(0, -7.0, 6.8), "accelerometer": Vector3(0, -7.0, 6.8), "gyro": Vector3(0, 0, 0.5)})
+	var anchor_lower := anchors.update(0.25, false, false, true)
+	anchors.queue_sample(_motion_sample(Vector3.ZERO, Vector3(0, 0, 0.5)))
+	var anchor_pull := anchors.update(0.25, false, false, true)
+	expect(is_zero_approx(float(anchor_lower.fight_load)) and is_equal_approx(float(anchor_pull.fight_load), 1.0), "response curve preserves exact lower and pull load anchors")
 
 func _test_admob_contract() -> void:
 	var ads = AdMobService.new()
@@ -331,7 +352,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 7 and export_config.get_value("preset.0.options", "version/name") == "0.1.6-gate1", "debug package version is bumped")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 8 and export_config.get_value("preset.0.options", "version/name") == "0.1.7-gate1", "debug package version is bumped")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
@@ -342,4 +363,6 @@ func _test_project_source_settings() -> void:
 	var haptic_source := FileAccess.get_file_as_string("res://src/services/haptic_service.gd")
 	expect("AndroidRuntime" in haptic_source and "getSystemService(\"vibrator\")" in haptic_source and "VibrationEffect" in haptic_source and "createOneShot" in haptic_source and "Build$VERSION" in haptic_source and "SDK_INT" in haptic_source and "VibrationAttributes" in haptic_source and "createForUsage" in haptic_source and "USAGE_MEDIA" in haptic_source and "AudioAttributes$Builder" in haptic_source and "USAGE_GAME" in haptic_source and "CONTENT_TYPE_SONIFICATION" in haptic_source and "vibrate(effect, _android_vibration_attributes)" in haptic_source and "vibrate(effect, _android_audio_attributes)" in haptic_source and "_android_vibrator.vibrate(maxi(1, duration_ms), _android_audio_attributes)" in haptic_source and "Input.vibrate_handheld" in haptic_source, "Android explicit non-touch attributes with API24 fallback contract retained")
 	var main_source := FileAccess.get_file_as_string("res://src/ui/main.gd")
-	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and not "reel_fallback" in main_source and "not OS.has_feature(\"android\")" in main_source, "Android UI has no touch cast, hook, or reel fallback and keyboard simulation is desktop-only")
+	var motion_source := FileAccess.get_file_as_string("res://src/services/motion_service.gd")
+	expect("raw_fight_load" in motion_source and "sqrt(raw_fight_load)" in motion_source, "learned fight load retains geometric anchors with the deliberate partial-response curve")
+	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and not "reel_fallback" in main_source and "not OS.has_feature(\"android\")" in main_source and "MOTION_FIGHT caught elapsed=" in main_source and "MOTION_FIGHT escaped elapsed=" in main_source, "Android UI has no touch cast, hook, or reel fallback while terminal motion logs remain device-auditable")
