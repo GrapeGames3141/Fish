@@ -43,3 +43,10 @@ The user authorized generation and integration of this first ImageGen UI pass. H
 - Implemented for the next build: continuous cock/snap bursts ignore rising sub-threshold frames, can recover from one bad above-threshold axis/gyro frame, and keep only one derived failure record per burst. Runtime cock/snap/gyro/timing gates are separately tuned from calibration.
 - Signed v16 `0.3.3-gesturefix1` is exported, audited, installed, and cold-launched on the paired Pixel 9 Pro. VIBRATE is granted and the scoped startup log has no fatal, script, parse, SIGSEGV, or crash marker.
 - Still pending: physical cast distance/recognition validation on the paired device. No device-feel claim is made for this follow-up.
+
+## Gate-restoration follow-up checkpoint
+
+- Physical v16 feedback: four accepted casts measured quality/distance `.40` / `20.9m`, `.75` / `31.9m`, `.84` / `34.8m`, and `.41` / `21.2m`; the user judged the recognition gate too easy after the burst-latch repair.
+- Implemented for the next build: v17 retains the v16 continuous-burst recovery and timing curve while restoring strict learned-profile snap strength, axis, physical-polarity, and cast-gyro gates.
+- Signed v17 `0.3.4-gaterestore1` is exported, audited, installed, and cold-launched on the paired Pixel 9 Pro. VIBRATE is granted and the scoped startup log has no fatal, script, parse, SIGSEGV, or crash marker.
+- Still pending: physical v17 cast recognition, distance, and comfort validation. No device-feel claim is made for this follow-up.

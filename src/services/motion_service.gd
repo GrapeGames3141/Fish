@@ -22,10 +22,6 @@ const RIGHT_HANDED_BACK_AXIS := Vector3(1, 0, 0)
 const PROFILE_HANDEDNESS_ALIGNMENT := 0.48
 const CALIBRATION_HANDEDNESS_ALIGNMENT := 0.34
 const RUNTIME_X_POLARITY_ALIGNMENT := 0.18
-const SNAP_MIN_AXIS_TOLERANCE := 0.38
-const SNAP_AXIS_PROFILE_SCALE := 0.68
-const SNAP_MIN_POLARITY_TOLERANCE := 0.06
-const SNAP_POLARITY_SCALE := 0.45
 const RUNTIME_FULL_REVERSAL_SECONDS := 0.22
 const RUNTIME_MAX_REVERSAL_SECONDS := 0.65
 const LOAD_RESPONSE_SECONDS := 0.10
@@ -378,7 +374,7 @@ func _back_threshold() -> float:
 	return maxf(float(profile.noise_floor) * 1.9, float(profile.back_peak) * 0.58) / maxf(sensitivity, 0.5)
 
 func _forward_threshold() -> float:
-	return maxf(float(profile.noise_floor) * 1.1, float(profile.forward_peak) * 0.24) / maxf(sensitivity, 0.5)
+	return maxf(float(profile.noise_floor) * 1.8, float(profile.forward_peak) * 0.42) / maxf(sensitivity, 0.5)
 
 func _hook_threshold() -> float:
 	return maxf(float(profile.noise_floor) * 1.6, float(profile.back_peak) * 0.30) / maxf(sensitivity, 0.5)
@@ -387,13 +383,13 @@ func _gyro_threshold() -> float:
 	return clampf(float(profile.gyro_peak) * 0.16 / maxf(sensitivity, 0.5), 0.10, 0.60)
 
 func _snap_gyro_threshold() -> float:
-	return clampf(float(profile.gyro_peak) * 0.09 / maxf(sensitivity, 0.5), 0.08, 0.36)
+	return _gyro_threshold()
 
 func _snap_axis_tolerance() -> float:
-	return maxf(SNAP_MIN_AXIS_TOLERANCE, float(profile.get("direction_tolerance", 0.62)) * SNAP_AXIS_PROFILE_SCALE)
+	return float(profile.get("direction_tolerance", 0.62))
 
 func _snap_polarity_tolerance() -> float:
-	return maxf(SNAP_MIN_POLARITY_TOLERANCE, RUNTIME_X_POLARITY_ALIGNMENT * SNAP_POLARITY_SCALE)
+	return RUNTIME_X_POLARITY_ALIGNMENT
 
 func _cast_quality(forward_projection: float, reversal_elapsed: float) -> float:
 	var threshold := _forward_threshold()
