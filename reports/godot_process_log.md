@@ -13,3 +13,12 @@ Gate 1 invocations and their PIDs/results are appended after validation. The eng
 | Domain final | 36664 | 0 | `PASS: Cast & Crank Gate 1 domain tests`. Godot emitted existing ObjectDB/resource cleanup diagnostics; no task Godot or WerFault remained. |
 
 Retained stdout, stderr, and engine logs are in `reports/runtime/`. No physical device, sensor, haptic, UMP, live banner, or Android export validation was performed. No task-created process or crash dialog remained after the final process inspection.
+
+## Final Gate 1 validation evidence
+
+| Gate | Exact process evidence | Result |
+| --- | --- | --- |
+| Domain | Console `36700`; children `42844` Godot worker and `5576` conhost | Exit `0`, `PASS: Cast & Crank Gate 1 domain tests`; remaining task processes `0`. Stderr retains Godot's 7 ObjectDB / 3 resource teardown diagnostics. |
+| Import | Console `25780`; children `40744`, `38900` | Exit `0`, no stderr, remaining task processes `0`. |
+| ADB | Non-destructive device check | No attached devices. Task-started ADB server was stopped. No device validation claim. |
+| Android export | Task-owned export PIDs were cleaned | No APK produced. Initial export was blocked by conflicting `ANDROID_HOME=E:` and `ANDROID_SDK_ROOT=C:`; corrected E:-SDK attempt produced no success artifact before owner exit. |
