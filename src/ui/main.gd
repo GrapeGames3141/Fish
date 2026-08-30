@@ -5,6 +5,7 @@ const MotionService = preload("res://src/services/motion_service.gd")
 const SaveService = preload("res://src/services/save_service.gd")
 const AdMobService = preload("res://src/services/admob_service.gd")
 const HapticService = preload("res://src/services/haptic_service.gd")
+const FishDefinition = preload("res://src/domain/fish_definition.gd")
 
 var session: FishingSession
 var motion: MotionService
@@ -15,63 +16,60 @@ var prior_state := -1
 var view: FishingView
 var capture_path := ""
 var capture_scenario := "ready"
+var loading_elapsed := 0.0
+var loading_active := true
+var ui_time := 0.0
+var caught_recorded := false
+var capture_mode := false
+
+var lake_texture: Texture2D = load("res://art/ui_v1/runtime_source/pine-lake-clean-v01.png")
+var rod_texture: Texture2D = load("res://art/ui_v1/runtime_source/rod-bend-strip-v01.png")
+var bobber_texture: Texture2D = load("res://art/ui_v1/runtime_source/bobber-v01.png")
+var reaction_texture: Texture2D = load("res://art/ui_v1/runtime_source/water-reaction-strip-v01.png")
+var catch_frame_texture: Texture2D = load("res://art/ui_v1/runtime_source/catch-frame-clean-v01.png")
+var bluegill_texture: Texture2D = load("res://art/ui_v1/runtime_source/bluegill-v01.png")
+var splash_texture: Texture2D = load("res://art/ui_v1/runtime_source/loading-splash-v01.png")
+var records_texture: Texture2D = load("res://art/ui_v1/runtime_source/records-screen-v01.png")
 
 func _ready() -> void:
-	session = FishingSession.new()
-	motion = MotionService.new()
-	save = SaveService.new()
-	ads = AdMobService.new()
-	haptics = HapticService.new()
-	save.load_data()
-	motion.sensitivity = float(save.data.settings.get("sensitivity", 1.0))
-	if not motion.set_profile(save.data.get("motion_profile", {})):
-		motion.begin_calibration()
-	ads.initialize()
-	haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
-	view = FishingView.new()
-	view.controller = self
-	add_child(view)
+	session = FishingSession.new(); motion = MotionService.new(); save = SaveService.new(); ads = AdMobService.new(); haptics = HapticService.new()
+	save.load_data(); motion.sensitivity = float(save.data.settings.get("sensitivity", 1.0))
+	if not motion.set_profile(save.data.get("motion_profile", {})): motion.begin_calibration()
+	ads.initialize(); haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
+	view = FishingView.new(); view.controller = self; add_child(view)
 	_parse_capture_args()
-	if not motion.is_calibrated():
-		view.overlay = "calibration"
 	if capture_path != "":
-		_apply_capture_scenario()
-		call_deferred("_capture_after_draw")
+		capture_mode = true; _apply_capture_scenario(); loading_active = capture_scenario == "loading"; call_deferred("_capture_after_draw")
+	elif not motion.is_calibrated(): view.overlay = "calibration"
 
 func _process(delta: float) -> void:
+	ui_time += delta
+	if loading_active:
+		loading_elapsed += delta
+		if loading_elapsed >= 1.0: loading_active = false
+		view.queue_redraw(); return
 	if view.overlay == "calibration":
 		var calibration_event := motion.update(delta, false, false)
 		if bool(calibration_event.get("calibration_complete", false)):
-			save.data.motion_profile = motion.get_profile()
-			save.data.calibrated = true
-			save.save_data()
+			save.data.motion_profile = motion.get_profile(); save.data.calibrated = true; save.save_data()
 			var profile := motion.get_profile()
 			print("MOTION_PROFILE_SAVED forward_peak=%.2f back_peak=%.2f transition=%.2f" % [float(profile.forward_peak), float(profile.back_peak), float(profile.transition_seconds)])
 			view.overlay = ""
-		view.queue_redraw()
-		return
-	if view.overlay == "settings":
-		view.queue_redraw()
-		return
+		view.queue_redraw(); return
+	if view.overlay in ["settings", "records"]: view.queue_redraw(); return
 	var motion_event := motion.update(delta, session.state in [FishingSession.State.READY, FishingSession.State.CAST_ARMED], session.state == FishingSession.State.HOOK_WINDOW, session.state == FishingSession.State.REELING)
-	if session.state == FishingSession.State.READY and bool(motion_event.get("cast_arm", false)):
-		_arm_cast()
-	if session.state == FishingSession.State.CAST_ARMED and float(motion_event.get("cast_quality", 0.0)) > 0.0:
-		_cast(float(motion_event.cast_quality))
-	if session.state == FishingSession.State.HOOK_WINDOW and bool(motion_event.get("hook", false)):
-		_hook()
+	if session.state == FishingSession.State.READY and bool(motion_event.get("cast_arm", false)): _arm_cast()
+	if session.state == FishingSession.State.CAST_ARMED and float(motion_event.get("cast_quality", 0.0)) > 0.0: _cast(float(motion_event.cast_quality))
+	if session.state == FishingSession.State.HOOK_WINDOW and bool(motion_event.get("hook", false)): _hook()
 	if session.state == FishingSession.State.REELING:
 		session.set_rod_load(float(motion_event.get("fight_load", 0.0)))
-		if bool(motion_event.get("fight_lower", false)):
-			print("MOTION_FIGHT lower tension=%.2f elapsed=%.2f" % [session.tension, session.fight_elapsed])
-		if bool(motion_event.get("fight_pull", false)):
-			print("MOTION_FIGHT pull progress=%.2f tension=%.2f elapsed=%.2f" % [session.fight_progress, session.tension, session.fight_elapsed])
-	session.tick(delta)
-	haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
+		if bool(motion_event.get("fight_lower", false)): print("MOTION_FIGHT lower tension=%.2f elapsed=%.2f" % [session.tension, session.fight_elapsed])
+		if bool(motion_event.get("fight_pull", false)): print("MOTION_FIGHT pull progress=%.2f tension=%.2f elapsed=%.2f" % [session.fight_progress, session.tension, session.fight_elapsed])
+	session.tick(delta); haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
 	if prior_state != session.state:
 		if session.state == FishingSession.State.BITE: haptics.cue("bite")
 		elif session.state == FishingSession.State.CAUGHT:
-			haptics.cue("caught")
+			_record_catch_once(); haptics.cue("caught")
 			print("MOTION_FIGHT caught elapsed=%.2f progress=%.2f tension=%.2f" % [session.fight_elapsed, session.fight_progress, session.tension])
 		elif session.state == FishingSession.State.ESCAPED:
 			haptics.cue("escaped")
@@ -79,220 +77,186 @@ func _process(delta: float) -> void:
 		if session.state in [FishingSession.State.CAUGHT, FishingSession.State.ESCAPED]: motion.reset_fight()
 		prior_state = session.state
 	if session.state == FishingSession.State.REELING:
-		if not haptics.fighting:
-			haptics.start_fight(session.fish)
+		if not haptics.fighting: haptics.start_fight(session.fish)
 		haptics.update_fight(delta, session.fish, session.tension)
-	else:
-		haptics.tick(delta)
+	else: haptics.tick(delta)
 	view.queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not _desktop_fallbacks_enabled():
-		return
+	if not _desktop_fallbacks_enabled(): return
 	if event.is_action_pressed("cast_fallback"):
-		if session.state == FishingSession.State.READY:
-			_arm_cast()
-		elif session.state == FishingSession.State.CAST_ARMED:
-			_cast(0.8)
-	if event.is_action_pressed("hook_fallback"):
-		_hook()
-	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-		view.overlay = "" if view.overlay == "settings" else "settings"
+		if session.state == FishingSession.State.READY: _arm_cast()
+		elif session.state == FishingSession.State.CAST_ARMED: _cast(0.8)
+	if event.is_action_pressed("hook_fallback"): _hook()
+	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE: view.overlay = "" if view.overlay in ["settings", "records"] else "settings"
 
-func _arm_cast() -> void:
-	session.arm_cast()
-
+func _arm_cast() -> void: session.arm_cast()
 func _cast(quality: float = 0.78) -> void:
-	if session.release_cast(quality):
-		print("MOTION_CAST quality=%.2f distance_m=%.1f" % [session.cast_quality, session.cast_distance_m])
-
+	if session.release_cast(quality): print("MOTION_CAST quality=%.2f distance_m=%.1f" % [session.cast_quality, session.cast_distance_m])
 func _hook() -> void:
 	if session.set_hook():
-		motion.begin_fight()
-		haptics.cue("hook")
-		haptics.start_fight(session.fish)
-		print("MOTION_HOOK state=REELING")
-
-
-func _finish_catch() -> void:
-	if session.state == FishingSession.State.CAUGHT:
-		var length := 19.0 + session.cast_quality * 7.5
-		save.record_bluegill(length)
-
+		motion.begin_fight(); haptics.cue("hook"); haptics.start_fight(session.fish); print("MOTION_HOOK state=REELING")
+func _record_catch_once() -> void:
+	if caught_recorded or capture_mode: return
+	save.record_catch(session.fish.id, 19.0 + session.cast_quality * 7.5); caught_recorded = true
 func _reset_session() -> void:
-	session.reset()
-	haptics.stop(); prior_state = session.state
-	motion.reset_gesture()
-	motion.reset_fight()
-
+	session.reset(); caught_recorded = false; haptics.stop(); prior_state = session.state; motion.reset_gesture(); motion.reset_fight()
 func _start_motion_recalibration() -> void:
-	motion.begin_calibration()
-	save.data.calibrated = false
-	save.data.motion_profile = {}
-	save.save_data()
-	view.overlay = "calibration"
-
-func _desktop_fallbacks_enabled() -> bool:
-	return not OS.has_feature("android")
-
+	motion.begin_calibration(); save.data.calibrated = false; save.data.motion_profile = {}; save.save_data(); view.overlay = "calibration"
+func _desktop_fallbacks_enabled() -> bool: return not OS.has_feature("android")
 func _toggle_setting(key: String) -> void:
 	if key == "sensitivity":
 		var next := float(save.data.settings.sensitivity) + 0.2
-		save.data.settings.sensitivity = 0.6 if next > 1.6 else next
-		motion.sensitivity = float(save.data.settings.sensitivity)
-	else:
-		save.data.settings[key] = not bool(save.data.settings[key])
+		save.data.settings.sensitivity = 0.6 if next > 1.6 else next; motion.sensitivity = float(save.data.settings.sensitivity)
+	else: save.data.settings[key] = not bool(save.data.settings[key])
 	save.save_data()
-
+func _can_open_journal() -> bool: return session.state in [FishingSession.State.READY, FishingSession.State.CAUGHT, FishingSession.State.ESCAPED]
 func _parse_capture_args() -> void:
 	for arg in OS.get_cmdline_user_args():
-		if arg.begins_with("--capture="):
-			capture_path = arg.trim_prefix("--capture=")
-		elif arg.begins_with("--capture-scenario="):
-			capture_scenario = arg.trim_prefix("--capture-scenario=")
-
+		if arg.begins_with("--capture="): capture_path = arg.trim_prefix("--capture=")
+		elif arg.begins_with("--capture-scenario="): capture_scenario = arg.trim_prefix("--capture-scenario=")
 func _apply_capture_scenario() -> void:
 	view.overlay = ""
 	match capture_scenario:
-		"armed": session.arm_cast()
-		"bite":
-			session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.HOOK_WINDOW
-		"reeling":
-			session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.63
-		"caught":
-			session.state = FishingSession.State.CAUGHT; session.last_reason = "Bluegill landed!"
-		"escaped":
-			session.state = FishingSession.State.ESCAPED; session.last_reason = "Line snapped under too much tension."
+		"loading": pass
+		"bite": session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.HOOK_WINDOW; session.bite_elapsed = 0.35
+		"reeling": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.63; session.rod_load = 0.55; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+		"caught": session.state = FishingSession.State.CAUGHT; session.last_reason = "Bluegill landed!"; session.cast_quality = 0.88; session.cast_distance_m = 36.2; caught_recorded = true
+		"records": _seed_capture_records(); view.overlay = "records"
+		"settings": view.overlay = "settings"
 		"synthetic_reserve": view.synthetic_reserve = 88.0
 		_: pass
-
+func _seed_capture_records() -> void:
+	var count := 1
+	for fish in FishDefinition.all_planned(): save.data.catches[fish.id] = count; save.data.best_cm[fish.id] = fish.min_length_cm + 3.5; count += 1
 func _capture_after_draw() -> void:
-	await get_tree().process_frame
-	await get_tree().process_frame
-	var image := get_viewport().get_texture().get_image()
-	var error := image.save_png(capture_path)
-	print("SCREENSHOT_CAPTURED path=%s error=%s" % [capture_path, error])
-	get_tree().quit(0 if error == OK else 1)
+	await get_tree().process_frame; await get_tree().process_frame
+	var image := get_viewport().get_texture().get_image(); var error := image.save_png(capture_path)
+	print("SCREENSHOT_CAPTURED path=%s error=%s" % [capture_path, error]); get_tree().quit(0 if error == OK else 1)
 
 class FishingView extends Control:
 	var controller: Node
 	var overlay := ""
 	var synthetic_reserve := 0.0
-	var settings_rect := Rect2(625, 36, 58, 58)
+	var settings_rect := Rect2(618, 30, 48, 48)
+	var journal_rect := Rect2(556, 30, 48, 48)
 	var font: Font
-
 	func _ready() -> void:
-		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		mouse_filter = Control.MOUSE_FILTER_STOP
-		font = ThemeDB.fallback_font
-		queue_redraw()
-
+		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); mouse_filter = Control.MOUSE_FILTER_STOP; font = ThemeDB.fallback_font; queue_redraw()
 	func _draw() -> void:
-		var size := get_size()
-		var scale_x := size.x / 720.0
-		var scale_y := size.y / 1280.0
-		draw_set_transform(Vector2.ZERO, 0.0, Vector2(scale_x, scale_y))
-		_draw_world()
+		var size := get_size(); draw_set_transform(Vector2.ZERO, 0.0, Vector2(size.x / 720.0, size.y / 1280.0))
+		if controller.loading_active: _draw_loading()
+		else: _draw_world()
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-
+	func _draw_loading() -> void:
+		if controller.splash_texture: draw_texture_rect(controller.splash_texture, Rect2(0, 0, 720, 1280), false)
+		draw_rect(Rect2(0, 0, 720, 1280), Color(0.03, 0.10, 0.14, clampf(0.28 - controller.loading_elapsed * 0.22, 0.0, 0.28)))
+		_text("CAST & CRANK", Vector2(128, 1040), 46, Color("fff4cf")); _text("PINE LAKE", Vector2(281, 1080), 18, Color("d9f0e2"))
 	func _draw_world() -> void:
-		# Temporary code-native Gate 1 illustration; no production art is promoted.
-		draw_rect(Rect2(0, 0, 720, 1280), Color("112d43"))
-		draw_rect(Rect2(0, 0, 720, 370), Color("8fc9de"))
-		draw_circle(Vector2(594, 138), 55, Color("f7d989"))
-		for cloud_x in [105.0, 390.0]:
-			draw_circle(Vector2(cloud_x, 120), 28, Color("d6edf3")); draw_circle(Vector2(cloud_x + 35, 113), 38, Color("d6edf3")); draw_circle(Vector2(cloud_x + 72, 124), 24, Color("d6edf3"))
-		draw_rect(Rect2(0, 350, 720, 650), Color("236f8c"))
-		for y in range(410, 930, 68):
-			draw_line(Vector2(36, y), Vector2(680, y), Color("5fb2c6", 0.45), 3)
-		for x in range(22, 720, 73):
-			draw_line(Vector2(x, 348), Vector2(x - 13, 225), Color("1d5d54"), 8)
-			draw_line(Vector2(x + 10, 348), Vector2(x + 24, 250), Color("347c62"), 6)
-		draw_rect(Rect2(0, 1000, 720, 280), Color("153948"))
-		_draw_header()
-		_draw_state_panel()
-		_draw_fight_status()
-		if synthetic_reserve > 0.0:
-			draw_rect(Rect2(0, 1280 - synthetic_reserve, 720, synthetic_reserve), Color("ff2f5f", 0.68))
-			_text("SYNTHETIC OVERLAY STRESS — NOT NATIVE AD", Vector2(72, 1248), 16, Color.WHITE)
+		var s: FishingSession = controller.session
+		if controller.lake_texture: draw_texture_rect(controller.lake_texture, Rect2(0, 0, 720, 1280), false)
+		else: draw_rect(Rect2(0, 0, 720, 1280), Color("1c617d"))
+		_draw_lake_motion(s); _draw_top_chrome(s); _draw_glance_hint(s); _draw_fight_status(s)
+		if s.state == FishingSession.State.CAUGHT: _draw_catch_reveal(s)
+		elif s.state == FishingSession.State.ESCAPED: _draw_escape_card(s)
+		if synthetic_reserve > 0.0: draw_rect(Rect2(0, 1280 - synthetic_reserve, 720, synthetic_reserve), Color("ff2f5f", 0.68)); _text("SYNTHETIC OVERLAY STRESS — NOT NATIVE AD", Vector2(66, 1248), 16, Color.WHITE)
 		if overlay == "calibration": _draw_calibration()
-		if overlay == "settings": _draw_settings()
-
-	func _draw_header() -> void:
-		_text("CAST & CRANK", Vector2(38, 68), 32, Color("fcf7df"))
-		_text("PINE LAKE  •  BLUEGILL", Vector2(40, 96), 16, Color("d0e9d2"))
-		draw_circle(Vector2(654, 65), 29, Color("e2bc62"))
-		_text("⚙", Vector2(642, 77), 26, Color("1c3a46"))
-
-	func _draw_state_panel() -> void:
-		var s: FishingSession = controller.session
-		var copy := "Cock back, then snap forward to cast."
+		elif overlay == "settings": _draw_settings()
+		elif overlay == "records": _draw_records()
+	func _draw_lake_motion(s: FishingSession) -> void:
+		var reduced := bool(controller.save.data.settings.get("reduced_motion", false))
+		var wave := 0.0 if reduced else sin(controller.ui_time * 2.2) * 5.0
+		var bobber_pos := Vector2(475, 635 + wave)
+		var submerged := s.state in [FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
+		if submerged:
+			bobber_pos.y += 44.0 + (0.0 if reduced else sin(controller.ui_time * 9.0) * 3.0)
+		var rod_region := 0 if s.state != FishingSession.State.REELING else clampi(int(round(maxf(s.tension, s.rod_load) * 2.0)), 0, 2)
+		draw_line(Vector2(87, 1070), bobber_pos, Color("f4e6bf", 0.9), 2.4)
+		if controller.rod_texture: draw_texture_rect_region(controller.rod_texture, Rect2(-85, 545, 435, 870), Rect2(rod_region * 512, 0, 512, 1024))
+		if not submerged and controller.bobber_texture:
+			draw_texture_rect(controller.bobber_texture, Rect2(bobber_pos - Vector2(21, 25), Vector2(42, 50)), false)
+		elif submerged:
+			# The body is below the waterline: leave only a dark tip and the line contact visible.
+			draw_circle(bobber_pos + Vector2(0, 5), 8, Color(0.015, 0.09, 0.12, 0.88))
+			draw_circle(bobber_pos + Vector2(0, 1), 3, Color("9b3a32"))
+		if controller.reaction_texture and (submerged or not reduced):
+			var frame := 0 if reduced else int(floor(controller.ui_time * 8.0)) % 6
+			var alpha := 1.0 if submerged else 0.36
+			var reaction_size := Vector2(218, 132) if submerged else Vector2(172, 108)
+			draw_texture_rect_region(controller.reaction_texture, Rect2(bobber_pos - reaction_size * Vector2(0.5, 0.42), reaction_size), Rect2(frame * 362, 0, 362, 724), Color(1, 1, 1, alpha))
+		if submerged:
+			var pulse := 0.0 if reduced else fmod(controller.ui_time * (5.0 if s.state == FishingSession.State.REELING else 3.0), 1.0)
+			for ring in range(3):
+				var radius := 14.0 + ring * 15.0 + pulse * 9.0
+				draw_arc(bobber_pos + Vector2(0, 5), radius, 0.15, TAU - 0.15, 28, Color("d9f6ea", 0.72 - ring * 0.17), 1.6)
+		if s.state == FishingSession.State.REELING and not reduced:
+			draw_circle(bobber_pos + Vector2(18, 18), 7 + sin(controller.ui_time * 12.0) * 2, Color("e8fbf4", 0.78))
+	func _draw_top_chrome(s: FishingSession) -> void:
+		draw_style_box(_panel_style(Color(0.03, 0.13, 0.18, 0.72), Color("74b7a8")), Rect2(24, 22, 672, 100)); _text("CAST & CRANK", Vector2(46, 66), 30, Color("fff4d1")); _text("PINE LAKE  •  %s" % s.fish.display_name.to_upper(), Vector2(48, 98), 16, Color("b9e2d3"))
+		draw_circle(Vector2(580, 54), 20, Color("d9bf72")); _text("≡", Vector2(571, 63), 21, Color("173a48")); draw_circle(Vector2(644, 54), 20, Color("d9bf72")); _text("⚙", Vector2(633, 64), 20, Color("173a48"))
+	func _draw_glance_hint(s: FishingSession) -> void:
+		var copy := "COCK BACK, THEN SNAP FORWARD"
 		match s.state:
-			FishingSession.State.CAST_ARMED: copy = "Armed — snap forward now!"
-			FishingSession.State.LINE_OUT: copy = "Line is out — %.0f m. Watch the bobber." % s.cast_distance_m
-			FishingSession.State.HOOK_WINDOW: copy = "BITE! Cock back to set the hook."
+			FishingSession.State.CAST_ARMED: copy = "SNAP FORWARD"
+			FishingSession.State.LINE_OUT: copy = "LINE OUT  %.0f m" % s.cast_distance_m
+			FishingSession.State.HOOK_WINDOW: copy = "BITE — COCK BACK"
 			FishingSession.State.REELING: copy = "LOWER TO EASE" if s.rod_load >= 0.55 or s.tension >= 0.65 else "PULL BACK SMOOTHLY"
-			FishingSession.State.CAUGHT: copy = "BLUEGILL LANDED! Tap the catch card."
-			FishingSession.State.ESCAPED: copy = s.last_reason + " Tap to cast again."
-		draw_style_box(_panel_style(Color("143c4d", 0.92), Color("a9d4ca")), Rect2(55, 165, 610, 104))
-		_text(copy, Vector2(82, 208), 22, Color("f8f4d7"))
-		if s.state == FishingSession.State.HOOK_WINDOW:
-			draw_rect(Rect2(80, 232, 540, 9), Color("e8d276"))
-			draw_rect(Rect2(80, 232, 540 * maxf(0.0, 1.0 - s.bite_elapsed / FishingSession.HOOK_WINDOW_SECONDS), 9), Color("fc5c55"))
-		if s.state == FishingSession.State.CAUGHT:
-			draw_style_box(_panel_style(Color("e6c869"), Color("fff3bf")), Rect2(102, 318, 516, 220))
-			draw_circle(Vector2(360, 410), 69, Color("4e9eb5")); draw_circle(Vector2(395, 398), 8, Color("172e3b"))
-			_text("19–27 cm • %.0f m cast • Pine Lake" % s.cast_distance_m, Vector2(154, 512), 20, Color("153948"))
-		if s.state == FishingSession.State.ESCAPED:
-			draw_style_box(_panel_style(Color("713d47"), Color("e8aa90")), Rect2(102, 318, 516, 138))
-			_text("TRY THE RIPPLE AGAIN", Vector2(166, 397), 24, Color("fff1d1"))
-
-	func _draw_fight_status() -> void:
-		var s: FishingSession = controller.session
-		if s.state == FishingSession.State.REELING:
-			draw_style_box(_panel_style(Color("203e50"), Color("a9d4ca")), Rect2(95, 900, 530, 155))
-			_text("FIGHT PROGRESS", Vector2(120, 940), 18, Color("f4e7c3"))
-			draw_rect(Rect2(120, 956, 480 * s.fight_progress, 22), Color("78d8ba"))
-			_text("LOWER TO EASE" if s.rod_load >= 0.55 or s.tension >= 0.65 else "PULL BACK", Vector2(212, 1020), 28, Color("fff1c9"))
-			_text("Raise to pull; tilt forward to ease tension.", Vector2(128, 1045), 17, Color("d0e9d2"))
-			draw_style_box(_panel_style(Color("391f32"), Color("ff8e73")), Rect2(90, 815, 540, 32))
-			draw_rect(Rect2(95, 820, 530 * s.tension, 22), Color("ed665b") if s.tension >= 0.65 else Color("8cd6aa"))
-			_text("TENSION", Vector2(92, 800), 16, Color("f4e7c3"))
-
+			FishingSession.State.CAUGHT: copy = "BLUEGILL LANDED"
+			FishingSession.State.ESCAPED: copy = "LINE WENT SLACK"
+		draw_style_box(_panel_style(Color(0.02, 0.13, 0.18, 0.78), Color("e1ca77")), Rect2(78, 147, 564, 58)); _text(copy, Vector2(118, 185), 20, Color("fff7dc"))
+	func _draw_fight_status(s: FishingSession) -> void:
+		if s.state != FishingSession.State.REELING: return
+		draw_style_box(_panel_style(Color(0.03, 0.14, 0.20, 0.84), Color("79b9ad")), Rect2(74, 1032, 572, 128)); _text("FIGHT", Vector2(102, 1065), 17, Color("d9efe3")); draw_rect(Rect2(102, 1078, 516, 10), Color("153947")); draw_rect(Rect2(102, 1078, 516 * s.fight_progress, 10), Color("70d5ad")); _text("TENSION", Vector2(102, 1122), 17, Color("d9efe3")); draw_rect(Rect2(102, 1134, 516, 10), Color("321b28")); draw_rect(Rect2(102, 1134, 516 * s.tension, 10), Color("ed695e") if s.tension >= 0.65 else Color("e1c46e"))
+	func _draw_catch_reveal(s: FishingSession) -> void:
+		if controller.catch_frame_texture: draw_texture_rect(controller.catch_frame_texture, Rect2(0, 0, 720, 1280), false)
+		var reduced := bool(controller.save.data.settings.get("reduced_motion", false)); var entry := 0.0 if reduced else sin(controller.ui_time * 2.1) * 9.0
+		if controller.bluegill_texture: draw_texture_rect(controller.bluegill_texture, Rect2(182, 342 + entry, 350, 233), false)
+		for i in range(4): draw_circle(Vector2(210 + i * 94, 328 + (0 if reduced else sin(controller.ui_time * 4.0 + i) * 7)), 5, Color("d6f7ef", 0.75))
+		draw_style_box(_panel_style(Color(0.03, 0.15, 0.19, 0.88), Color("e4c86d")), Rect2(74, 712, 572, 262)); _text("BLUEGILL", Vector2(253, 770), 38, Color("fff1c4")); var length := 19.0 + s.cast_quality * 7.5; _text("%.1f cm  •  %.0f m cast" % [length, s.cast_distance_m], Vector2(218, 816), 22, Color("d7eee4")); _text("PB  %.1f cm" % maxf(length, float(controller.save.data.best_cm.get("bluegill", 0.0))), Vector2(264, 864), 24, Color("b9e2d3")); _text("TAP TO CONTINUE", Vector2(232, 932), 20, Color("fff1c4"))
+	func _draw_escape_card(s: FishingSession) -> void:
+		draw_style_box(_panel_style(Color(0.19, 0.07, 0.10, 0.92), Color("e58970")), Rect2(84, 662, 552, 210)); _text("THE LINE WENT SLACK", Vector2(139, 742), 29, Color("fff2d5")); _text(s.last_reason, Vector2(152, 790), 18, Color("ffd5c2")); _text("TAP TO TRY AGAIN", Vector2(207, 838), 20, Color("fff2d5"))
 	func _draw_calibration() -> void:
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.04, 0.11, 0.16, 0.88))
+		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.86))
 		draw_style_box(_panel_style(Color("eff3dc"), Color("fff6c5")), Rect2(54, 300, 612, 530))
 		_text("MOTION CHECK", Vector2(180, 375), 34, Color("173a48"))
 		var step: int = controller.motion.calibration_progress + 1
 		_text("Practice cast %d of 2" % min(step, 2), Vector2(242, 430), 22, Color("2c6876"))
 		var phase: String = controller.motion.calibration_phase
 		var copy := "Rest the phone flat and still for a moment."
-		if phase.contains("snap"): copy = "Now snap forward to finish this practice cast."
-		elif phase.contains("back"): copy = "Cock back, then snap forward when ready."
+		if phase.contains("snap"):
+			copy = "Now snap forward to finish this practice cast."
+		elif phase.contains("back"):
+			copy = "Cock back, then snap forward when ready."
 		_text(copy, Vector2(90, 510), 21, Color("173a48"))
 		_text("Calibration starts automatically — no buttons.", Vector2(112, 580), 18, Color("416b72"))
-		_text("You can recalibrate later in Settings.", Vector2(147, 770), 17, Color("416b72"))
-
 	func _draw_settings() -> void:
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.04, 0.11, 0.16, 0.88))
-		draw_style_box(_panel_style(Color("eaf2dc"), Color("fff6c5")), Rect2(55, 230, 610, 720))
-		_text("SETTINGS", Vector2(243, 338), 34, Color("173a48"))
-		var settings: Dictionary = controller.save.data.settings
-		_text("Sensitivity: %.1f  (tap row)" % float(settings.sensitivity), Vector2(120, 438), 24, Color("173a48"))
-		_text("Haptics: %s" % ("ON" if settings.haptics else "OFF"), Vector2(120, 518), 24, Color("173a48"))
-		_text("Audio: %s" % ("ON" if settings.audio else "OFF"), Vector2(120, 598), 24, Color("173a48"))
-		_text("Reduced motion: %s" % ("ON" if settings.reduced_motion else "OFF"), Vector2(120, 678), 24, Color("173a48"))
-		draw_style_box(_panel_style(Color("dce7d0"), Color("8ab5a9")), Rect2(110, 730, 500, 65))
-		_text("RECALIBRATE MOTION", Vector2(193, 772), 22, Color("173a48"))
-		_text("Tap title to close", Vector2(247, 875), 18, Color("416b72"))
-
+		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.88)); draw_style_box(_panel_style(Color("eaf2dc"), Color("fff6c5")), Rect2(55, 230, 610, 720)); _text("SETTINGS", Vector2(243, 338), 34, Color("173a48")); var settings: Dictionary = controller.save.data.settings; _text("Sensitivity: %.1f  (tap row)" % float(settings.sensitivity), Vector2(120, 438), 24, Color("173a48")); _text("Haptics: %s" % ("ON" if settings.haptics else "OFF"), Vector2(120, 518), 24, Color("173a48")); _text("Audio: %s" % ("ON" if settings.audio else "OFF"), Vector2(120, 598), 24, Color("173a48")); _text("Reduced motion: %s" % ("ON" if settings.reduced_motion else "OFF"), Vector2(120, 678), 24, Color("173a48")); draw_style_box(_panel_style(Color("dce7d0"), Color("8ab5a9")), Rect2(110, 730, 500, 65)); _text("RECALIBRATE MOTION", Vector2(193, 772), 22, Color("173a48")); _text("Tap title to close", Vector2(247, 875), 18, Color("416b72"))
+	func _draw_records() -> void:
+		if controller.records_texture: draw_texture_rect(controller.records_texture, Rect2(0, 0, 720, 1280), false)
+		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.09, 0.12, 0.12))
+		_text("PINE LAKE JOURNAL", Vector2(160, 230), 30, Color("fff2c8"))
+		_text("TAP TOP LEFT TO RETURN", Vector2(206, 262), 15, Color("163c46"))
+		var fish_list := FishDefinition.all_planned()
+		var card_x := [56.0, 372.0]
+		# Each plaque belongs beneath its card's fish, not at a uniform row cadence.
+		var card_y := [335.0, 665.0, 995.0]
+		for index in range(fish_list.size()):
+			var fish = fish_list[index]
+			var column := index % 2
+			var row: int = index >> 1
+			var plaque := Rect2(card_x[column], card_y[row], 292, 58)
+			var count := int(controller.save.data.catches.get(fish.id, 0))
+			var best := float(controller.save.data.best_cm.get(fish.id, 0.0))
+			draw_style_box(_panel_style(Color(0.015, 0.11, 0.14, 0.84), Color("a98a48")), plaque)
+			_text(fish.display_name.to_upper(), plaque.position + Vector2(13, 24), 16, Color("fff1c8"))
+			_text("%d caught  •  %.1f cm" % [count, best], plaque.position + Vector2(13, 47), 16, Color("caeadb"))
 	func _gui_input(event: InputEvent) -> void:
 		if event is InputEventScreenTouch or event is InputEventMouseButton:
-			if bool(event.pressed):
-				_handle_press(event.position * Vector2(720.0 / size.x, 1280.0 / size.y))
-
+			if bool(event.pressed): _handle_press(event.position * Vector2(720.0 / size.x, 1280.0 / size.y))
 	func _handle_press(pos: Vector2) -> void:
-		if overlay == "calibration":
+		if overlay == "calibration": return
+		if overlay == "records":
+			if pos.y < 130: overlay = ""
 			return
 		if overlay == "settings":
 			if pos.y < 370: overlay = ""
@@ -302,13 +266,9 @@ class FishingView extends Control:
 			elif pos.y < 720: controller._toggle_setting("reduced_motion")
 			elif pos.y < 810: controller._start_motion_recalibration()
 			return
-		if settings_rect.has_point(pos): overlay = "settings"; return
-		if controller.session.state in [FishingSession.State.CAUGHT, FishingSession.State.ESCAPED]:
-			controller._finish_catch(); controller._reset_session(); return
-
+		if settings_rect.has_point(pos) and controller._can_open_journal(): overlay = "settings"; return
+		if journal_rect.has_point(pos) and controller._can_open_journal(): overlay = "records"; return
+		if controller.session.state in [FishingSession.State.CAUGHT, FishingSession.State.ESCAPED]: controller._reset_session()
 	func _panel_style(background: Color, border: Color) -> StyleBoxFlat:
-		var box := StyleBoxFlat.new(); box.bg_color = background; box.border_color = border
-		box.set_border_width_all(3); box.set_corner_radius_all(20); return box
-
-	func _text(value: String, pos: Vector2, font_size: int, color: Color) -> void:
-		draw_string(font, pos, value, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
+		var box := StyleBoxFlat.new(); box.bg_color = background; box.border_color = border; box.set_border_width_all(3); box.set_corner_radius_all(20); return box
+	func _text(value: String, pos: Vector2, font_size: int, color: Color) -> void: draw_string(font, pos, value, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)

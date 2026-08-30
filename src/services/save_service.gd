@@ -1,8 +1,9 @@
 class_name SaveService
 extends RefCounted
 
-const VERSION := 2
+const VERSION := 3
 const PATH := "user://cast_and_crank_save.json"
+const PLANNED_FISH_IDS := ["bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike"]
 
 var data: Dictionary = default_data()
 var path: String
@@ -11,7 +12,12 @@ func _init(custom_path: String = PATH) -> void:
 	path = custom_path
 
 static func default_data() -> Dictionary:
-	return {"version": VERSION, "calibrated": false, "motion_profile": {}, "settings": {"sensitivity": 1.0, "haptics": true, "audio": true, "reduced_motion": false}, "catches": {"bluegill": 0}, "best_cm": {"bluegill": 0.0}}
+	var catches := {}
+	var best_cm := {}
+	for fish_id in PLANNED_FISH_IDS:
+		catches[fish_id] = 0
+		best_cm[fish_id] = 0.0
+	return {"version": VERSION, "calibrated": false, "motion_profile": {}, "settings": {"sensitivity": 1.0, "haptics": true, "audio": true, "reduced_motion": false}, "catches": catches, "best_cm": best_cm}
 
 func load_data() -> Dictionary:
 	if not FileAccess.file_exists(path):
@@ -61,7 +67,10 @@ func save_data() -> bool:
 	file.close()
 	return true
 
-func record_bluegill(length_cm: float) -> void:
-	data.catches.bluegill = int(data.catches.get("bluegill", 0)) + 1
-	data.best_cm.bluegill = maxf(float(data.best_cm.get("bluegill", 0.0)), length_cm)
+func record_catch(fish_id: String, length_cm: float) -> void:
+	data.catches[fish_id] = int(data.catches.get(fish_id, 0)) + 1
+	data.best_cm[fish_id] = maxf(float(data.best_cm.get(fish_id, 0.0)), length_cm)
 	save_data()
+
+func record_bluegill(length_cm: float) -> void:
+	record_catch("bluegill", length_cm)

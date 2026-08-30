@@ -82,3 +82,10 @@ V7 therefore works physically for cast, hook, fight, landing, persistence, and h
 - No caught/escaped terminal `MOTION_FIGHT` marker was captured before further testing was deferred. Catch count reaching `14` across the restart is not timing evidence.
 
 This proves v8 export/install, permission delivery, and initial cast/hook/lower operation only. It does not establish v8 physical landing timing, terminal marker behavior, sustained fight haptics, or user acceptance.
+
+## V9 UI build install and launch
+
+- Optimized UI build `0.2.0-ui1` / versionCode `9`: 46,072,704 bytes; SHA-256 `9EA3732C31C97BC09EAA10DA89A4FE481CAFAF9A230FCD03EA925B623AC15063`.
+- `adb install -r` succeeded on the Pixel 9 Pro (`caiman`, `192.168.1.234:43875`). `dumpsys` confirms versionCode `9` and `android.permission.VIBRATE` `granted=true`.
+- The Godot activity displayed/launched and inspected output had no fatal exception or script-error marker.
+- Secure lock / NotificationShade blocked an actual device visual capture. Desktop 720×1280 captures remain the visual evidence. Real v9 motion, haptic, and timing validation remains open for the next physical test session.

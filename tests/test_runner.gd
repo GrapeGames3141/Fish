@@ -111,22 +111,26 @@ func _test_save_round_trip() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 	var save = SaveService.new(path)
 	expect(save.load_data().version == SaveService.VERSION, "missing save returns defaults")
+	for fish in FishDefinition.all_planned():
+		expect(int(save.data.catches.get(fish.id, -1)) == 0 and float(save.data.best_cm.get(fish.id, -1.0)) == 0.0, "new save has a zero record for " + fish.id)
 	save.data.settings.sensitivity = 1.4
 	save.data.motion_profile = _calibrated_motion().get_profile()
 	save.data.calibrated = true
 	save.record_bluegill(24.2)
+	save.record_catch("northern_pike", 74.5)
 	var restored = SaveService.new(path)
 	restored.load_data()
 	expect(float(restored.data.settings.sensitivity) == 1.4, "save restores settings")
 	expect(int(restored.data.catches.bluegill) >= 1, "save restores catch count")
 	expect(float(restored.data.best_cm.bluegill) >= 24.2, "save restores best fish")
+	expect(int(restored.data.catches.northern_pike) == 1 and float(restored.data.best_cm.northern_pike) == 74.5, "generic record_catch persists every planned species")
 	expect(restored.data.calibrated and SaveService.is_motion_profile_valid(restored.data.motion_profile), "save restores a validated motion profile")
 	var legacy := FileAccess.open(path, FileAccess.WRITE)
 	legacy.store_string(JSON.stringify({"version": 1, "calibrated": true, "settings": {"sensitivity": 1.2, "haptics": false}, "catches": {"bluegill": 4}, "best_cm": {"bluegill": 29.5}}))
 	legacy.close()
 	var migrated := SaveService.new(path); migrated.load_data()
 	expect(migrated.data.version == SaveService.VERSION and not migrated.data.calibrated and migrated.data.motion_profile.is_empty(), "v1 save migrates to uncalibrated without losing unsafe profile state")
-	expect(float(migrated.data.settings.sensitivity) == 1.2 and not migrated.data.settings.haptics and int(migrated.data.catches.bluegill) == 4 and float(migrated.data.best_cm.bluegill) == 29.5, "v1 migration preserves settings and catch progress")
+	expect(float(migrated.data.settings.sensitivity) == 1.2 and not migrated.data.settings.haptics and int(migrated.data.catches.bluegill) == 4 and float(migrated.data.best_cm.bluegill) == 29.5 and int(migrated.data.catches.northern_pike) == 0, "v1 migration preserves settings/catch progress and adds zero planned records")
 	var invalid := FileAccess.open(path, FileAccess.WRITE)
 	invalid.store_string(JSON.stringify({"version": SaveService.VERSION, "settings": {"sensitivity": 1.1}, "catches": {"bluegill": 6}, "best_cm": {"bluegill": 30.0}, "motion_profile": {"forward_axis": [1.0, 0.0, 0.0], "back_peak": 0.1, "forward_peak": 5.0}}))
 	invalid.close()
@@ -352,12 +356,32 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 8 and export_config.get_value("preset.0.options", "version/name") == "0.1.7-gate1", "debug package version is bumped")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 9 and export_config.get_value("preset.0.options", "version/name") == "0.2.0-ui1", "UI checkpoint package version is bumped")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
 	var excluded := str(export_config.get_value("preset.0", "exclude_filter"))
-	expect("build/**" in excluded and "reports/**" in excluded and "addons/admob/internal/editor/**" in excluded and "addons/admob/internal/mock/**" in excluded and not "addons/admob/gdscript/src/mediation/**" in excluded, "non-runtime material is recursively excluded while runtime mediation dependencies remain")
+	expect("build/**" in excluded and "reports/**" in excluded and "art/ui_v1/mockups/**" in excluded and "addons/admob/internal/editor/**" in excluded and "addons/admob/internal/mock/**" in excluded and not "addons/admob/gdscript/src/mediation/**" in excluded, "mockups and non-runtime material are recursively excluded while runtime mediation dependencies remain")
+	expect(config.get_value("application", "config/icon") == "res://art/ui_v1/runtime_source/app-icon-v01.png" and config.get_value("application", "boot_splash/image") == "res://art/ui_v1/runtime_source/loading-splash-v01.png", "ImageGen runtime icon and boot splash are configured")
+	var runtime_assets := {
+		"res://art/ui_v1/runtime_source/pine-lake-clean-v01.png": Vector2i(941, 1672),
+		"res://art/ui_v1/runtime_source/rod-bend-strip-v01.png": Vector2i(1536, 1024),
+		"res://art/ui_v1/runtime_source/bobber-v01.png": Vector2i(1230, 1278),
+		"res://art/ui_v1/runtime_source/water-reaction-strip-v01.png": Vector2i(2172, 724),
+		"res://art/ui_v1/runtime_source/catch-frame-clean-v01.png": Vector2i(941, 1672),
+		"res://art/ui_v1/runtime_source/bluegill-v01.png": Vector2i(1536, 1024),
+		"res://art/ui_v1/runtime_source/app-icon-v01.png": Vector2i(1254, 1254),
+		"res://art/ui_v1/runtime_source/loading-splash-v01.png": Vector2i(941, 1672),
+		"res://art/ui_v1/runtime_source/records-screen-v01.png": Vector2i(941, 1672)
+	}
+	for asset_path in runtime_assets:
+		var texture := load(asset_path) as Texture2D
+		var image := texture.get_image() if texture else Image.new()
+		expect(not image.is_empty() and image.get_size() == runtime_assets[asset_path], "runtime UI asset has the expected dimensions: " + asset_path)
+	for transparent_asset in ["res://art/ui_v1/runtime_source/rod-bend-strip-v01.png", "res://art/ui_v1/runtime_source/bobber-v01.png", "res://art/ui_v1/runtime_source/water-reaction-strip-v01.png", "res://art/ui_v1/runtime_source/bluegill-v01.png"]:
+		var transparent_texture := load(transparent_asset) as Texture2D
+		var transparent_image := transparent_texture.get_image() if transparent_texture else Image.new()
+		expect(transparent_image.detect_alpha() != Image.ALPHA_NONE, "runtime animated asset retains alpha: " + transparent_asset)
 	var source := FileAccess.get_file_as_string("res://src/services/admob_service.gd")
 	expect("ConsentInformation" in source and "MAX_AD_CONTENT_RATING_PG" in source and "failed_closed" in source and "game_content_reserve_height" in source and "OnInitializationCompleteListener" in source and "sdk_initializing" in source and "banner_requested" in source, "consent-first SDK-sequenced AdMob contract retained")
 	var haptic_source := FileAccess.get_file_as_string("res://src/services/haptic_service.gd")
@@ -365,4 +389,4 @@ func _test_project_source_settings() -> void:
 	var main_source := FileAccess.get_file_as_string("res://src/ui/main.gd")
 	var motion_source := FileAccess.get_file_as_string("res://src/services/motion_service.gd")
 	expect("raw_fight_load" in motion_source and "sqrt(raw_fight_load)" in motion_source, "learned fight load retains geometric anchors with the deliberate partial-response curve")
-	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and not "reel_fallback" in main_source and "not OS.has_feature(\"android\")" in main_source and "MOTION_FIGHT caught elapsed=" in main_source and "MOTION_FIGHT escaped elapsed=" in main_source, "Android UI has no touch cast, hook, or reel fallback while terminal motion logs remain device-auditable")
+	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and not "reel_fallback" in main_source and "not OS.has_feature(\"android\")" in main_source and "MOTION_FIGHT caught elapsed=" in main_source and "MOTION_FIGHT escaped elapsed=" in main_source and "_record_catch_once" in main_source and "records-screen-v01.png" in main_source, "Android UI has no touch cast, hook, or reel fallback while terminal logs, one-shot catch recording, and journal remain device-auditable")

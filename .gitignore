@@ -11,5 +11,6 @@ reports/runtime/*.png
 reports/runtime/*.txt
 *.tmp
 *.import
+!art/ui_v1/runtime_source/*.png.import
 addons/admob/downloads/
 addons/admob/ios/

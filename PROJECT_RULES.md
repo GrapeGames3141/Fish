@@ -3,6 +3,7 @@
 - Target Godot 4.7.1, GDScript, Android portrait 720×1280, package `com.tak.castandcrank`.
 - Maintain a deterministic domain layer with replaceable motion, save, and ad adapters.
 - This UI-production checkpoint authorizes a versioned, provenance-tracked ImageGen family for the icon, splash, gameplay, catch, and records presentation. Keep gameplay-critical dynamic text native and do not add a cast, hook, or fight touch fallback. The delivered first visual pass remains pending human aesthetic approval before broader art promotion; `concepts/gate1` remains review-only unless explicitly promoted.
+- Runtime UI masters live under `art/ui_v1/runtime_source/`; selected presentation mockups are provenance-only and must remain excluded from Android export via `art/ui_v1/mockups/**`. Maintain the 720×1280 scenario captures and inspect them before a release candidate.
 - Poing AdMob v5.0.0 is MIT-licensed local source. Use Google test IDs until production IDs, privacy policy, UMP review, and store disclosures are supplied.
 - For a native `AdPosition.BOTTOM` banner outside the Godot surface: native owns banner and Android safe inset; `game_content_reserve_height()` is always zero. Synthetic overlay reserve is a test-only fixture.
 - General audience is 13+, max ad content rating PG, not child-directed. UMP consent must run before requesting production ads.
