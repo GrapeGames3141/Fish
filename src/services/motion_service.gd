@@ -328,7 +328,7 @@ func _update_cast(delta: float, reading: Dictionary, event: Dictionary) -> void:
 		var back_projection := -linear.dot(axis)
 		var back_match := -linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
 		var handed_match := linear.normalized().dot(_back_axis_direction()) if linear.length() > 0.0 else -1.0
-		if _new_candidate("cock", linear, gyro, _back_threshold()):
+		if _new_candidate("cock", back_projection, _back_threshold()):
 			diagnostics.cock_attempts += 1
 			if back_projection >= _back_threshold() and back_match >= float(profile.direction_tolerance) and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold():
 				_back_axis = -axis; _back_peak = back_projection; _back_gyro_peak = gyro.length(); _gesture_elapsed = 0.0; event.cast_arm = true
@@ -341,7 +341,7 @@ func _update_cast(delta: float, reading: Dictionary, event: Dictionary) -> void:
 	var forward_projection := linear.dot(axis)
 	var forward_match := linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
 	var handed_match := linear.normalized().dot(_forward_axis()) if linear.length() > 0.0 else -1.0
-	if _new_candidate("snap", linear, gyro, _forward_threshold()):
+	if _new_candidate("snap", forward_projection, _forward_threshold()):
 		if forward_projection >= _forward_threshold() and forward_match >= float(profile.direction_tolerance) and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold():
 			event.cast_quality = _cast_quality(forward_projection); diagnostics.completed_casts += 1; reset_gesture(); _cooldown_elapsed = GESTURE_COOLDOWN_SECONDS
 		else: _classify_failure(linear, gyro, forward_match, handed_match, _forward_threshold(), "snap")
@@ -359,25 +359,25 @@ func _detect_hook(reading: Dictionary) -> bool:
 	var back_projection: float = -linear.dot(axis)
 	var back_match := -linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
 	var handed_match := linear.normalized().dot(_back_axis_direction()) if linear.length() > 0.0 else -1.0
-	if not _new_candidate("hook", linear, gyro, _hook_threshold()): return false
+	if not _new_candidate("hook", back_projection, _hook_threshold()): return false
 	diagnostics.hook_attempts += 1
-	if back_projection >= _hook_threshold() and back_match >= float(profile.direction_tolerance) * 0.82 and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold() * 0.72:
+	if back_projection >= _hook_threshold() and back_match >= float(profile.direction_tolerance) * 0.82 and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold() * 0.65:
 		_cooldown_elapsed = GESTURE_COOLDOWN_SECONDS
 		return true
 	_classify_failure(linear, gyro, back_match, handed_match, _hook_threshold(), "hook")
 	return false
 
 func _back_threshold() -> float:
-	return maxf(float(profile.noise_floor) * 1.8, float(profile.back_peak) * 0.50) / maxf(sensitivity, 0.5)
+	return maxf(float(profile.noise_floor) * 1.6, float(profile.back_peak) * 0.42) / maxf(sensitivity, 0.5)
 
 func _forward_threshold() -> float:
-	return maxf(float(profile.noise_floor) * 2.2, float(profile.forward_peak) * 0.50) / maxf(sensitivity, 0.5)
+	return maxf(float(profile.noise_floor) * 1.8, float(profile.forward_peak) * 0.42) / maxf(sensitivity, 0.5)
 
 func _hook_threshold() -> float:
 	return maxf(float(profile.noise_floor) * 1.6, float(profile.back_peak) * 0.30) / maxf(sensitivity, 0.5)
 
 func _gyro_threshold() -> float:
-	return clampf(float(profile.gyro_peak) * 0.22 / maxf(sensitivity, 0.5), 0.12, 0.85)
+	return clampf(float(profile.gyro_peak) * 0.16 / maxf(sensitivity, 0.5), 0.10, 0.60)
 
 func _cast_quality(forward_projection: float) -> float:
 	var threshold := _forward_threshold()
@@ -408,11 +408,12 @@ func _classify_failure(linear: Vector3, gyro: Vector3, axis_match: float, polari
 	elif axis_match < float(profile.get("direction_tolerance", 0.62)): _fail("axis")
 	elif gyro.length() < _gyro_threshold(): _fail("gyro")
 
-func _new_candidate(stage: String, linear: Vector3, gyro: Vector3, threshold: float) -> bool:
-	var linear_start := maxf(0.35, threshold * 0.30)
-	var gyro_start := maxf(0.08, _gyro_threshold() * 0.50)
-	var active := linear.length() >= linear_start or gyro.length() >= gyro_start
-	if not active:
+func _new_candidate(stage: String, directed_projection: float, threshold: float) -> bool:
+	# Enter a stage only when energy is already travelling in that stage's learned
+	# direction. A cock's taper is negative forward projection, so it clears the
+	# snap latch instead of consuming the forthcoming left/forward snap candidate.
+	var directional_start := maxf(0.35, threshold * 0.30)
+	if directed_projection < directional_start:
 		_candidate_latched[stage] = false
 		return false
 	if bool(_candidate_latched.get(stage, false)): return false

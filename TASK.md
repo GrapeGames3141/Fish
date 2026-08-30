@@ -26,3 +26,8 @@ The user authorized generation and integration of this first ImageGen UI pass. H
 - Implemented: mirrored left-handed calibration/motion option, rest-baseline thresholding, compact derived diagnostics, 1.8s hook window, generic species/location selection and records, and code-native non-Bluegill catch silhouettes.
 - Verified headlessly: deterministic threshold, handedness, hook-window, fight, save migration, selection, and haptic-contract tests.
 - Still pending: physical cast/hook rate and comfort, haptic feel, left-handed feel, full fight timing, native ad/UMP visual behavior, and human visual/art approval. No new production art is authorized by this checkpoint.
+
+## Cast-recognition hotfix checkpoint
+
+- Implemented for the next build: direction-aware candidate entry prevents residual cock frames from latching the expected forward snap; retuned learned-profile gates preserve existing v3 calibration data and reduce the Pixel-derived cock/snap/gyro gates.
+- Still pending: physical cast/hook reliability confirmation on the paired device. This hotfix has no export, install, or user-feel claim yet.
