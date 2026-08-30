@@ -36,3 +36,14 @@ The installed v3 save has haptics enabled and Android VIBRATE is granted, but ap
 - Package inspection retains HapticService entries `2` and MediationExtras entries `10`.
 
 The Pixel remained locked/asleep for this install. No physical haptic, foreground interaction, UMP, banner, touch, lifecycle, or visual validation is claimed.
+
+## Final v5 motion and haptic validation
+
+- Final `0.1.4-gate1` APK: 38,973,335 bytes; SHA-256 `CBCC74703FB5172454A276616AF4DB62720CEAB1FC0415D9C40A8BED2D749061`.
+- The signed arm64-only package is `com.tak.castandcrank`, versionCode `5`, minSdk `24`, targetSdk `36`, v2-signed with Android Debug certificate SHA-256 `c26373b2320fa530be93f5b6d255a4c8e10e6aa4476e430dedb6106a4de865dc`; VIBRATE is present.
+- `adb install -r` succeeded on Pixel 9 Pro `192.168.1.234:43875`. `dumpsys` confirms versionCode `5`, versionName `0.1.4-gate1`, min/target SDK values, and VIBRATE granted. Android PID `28410` stayed alive with no inspected current-process `FATAL EXCEPTION`, crash, or script-error marker.
+- The private v2 save is calibrated and preserved catches `8` / best `26.5`; its derived profile records back peak `2.14565`, forward peak `3.68140`, gyro `4.23146`, transition `0.375`, axis `[-0.8526, 0.27369, -0.44516]`, and noise `0.64370`.
+- Actual sensor markers show hook-to-reeling at `22:14:39.950`, cast quality `0.79` / `33.4 m` at `22:14:57.906`, cast quality `1.00` / `40 m` at `22:15:06.038`, and hook-to-reeling at `22:15:09.171`.
+- Pixel vibrator-manager evidence attributes the app to `usage: MEDIA`, with finished (not `ignored_for_settings`) bite pulses `70 ms` / `0.85` and `105 ms` / `0.95` at `22:15:00`, hook `55 ms` / `0.60` at `22:15:09`, and later fight/cadence cues including `38 ms` / `0.30` and `62 ms` / `0.58`. Adjacent cadence entries may be superseded as expected.
+
+This validates installed-package delivery, real sensor calibration/cast/hook markers, and Pixel haptic playback routing. The user has not explicitly confirmed subjective haptic strength or feel. The final observed window was the launcher while the app PID remained alive; foreground visuals, UMP/AdMob banner geometry, touch comfort, lifecycle, and performance remain unvalidated.
