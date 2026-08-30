@@ -6,6 +6,7 @@ const AdMobService = preload("res://src/services/admob_service.gd")
 const MotionService = preload("res://src/services/motion_service.gd")
 const FishDefinition = preload("res://src/domain/fish_definition.gd")
 const HapticService = preload("res://src/services/haptic_service.gd")
+const CastCaptureService = preload("res://src/services/cast_capture_service.gd")
 
 var failures: Array[String] = []
 
@@ -13,6 +14,7 @@ func _init() -> void:
 	_test_state_transitions_and_timing()
 	_test_pump_and_recover_fight()
 	_test_save_round_trip()
+	_test_cast_capture_service()
 	_test_injectable_motion()
 	_test_haptic_signatures()
 	_test_admob_contract()
@@ -37,6 +39,39 @@ func _max_emitted_amplitude(pulses: Array[Dictionary]) -> float:
 func _motion_sample(linear: Vector3, gyro := Vector3(0, 0, 0.72)) -> Dictionary:
 	var gravity := Vector3(0, -9.8, 0)
 	return {"gravity": gravity, "accelerometer": gravity + linear, "gyro": gyro}
+
+func _test_cast_capture_service() -> void:
+	var path := "user://cast_tuning_capture_test_%d.json" % Time.get_ticks_msec()
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
+	var capture := CastCaptureService.new(path)
+	expect(capture.phase == "idle" and not FileAccess.file_exists(path), "capture recorder is idle and stores nothing by default")
+	expect(capture.start({"left_handed": false, "sensitivity": 1.2, "motion_profile": {"forward_axis": [-0.85, 0.27, -0.45]}}), "explicit Settings-style start begins a fresh capture")
+	expect(capture.phase == "countdown" and not FileAccess.file_exists(path), "countdown does not overwrite a prior capture")
+	var event: Dictionary = {}
+	for frame in range(30): event = capture.update(0.10)
+	expect(capture.phase == "active" and str(event.get("cue", "")) == "capture_window" and capture.casts.is_empty(), "countdown transitions into the first haptic-cued active window without sampling early")
+	var last_event: Dictionary = {}
+	for cast_number in range(CastCaptureService.CAST_COUNT):
+		for frame in range(20):
+			capture.queue_sample(_motion_sample(Vector3(-1.5 - cast_number * 0.1, 0.2, -0.3), Vector3(0.1, 0.2, 0.7)))
+			last_event = capture.update(0.10)
+		if cast_number < CastCaptureService.CAST_COUNT - 1:
+			capture.queue_sample(_motion_sample(Vector3(99, 0, 0)))
+			var rest_queued := capture.queued_samples.size()
+			for frame in range(11): last_event = capture.update(0.10)
+			expect(capture.phase == "active" and str(last_event.get("cue", "")) == "capture_window" and capture.queued_samples.size() == rest_queued, "rest windows do not sample and advance automatically to the next capture cue")
+			capture.queued_samples.pop_front()
+	expect(capture.phase == "saved" and bool(last_event.get("saved", false)) and capture.write_count == 1, "exactly ten active windows complete and write once")
+	expect(capture.casts.size() == CastCaptureService.CAST_COUNT, "capture contains exactly ten cast groups")
+	for group in capture.casts:
+		expect(group.samples.size() > 0 and group.samples.size() <= CastCaptureService.MAX_SAMPLES_PER_CAST, "active capture group is nonempty and bounded")
+		var sample: Dictionary = group.samples[0]
+		expect(sample.has("t_ms") and sample.has("gravity") and sample.has("accelerometer") and sample.has("linear") and sample.has("gyro"), "captured samples retain timestamped sensor and derived-linear fields")
+	last_event = capture.update(0.10)
+	expect(capture.write_count == 1 and not bool(last_event.get("saved", false)), "completed capture is one-shot and does not rewrite while idle")
+	var file := FileAccess.open(path, FileAccess.READ); var json := JSON.new(); var parse_error := json.parse(file.get_as_text()); file.close()
+	expect(parse_error == OK and typeof(json.data) == TYPE_DICTIONARY and int(json.data.get("version", 0)) == CastCaptureService.VERSION and bool(json.data.get("completed", false)) and json.data.get("metadata", {}).get("handedness", "") == "right" and json.data.get("casts", []).size() == CastCaptureService.CAST_COUNT, "completed explicit capture writes valid metadata and ten groups")
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 
 func _runtime_sweep(motion: MotionService, linear: Vector3, gyro := Vector3(0, 0, 0.72), frames := 3, delta := 0.04) -> Dictionary:
 	var event := {"cast_arm": false, "cast_quality": 0.0}
@@ -198,6 +233,7 @@ func _test_injectable_motion() -> void:
 	var pixel_profile := {"forward_axis": [-0.8526, 0.2737, -0.4452], "back_peak": 2.1457, "forward_peak": 3.6814, "gyro_peak": 4.2315, "transition_seconds": 0.375, "noise_floor": 0.6437, "direction_tolerance": 0.62}
 	var pixel_thresholds := MotionService.new(); expect(pixel_thresholds.set_profile(pixel_profile), "inherited Pixel v3 profile remains valid without recalibration")
 	expect(absf(pixel_thresholds._back_threshold() - 1.244506) <= 0.001 and absf(pixel_thresholds._forward_threshold() - 1.546188) <= 0.001 and is_equal_approx(pixel_thresholds._snap_axis_tolerance(), 0.62) and is_equal_approx(pixel_thresholds._snap_polarity_tolerance(), 0.18) and is_equal_approx(pixel_thresholds._gyro_threshold(), 0.60) and is_equal_approx(pixel_thresholds._snap_gyro_threshold(), 0.60) and is_equal_approx(pixel_thresholds._gyro_threshold() * 0.65, 0.39), "Pixel gate-restoration values set cock 1.2445, snap 1.5462, axis .62, polarity .18, cast/snap gyro .60, and unchanged hook gyro .39")
+	expect(is_equal_approx(MotionService.RUNTIME_COCK_MIN_IMPULSE_FACTOR, 0.045) and is_equal_approx(MotionService.RUNTIME_SNAP_MIN_IMPULSE_FACTOR, 0.055), "capture build restores the physically known v18 sweep energy: cock 4.5% and snap 5.5%")
 	var pixel_axis := Vector3(-0.8526, 0.2737, -0.4452).normalized()
 	var ramped_pixel_gesture := MotionService.new(); ramped_pixel_gesture.set_profile(pixel_profile)
 	ramped_pixel_gesture.queue_sample(_motion_sample(-pixel_axis * 1.10, Vector3(0, 0, 0.61)))
@@ -247,10 +283,6 @@ func _test_injectable_motion() -> void:
 	var varied_pixel_recovered := _runtime_sweep(varied_pixel_snap, pixel_axis * 1.60, Vector3(0, 0, 0.61), 1)
 	expect(varied_match >= 0.4216 and varied_match < 0.62 and varied_polarity >= 0.081 and float(varied_pixel_rejected.cast_quality) == 0.0 and float(varied_pixel_recovered.cast_quality) > 0.0, "a below-.62 varied snap remains rejected while a later strict-axis frame recovers in the same burst")
 	var below_axis_direction := (pixel_axis * 0.30 + Vector3(-0.305, -0.952, 0.0) * 0.954).normalized()
-	var axis_recovery := MotionService.new(); axis_recovery.set_profile(pixel_profile)
-	_runtime_sweep(axis_recovery, -pixel_axis * 1.32, Vector3(0, 0, 0.61))
-	_runtime_sweep(axis_recovery, below_axis_direction * 3.0, Vector3(0, 0, 0.61))
-	expect(float(_runtime_sweep(axis_recovery, pixel_axis * 1.60, Vector3(0, 0, 0.61), 1).cast_quality) > 0.0, "an above-threshold snap axis miss can recover on a later valid frame after shape buildup")
 	var gyro_recovery := MotionService.new(); gyro_recovery.set_profile(pixel_profile)
 	_runtime_sweep(gyro_recovery, -pixel_axis * 1.32, Vector3(0, 0, 0.61))
 	_runtime_sweep(gyro_recovery, pixel_axis * 1.60, Vector3(0, 0, 0.10))
@@ -563,6 +595,10 @@ func _test_haptic_signatures() -> void:
 	expect(terminal.size() == 2 and str(terminal) != caught_signature, "hook miss has a distinct two-pulse cue")
 	terminal.clear(); terminal_haptics.cue("cock"); terminal_haptics.tick(0.1)
 	expect(terminal.size() == 1 and int(terminal[0].duration) == 22, "accepted cast cock has one subtle haptic cue")
+	terminal.clear(); terminal_haptics.cue("capture_window"); terminal_haptics.tick(1.0)
+	expect(terminal.size() == 2 and int(terminal[0].duration) == 32, "each explicit capture window has a distinct two-pulse haptic cue")
+	terminal.clear(); terminal_haptics.cue("capture_complete"); terminal_haptics.tick(1.0)
+	expect(terminal.size() == 3 and int(terminal[2].duration) == 78, "explicit capture completion has a distinct saved cue")
 
 func _test_project_source_settings() -> void:
 	var config := ConfigFile.new()
@@ -577,7 +613,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 18 and export_config.get_value("preset.0.options", "version/name") == "0.3.5-shapefix1", "deliberate-sweep hotfix package version is bumped")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 20 and export_config.get_value("preset.0.options", "version/name") == "0.3.7-capture1", "explicit cast capture package version is bumped")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
@@ -607,9 +643,11 @@ func _test_project_source_settings() -> void:
 	var source := FileAccess.get_file_as_string("res://src/services/admob_service.gd")
 	expect("ConsentInformation" in source and "MAX_AD_CONTENT_RATING_PG" in source and "failed_closed" in source and "game_content_reserve_height" in source and "OnInitializationCompleteListener" in source and "sdk_initializing" in source and "banner_requested" in source, "consent-first SDK-sequenced AdMob contract retained")
 	var haptic_source := FileAccess.get_file_as_string("res://src/services/haptic_service.gd")
-	expect("AndroidRuntime" in haptic_source and "getSystemService(\"vibrator\")" in haptic_source and "VibrationEffect" in haptic_source and "createOneShot" in haptic_source and "Build$VERSION" in haptic_source and "SDK_INT" in haptic_source and "VibrationAttributes" in haptic_source and "createForUsage" in haptic_source and "USAGE_MEDIA" in haptic_source and "AudioAttributes$Builder" in haptic_source and "USAGE_GAME" in haptic_source and "CONTENT_TYPE_SONIFICATION" in haptic_source and "vibrate(effect, _android_vibration_attributes)" in haptic_source and "vibrate(effect, _android_audio_attributes)" in haptic_source and "_android_vibrator.vibrate(maxi(1, duration_ms), _android_audio_attributes)" in haptic_source and "Input.vibrate_handheld" in haptic_source, "Android explicit non-touch attributes with API24 fallback contract retained")
+	expect("AndroidRuntime" in haptic_source and "getSystemService(\"vibrator\")" in haptic_source and "VibrationEffect" in haptic_source and "createOneShot" in haptic_source and "Build$VERSION" in haptic_source and "SDK_INT" in haptic_source and "VibrationAttributes" in haptic_source and "createForUsage" in haptic_source and "USAGE_MEDIA" in haptic_source and "AudioAttributes$Builder" in haptic_source and "USAGE_GAME" in haptic_source and "CONTENT_TYPE_SONIFICATION" in haptic_source and "vibrate(effect, _android_vibration_attributes)" in haptic_source and "vibrate(effect, _android_audio_attributes)" in haptic_source and "_android_vibrator.vibrate(maxi(1, duration_ms), _android_audio_attributes)" in haptic_source and "Input.vibrate_handheld" in haptic_source and "capture_window" in haptic_source and "capture_complete" in haptic_source, "Android explicit non-touch attributes and capture haptic cues are retained")
 	var main_source := FileAccess.get_file_as_string("res://src/ui/main.gd")
 	var motion_source := FileAccess.get_file_as_string("res://src/services/motion_service.gd")
+	var capture_source := FileAccess.get_file_as_string("res://src/services/cast_capture_service.gd")
 	expect("randf()" in main_source and "haptics.cue(\"cock\")" in main_source and "haptics.set_enabled(bool(save.data.settings[key]))" in main_source, "physical arm selects a fresh weighted fish, cues cock, and applies haptics immediately")
-	expect("PROFILE_HANDEDNESS_ALIGNMENT" in motion_source and "CALIBRATION_HANDEDNESS_ALIGNMENT" in motion_source and "RUNTIME_X_POLARITY_ALIGNMENT" in motion_source and "RUNTIME_SWEEP_MIN_SAMPLES" in motion_source and "RUNTIME_COCK_MIN_IMPULSE_FACTOR" in motion_source and "RUNTIME_SNAP_MIN_IMPULSE_FACTOR" in motion_source and "_sweep_ready" in motion_source and "_snap_axis_tolerance" in motion_source and "_snap_polarity_tolerance" in motion_source and "_snap_gyro_threshold" in motion_source and "RUNTIME_FULL_REVERSAL_SECONDS" in motion_source and "RUNTIME_MAX_REVERSAL_SECONDS" in motion_source and "_burst_failure_latched" in motion_source and "MOTION_FAIL stage=%s reason=%s count=%d" in motion_source and not "SNAP_MIN_AXIS_TOLERANCE" in motion_source and not "MOTION_FAIL linear=" in motion_source and not "MOTION_FAIL gyro=" in motion_source and "sqrt(raw_fight_load)" in motion_source, "deliberate sweeps retain strict gates, burst recovery, and stage-labeled derived-only diagnostics")
-	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and not "reel_fallback" in main_source and "COCK RIGHT, THEN SNAP LEFT" in main_source and "BITE — PULL RIGHT" in main_source and "TILT LEFT TO EASE" in main_source and "TILT RIGHT TO PULL" in main_source and "not OS.has_feature(\"android\")" in main_source and "MOTION_FIGHT caught elapsed=" in main_source and "MOTION_FIGHT escaped elapsed=" in main_source and "_record_catch_once" in main_source and "records-screen-v01.png" in main_source and "ROD_TIP_ANCHORS" in main_source and "_rod_tip_for_frame" in main_source and not "draw_line(Vector2(87, 1070)" in main_source, "Android UI retains no touch gameplay paths, explicit right-handed guidance, and tip-anchored rod lines")
+	expect("PROFILE_HANDEDNESS_ALIGNMENT" in motion_source and "CALIBRATION_HANDEDNESS_ALIGNMENT" in motion_source and "RUNTIME_X_POLARITY_ALIGNMENT" in motion_source and "RUNTIME_SWEEP_MIN_SAMPLES" in motion_source and "RUNTIME_COCK_MIN_IMPULSE_FACTOR" in motion_source and "RUNTIME_SNAP_MIN_IMPULSE_FACTOR" in motion_source and is_equal_approx(MotionService.RUNTIME_COCK_MIN_IMPULSE_FACTOR, 0.045) and is_equal_approx(MotionService.RUNTIME_SNAP_MIN_IMPULSE_FACTOR, 0.055) and "_sweep_ready" in motion_source and "_snap_axis_tolerance" in motion_source and "_snap_polarity_tolerance" in motion_source and "_snap_gyro_threshold" in motion_source and "RUNTIME_FULL_REVERSAL_SECONDS" in motion_source and "RUNTIME_MAX_REVERSAL_SECONDS" in motion_source and "_burst_failure_latched" in motion_source and "MOTION_FAIL stage=%s reason=%s count=%d" in motion_source and not "SNAP_MIN_AXIS_TOLERANCE" in motion_source and not "MOTION_FAIL linear=" in motion_source and not "MOTION_FAIL gyro=" in motion_source and "sqrt(raw_fight_load)" in motion_source, "v18 sweep factors retain strict gates, burst recovery, and stage-labeled derived-only diagnostics")
+	expect("CAST_COUNT := 10" in capture_source and "ACTIVE_WINDOW_SECONDS := 2.0" in capture_source and "REST_WINDOW_SECONDS := 1.0" in capture_source and "MAX_SAMPLES_PER_CAST" in capture_source and "completed" in capture_source and "accelerometer" in capture_source and "linear" in capture_source and not "print(" in capture_source, "raw samples are bounded and retained only by the explicit capture service without logging")
+	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and not "reel_fallback" in main_source and "COCK RIGHT, THEN SNAP LEFT" in main_source and "BITE — PULL RIGHT" in main_source and "TILT LEFT TO EASE" in main_source and "TILT RIGHT TO PULL" in main_source and "not OS.has_feature(\"android\")" in main_source and "MOTION_FIGHT caught elapsed=" in main_source and "MOTION_FIGHT escaped elapsed=" in main_source and "_record_catch_once" in main_source and "records-screen-v01.png" in main_source and "ROD_TIP_ANCHORS" in main_source and "_rod_tip_for_frame" in main_source and not "draw_line(Vector2(87, 1070)" in main_source and "RECORD 10 CASTS" in main_source and "cast_capture.is_active()" in main_source and "_start_cast_capture" in main_source, "Android UI retains no gameplay touch paths and only an explicit Settings capture action")

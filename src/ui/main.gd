@@ -5,6 +5,7 @@ const MotionService = preload("res://src/services/motion_service.gd")
 const SaveService = preload("res://src/services/save_service.gd")
 const AdMobService = preload("res://src/services/admob_service.gd")
 const HapticService = preload("res://src/services/haptic_service.gd")
+const CastCaptureService = preload("res://src/services/cast_capture_service.gd")
 const FishDefinition = preload("res://src/domain/fish_definition.gd")
 
 var session: FishingSession
@@ -12,6 +13,7 @@ var motion: MotionService
 var save: SaveService
 var ads: AdMobService
 var haptics: HapticService
+var cast_capture: CastCaptureService
 var prior_state := -1
 var view: FishingView
 var capture_path := ""
@@ -32,7 +34,7 @@ var splash_texture: Texture2D = load("res://art/ui_v1/runtime_source/loading-spl
 var records_texture: Texture2D = load("res://art/ui_v1/runtime_source/records-screen-v01.png")
 
 func _ready() -> void:
-	session = FishingSession.new(); motion = MotionService.new(); save = SaveService.new(); ads = AdMobService.new(); haptics = HapticService.new()
+	session = FishingSession.new(); motion = MotionService.new(); save = SaveService.new(); ads = AdMobService.new(); haptics = HapticService.new(); cast_capture = CastCaptureService.new(CastCaptureService.PATH, Callable(motion, "sample"))
 	save.load_data(); motion.sensitivity = float(save.data.settings.get("sensitivity", 1.0)); motion.left_handed = bool(save.data.settings.get("left_handed", false)); session.set_location(str(save.data.get("selected_location_id", "pine_lake")), 0.0)
 	if not motion.set_profile(save.data.get("motion_profile", {})): motion.begin_calibration()
 	ads.initialize(); haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
@@ -48,6 +50,14 @@ func _process(delta: float) -> void:
 		loading_elapsed += delta
 		if loading_elapsed >= 1.0: loading_active = false
 		view.queue_redraw(); return
+	if cast_capture.is_active():
+		var capture_event := cast_capture.update(delta)
+		var capture_cue := str(capture_event.get("cue", ""))
+		if capture_cue != "": haptics.cue(capture_cue)
+		haptics.tick(delta)
+		if bool(capture_event.get("saved", false)): view.overlay = "capture_saved"
+		else: view.overlay = "capture"
+		view.queue_redraw(); return
 	if view.overlay == "calibration":
 		var calibration_event := motion.update(delta, false, false)
 		if bool(calibration_event.get("calibration_tick", false)): haptics.cue("calibration_tick")
@@ -57,7 +67,8 @@ func _process(delta: float) -> void:
 			print("MOTION_PROFILE_SAVED forward_peak=%.2f back_peak=%.2f transition=%.2f" % [float(profile.forward_peak), float(profile.back_peak), float(profile.transition_seconds)])
 			view.overlay = ""
 		view.queue_redraw(); return
-	if view.overlay in ["settings", "records", "locations", "diagnostics"]: view.queue_redraw(); return
+	if view.overlay == "capture_saved": haptics.tick(delta); view.queue_redraw(); return
+	if view.overlay in ["settings", "records", "locations", "diagnostics", "capture"]: view.queue_redraw(); return
 	var motion_event := motion.update(delta, session.state in [FishingSession.State.READY, FishingSession.State.CAST_ARMED], session.state == FishingSession.State.HOOK_WINDOW, session.state == FishingSession.State.REELING)
 	if session.state == FishingSession.State.READY and bool(motion_event.get("cast_arm", false)): _arm_cast()
 	if session.state == FishingSession.State.CAST_ARMED and float(motion_event.get("cast_quality", 0.0)) > 0.0: _cast(float(motion_event.cast_quality))
@@ -109,6 +120,12 @@ func _reset_session() -> void:
 	session.reset(); caught_recorded = false; haptics.stop(); prior_state = session.state; motion.reset_gesture(); motion.reset_fight()
 func _start_motion_recalibration() -> void:
 	motion.begin_calibration(); save.data.calibrated = false; save.data.motion_profile = {}; save.save_data(); view.overlay = "calibration"
+func _start_cast_capture() -> void:
+	var settings: Dictionary = save.data.settings
+	var metadata := {"left_handed": bool(settings.get("left_handed", false)), "sensitivity": float(settings.get("sensitivity", 1.0)), "motion_profile": motion.get_profile()}
+	if cast_capture.start(metadata):
+		haptics.cue("capture_countdown")
+		view.overlay = "capture"
 func _desktop_fallbacks_enabled() -> bool: return not OS.has_feature("android")
 func _toggle_setting(key: String) -> void:
 	if key == "left_handed":
@@ -184,6 +201,7 @@ class FishingView extends Control:
 		elif overlay == "records": _draw_records()
 		elif overlay == "locations": _draw_locations()
 		elif overlay == "diagnostics": _draw_diagnostics()
+		elif overlay == "capture" or overlay == "capture_saved": _draw_cast_capture()
 	func _draw_lake_motion(s: FishingSession) -> void:
 		var reduced := bool(controller.save.data.settings.get("reduced_motion", false))
 		var wave := 0.0 if reduced else sin(controller.ui_time * 2.2) * 5.0
@@ -264,12 +282,23 @@ class FishingView extends Control:
 	func _draw_settings() -> void:
 		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.88)); draw_style_box(_panel_style(Color("eaf2dc"), Color("fff6c5")), Rect2(55, 150, 610, 960)); _text("SETTINGS", Vector2(243, 240), 34, Color("173a48")); var settings: Dictionary = controller.save.data.settings
 		_text("Sensitivity: %.1f  (tap row)" % float(settings.sensitivity), Vector2(120, 330), 23, Color("173a48")); _text("Haptics: %s" % ("ON" if settings.haptics else "OFF"), Vector2(120, 400), 23, Color("173a48")); _text("Audio: %s" % ("ON" if settings.audio else "OFF"), Vector2(120, 470), 23, Color("173a48")); _text("Reduced motion: %s" % ("ON" if settings.reduced_motion else "OFF"), Vector2(120, 540), 23, Color("173a48")); _text("Handedness: %s" % ("LEFT" if settings.left_handed else "RIGHT"), Vector2(120, 610), 23, Color("173a48"))
-		draw_style_box(_panel_style(Color("dce7d0"), Color("8ab5a9")), Rect2(110, 650, 500, 58)); _text("RECALIBRATE MOTION", Vector2(193, 689), 20, Color("173a48")); _text("MOTION DIAGNOSTICS", Vector2(202, 758), 20, Color("173a48")); _text("PICK LOCATION", Vector2(232, 827), 20, Color("173a48")); _text("Tap title to close", Vector2(247, 965), 18, Color("416b72"))
+		draw_style_box(_panel_style(Color("dce7d0"), Color("8ab5a9")), Rect2(110, 650, 500, 58)); _text("RECALIBRATE MOTION", Vector2(193, 689), 20, Color("173a48")); _text("RECORD 10 CASTS", Vector2(223, 758), 20, Color("173a48")); _text("MOTION DIAGNOSTICS", Vector2(202, 827), 20, Color("173a48")); _text("PICK LOCATION", Vector2(232, 896), 20, Color("173a48")); _text("Tap title to close", Vector2(247, 1010), 18, Color("416b72"))
+	func _draw_cast_capture() -> void:
+		var data: Dictionary = controller.cast_capture.status()
+		var done := int(data.get("cast_index", 0))
+		var phase := str(data.get("phase", "idle"))
+		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.90)); draw_style_box(_panel_style(Color("eff3dc"), Color("fff6c5")), Rect2(54, 330, 612, 490)); _text("CAST TUNING CAPTURE", Vector2(142, 412), 30, Color("173a48"))
+		if phase == "saved":
+			_text("10 CASTS SAVED", Vector2(210, 505), 29, Color("1e665d")); _text("Raw trace is stored only for this", Vector2(155, 558), 20, Color("416b72")); _text("explicit capture. Tap title to return.", Vector2(135, 592), 20, Color("416b72")); return
+		var copy := "GET READY — WINDOWS BEGIN SOON"
+		if phase == "active": copy = "CAST NOW — COCK, THEN SNAP"
+		elif phase == "rest": copy = "REST — NEXT WINDOW WILL VIBRATE"
+		_text("CAST %d OF %d" % [min(done + 1, CastCaptureService.CAST_COUNT), CastCaptureService.CAST_COUNT], Vector2(248, 488), 24, Color("2c6876")); _text(copy, Vector2(118, 554), 22, Color("173a48")); _text("No taps needed. Gameplay is paused.", Vector2(170, 624), 19, Color("416b72")); _text("Each active window is haptic-cued.", Vector2(168, 658), 19, Color("416b72"))
 	func _draw_locations() -> void:
 		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.88)); draw_style_box(_panel_style(Color("eaf2dc"), Color("fff6c5")), Rect2(55, 310, 610, 480)); _text("CHOOSE WATER", Vector2(190, 395), 32, Color("173a48")); _text("PINE LAKE", Vector2(240, 495), 27, Color("173a48")); _text("Bluegill • Bass • Catfish", Vector2(185, 530), 17, Color("416b72")); _text("CEDAR RIVER", Vector2(220, 630), 27, Color("173a48")); _text("Trout • Smallmouth • Pike", Vector2(180, 665), 17, Color("416b72")); _text("Tap title to return", Vector2(245, 744), 18, Color("416b72"))
 	func _draw_diagnostics() -> void:
 		var data: Dictionary = controller.motion.get_diagnostics(); var reasons: Dictionary = data.reasons
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.88)); draw_style_box(_panel_style(Color("eaf2dc"), Color("fff6c5")), Rect2(55, 300, 610, 590)); _text("MOTION DIAGNOSTICS", Vector2(150, 390), 30, Color("173a48")); _text("Cock attempts: %d" % int(data.cock_attempts), Vector2(125, 465), 21, Color("173a48")); _text("Completed casts: %d" % int(data.completed_casts), Vector2(125, 510), 21, Color("173a48")); _text("Hook attempts: %d" % int(data.hook_attempts), Vector2(125, 555), 21, Color("173a48")); _text("Fails L/A/P/G/T: %d / %d / %d / %d / %d" % [int(reasons.linear), int(reasons.axis), int(reasons.polarity), int(reasons.gyro), int(reasons.timeout)], Vector2(82, 620), 18, Color("416b72")); _text("Derived counts only — no sensor trace stored.", Vector2(106, 694), 17, Color("416b72")); _text("Tap title to return", Vector2(245, 810), 18, Color("416b72"))
+		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.88)); draw_style_box(_panel_style(Color("eaf2dc"), Color("fff6c5")), Rect2(55, 300, 610, 590)); _text("MOTION DIAGNOSTICS", Vector2(150, 390), 30, Color("173a48")); _text("Cock attempts: %d" % int(data.cock_attempts), Vector2(125, 465), 21, Color("173a48")); _text("Completed casts: %d" % int(data.completed_casts), Vector2(125, 510), 21, Color("173a48")); _text("Hook attempts: %d" % int(data.hook_attempts), Vector2(125, 555), 21, Color("173a48")); _text("Fails L/A/P/G/T: %d / %d / %d / %d / %d" % [int(reasons.linear), int(reasons.axis), int(reasons.polarity), int(reasons.gyro), int(reasons.timeout)], Vector2(82, 620), 18, Color("416b72")); _text("Derived counts only. Raw traces exist only after", Vector2(92, 694), 17, Color("416b72")); _text("an explicit RECORD 10 CASTS session.", Vector2(132, 722), 17, Color("416b72")); _text("Tap title to return", Vector2(245, 810), 18, Color("416b72"))
 	func _draw_records() -> void:
 		if controller.records_texture: draw_texture_rect(controller.records_texture, Rect2(0, 0, 720, 1280), false)
 		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.09, 0.12, 0.12))
@@ -293,7 +322,10 @@ class FishingView extends Control:
 		if event is InputEventScreenTouch or event is InputEventMouseButton:
 			if bool(event.pressed): _handle_press(event.position * Vector2(720.0 / size.x, 1280.0 / size.y))
 	func _handle_press(pos: Vector2) -> void:
-		if overlay == "calibration": return
+		if overlay == "calibration" or overlay == "capture": return
+		if overlay == "capture_saved":
+			if pos.y < 270: overlay = "settings"
+			return
 		if overlay == "records":
 			if pos.y < 130: overlay = ""
 			return
@@ -310,8 +342,9 @@ class FishingView extends Control:
 			elif pos.y < 570: controller._toggle_setting("reduced_motion")
 			elif pos.y < 640: controller._toggle_setting("left_handed")
 			elif pos.y < 720: controller._start_motion_recalibration()
-			elif pos.y < 790: overlay = "diagnostics"
-			elif pos.y < 860: overlay = "locations"
+			elif pos.y < 790: controller._start_cast_capture()
+			elif pos.y < 860: overlay = "diagnostics"
+			elif pos.y < 930: overlay = "locations"
 			return
 		if settings_rect.has_point(pos) and controller._can_open_journal(): overlay = "settings"; return
 		if journal_rect.has_point(pos) and controller._can_open_journal(): overlay = "records"; return

@@ -57,3 +57,15 @@ The user authorized generation and integration of this first ImageGen UI pass. H
 - Implemented for the next build: runtime cock and snap now need a deliberate three-sample, capped-time directional impulse sweep before their unchanged strict final gates may recognize; hook remains a quick one-frame gesture.
 - Signed v18 `0.3.5-shapefix1` is exported, audited, installed, and cold-launched on the paired Pixel 9 Pro. VIBRATE is granted and the scoped startup log has no fatal, script, parse, SIGSEGV, or crash marker.
 - Still pending: physical v18 cast recognition, distance, and comfort validation. No device-feel claim is made for this follow-up.
+
+## Sweep-energy tuning follow-up checkpoint
+
+- Physical v18 feedback: casts remain a little too easy despite the three-sample shape gate.
+- Implemented for the next build: retain all v17 gates, v18 shape parameters, timing, recovery, handedness, hook, and fight behavior while raising only the cock/snap impulse factors from `4.5%` / `5.5%` to `5.5%` / `7.0%`.
+- Physical v19 feedback after installation: the higher impulse factors are too hard, so they are superseded by the proven v18 factors below. No broader comfort or haptic-feel claim is made for that check.
+
+## Explicit ten-cast capture checkpoint
+
+- Implemented for the next build: restore v18's `4.5%` / `5.5%` runtime sweep energy and add one Settings-only `RECORD 10 CASTS` workflow. After its countdown, ten automatic 2-second haptic-cued windows collect bounded raw gravity, accelerometer, derived-linear, and gyro samples; normal diagnostics remain derived-only.
+- Signed v20 `0.3.7-capture1` is exported, audited, installed, and cold-launched on the paired Pixel 9 Pro. VIBRATE is granted, the scoped startup log has no fatal/script/parse/SIGSEGV/crash marker, and no raw trace exists before explicit capture starts.
+- Still pending: the completed explicit capture file must be retrieved and reviewed before any further recognition tuning; no physical v20 recognition, distance, or comfort claim is made.
