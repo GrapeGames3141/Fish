@@ -1,7 +1,10 @@
 .godot/
 .godot-task-cache/
-build/
-android/build/
+/build/
+android/build/.gradle/
+android/build/build/
+android/build/.cxx/
+android/build/outputs/
 android/.gradle/
 reports/runtime/*.log
 *.tmp

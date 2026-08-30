@@ -6,3 +6,5 @@
 | Sensor/haptic runtime | Motion adapter and haptic calls | Requires physical Android validation |
 | Native AdMob | Pinned adapter + test ID + zero-reserve contract | Requires export/device + UMP validation |
 | Concept direction | `concepts/gate1/pine-lake-reel-concept-v01.png` | Pending human approval |
+| Portrait greybox captures | `screenshots/selected/gate1-{ready,reeling,caught,synthetic-reserve}.png` | Reviewed, code-native Gate 1 evidence |
+| Android export/device | Local export attempt and process log | Physical device and final export validation pending |

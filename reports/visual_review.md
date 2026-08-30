@@ -1,3 +1,3 @@
 # Visual Review — Gate 1
 
-Pending deterministic capture. Review original 720×1280 output for text contrast, cast/reel reachability, tension visibility, catch/escape hierarchy, and synthetic-reserve clearance. The synthetic reserve is explicitly not native AdMob geometry. Human visual-direction approval is pending.
+Four selected original 720×1280 captures were inspected: `gate1-ready.png`, `gate1-reeling.png`, `gate1-caught.png`, and `gate1-synthetic-reserve.png`. They confirm readable cream/dark-teal hierarchy, a large bottom cast target, a central circular reel plus tension meter, the catch-card state, and a clearly labeled 88px synthetic stress overlay. The synthetic overlay is explicitly not native AdMob geometry. These code-native greybox captures do not approve production art, real native-banner layout, sensor feel, or physical-device haptics. Human visual-direction approval remains pending.
