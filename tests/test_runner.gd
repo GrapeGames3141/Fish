@@ -11,7 +11,7 @@ var failures: Array[String] = []
 
 func _init() -> void:
 	_test_state_transitions_and_timing()
-	_test_reel_geometry_and_tension()
+	_test_pump_and_recover_fight()
 	_test_save_round_trip()
 	_test_injectable_motion()
 	_test_haptic_signatures()
@@ -27,6 +27,12 @@ func _init() -> void:
 
 func expect(value: bool, message: String) -> void:
 	if not value: failures.append(message)
+
+func _max_emitted_amplitude(pulses: Array[Dictionary]) -> float:
+	var maximum := 0.0
+	for pulse in pulses:
+		maximum = maxf(maximum, float(pulse.amplitude))
+	return maximum
 
 func _motion_sample(linear: Vector3, gyro := Vector3(0, 0, 0.72)) -> Dictionary:
 	var gravity := Vector3(0, -9.8, 0)
@@ -59,15 +65,29 @@ func _test_state_transitions_and_timing() -> void:
 	game.reset(); game.arm_cast(); game.release_cast(0.4); game.tick(game.fish.bite_delay_seconds + 0.01); game.tick(0.01); game.tick(FishingSession.HOOK_WINDOW_SECONDS + 0.1)
 	expect(game.state == FishingSession.State.ESCAPED, "hook timeout escapes")
 
-func _test_reel_geometry_and_tension() -> void:
+func _test_pump_and_recover_fight() -> void:
 	var game = FishingSession.new()
 	game.state = FishingSession.State.REELING
-	expect(not game.add_reel_turns(-0.3, 0.1), "counterclockwise turns are ignored")
-	game.add_reel_turns(0.5, 0.1)
-	expect(game.reel_progress > 0.0, "clockwise turns advance catch")
-	game.tension = 0.96
-	game.tick(FishingSession.RED_ESCAPE_SECONDS + 0.05)
-	expect(game.state == FishingSession.State.ESCAPED, "red tension has 1.25s escape")
+	game.tension = 0.40
+	game.set_rod_load(1.0)
+	game.tick(0.8)
+	var raised_tension: float = game.tension
+	game.lower_rod()
+	game.tick(0.8)
+	expect(game.tension < raised_tension, "lowering the rod actively relieves tension")
+	var progress_before: float = game.fight_progress
+	expect(game.complete_pull() and game.fight_progress > progress_before, "one lowered-then-pull sequence advances fight progress")
+	var progress_after_pull: float = game.fight_progress
+	expect(not game.complete_pull() and is_equal_approx(game.fight_progress, progress_after_pull), "repeated pull without lowering is rejected")
+	var red_game = FishingSession.new(); red_game.state = FishingSession.State.REELING; red_game.tension = 0.96; red_game.set_rod_load(1.0)
+	red_game.tick(FishingSession.RED_ESCAPE_SECONDS + 0.1)
+	expect(red_game.state == FishingSession.State.ESCAPED, "raised holding pressure can still escape at red tension")
+	var nominal = FishingSession.new(); nominal.state = FishingSession.State.REELING
+	for cycle in range(9):
+		nominal.set_rod_load(0.0); nominal.lower_rod(); nominal.tick(0.75)
+		nominal.set_rod_load(0.62); nominal.tick(0.75)
+		nominal.complete_pull()
+	expect(nominal.state == FishingSession.State.CAUGHT and nominal.fight_elapsed >= FishingSession.MIN_LANDING_SECONDS and nominal.fight_elapsed <= 20.0, "nine controlled lower-pull cycles land Bluegill in the 10–20 second target")
 
 func _test_save_round_trip() -> void:
 	var path := "user://gate1-test-%d.json" % Time.get_ticks_usec()
@@ -148,6 +168,24 @@ func _test_injectable_motion() -> void:
 	var easier_back := motion.update(0.01, true, false)
 	expect(easier_back.cast_arm, "larger sensitivity lowers learned motion thresholds")
 
+	var fight_motion := _calibrated_motion()
+	fight_motion.begin_fight(Vector3(0, -9.8, 0))
+	fight_motion.queue_sample(_motion_sample(Vector3.ZERO, Vector3(0, 0, 0.5)))
+	var shake := fight_motion.update(0.25, false, false, true)
+	expect(not shake.fight_lower and not shake.fight_pull, "holding or off-axis gyro shake does not advance the fight")
+	fight_motion.queue_sample({"gravity": Vector3(0, -8.0, 4.8), "accelerometer": Vector3(0, -8.0, 4.8), "gyro": Vector3(0, 0, 0.05)})
+	var no_gyro := fight_motion.update(0.25, false, false, true)
+	expect(not no_gyro.fight_lower, "lower pose without gyro corroboration is rejected")
+	fight_motion.queue_sample({"gravity": Vector3(0, -8.0, 4.8), "accelerometer": Vector3(0, -8.0, 4.8), "gyro": Vector3(0, 0, 0.5)})
+	var lowered := fight_motion.update(0.25, false, false, true)
+	expect(lowered.fight_lower and lowered.fight_phase == "PULL BACK" and float(lowered.fight_load) <= 0.1, "first deliberate lower captures a relief reference")
+	fight_motion.queue_sample(_motion_sample(Vector3.ZERO, Vector3(0, 0, 0.5)))
+	var pulled := fight_motion.update(0.25, false, false, true)
+	expect(pulled.fight_pull and pulled.fight_phase == "LOWER ROD" and float(pulled.fight_load) >= 0.9, "returning to pull pose completes one physical pull")
+	fight_motion.queue_sample(_motion_sample(Vector3.ZERO, Vector3(0, 0, 0.5)))
+	var repeated_pull := fight_motion.update(0.25, false, false, true)
+	expect(not repeated_pull.fight_pull, "repeated pull without another lower is rejected")
+
 func _test_admob_contract() -> void:
 	var ads = AdMobService.new()
 	ads.initialize()
@@ -211,6 +249,10 @@ func _test_haptic_signatures() -> void:
 		red_haptics.update_fight(0.05, FishDefinition.all_planned()[2], 0.95)
 	expect(red_haptics.warning_tier == "red" and red_fired.size() >= 10 and int(red_fired[0].duration) == 90, "red warning repeats on its universal cadence")
 	expect(red_fired.size() > high_fired.size(), "red warning cadence is faster than high across fish")
+	var normal_max := _max_emitted_amplitude(fired)
+	var high_max := _max_emitted_amplitude(high_fired)
+	var red_max := _max_emitted_amplitude(red_fired)
+	expect(normal_max < high_max and high_max < red_max and bluegill.fight_cycle_seconds > HapticService.HIGH_WARNING_CYCLE_SECONDS and HapticService.HIGH_WARNING_CYCLE_SECONDS > HapticService.RED_WARNING_CYCLE_SECONDS, "emitted haptic amplitude rises and warning interval shortens from normal to high to red")
 
 	var reset_fired: Array[Dictionary] = []
 	var reset_haptics := HapticService.new(func(duration, amplitude): reset_fired.append({"duration": duration, "amplitude": amplitude}))
@@ -268,7 +310,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 5 and export_config.get_value("preset.0.options", "version/name") == "0.1.4-gate1", "debug package version is bumped")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 6 and export_config.get_value("preset.0.options", "version/name") == "0.1.5-gate1", "debug package version is bumped")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
@@ -279,4 +321,4 @@ func _test_project_source_settings() -> void:
 	var haptic_source := FileAccess.get_file_as_string("res://src/services/haptic_service.gd")
 	expect("AndroidRuntime" in haptic_source and "getSystemService(\"vibrator\")" in haptic_source and "VibrationEffect" in haptic_source and "createOneShot" in haptic_source and "Build$VERSION" in haptic_source and "SDK_INT" in haptic_source and "VibrationAttributes" in haptic_source and "createForUsage" in haptic_source and "USAGE_MEDIA" in haptic_source and "AudioAttributes$Builder" in haptic_source and "USAGE_GAME" in haptic_source and "CONTENT_TYPE_SONIFICATION" in haptic_source and "vibrate(effect, _android_vibration_attributes)" in haptic_source and "vibrate(effect, _android_audio_attributes)" in haptic_source and "_android_vibrator.vibrate(maxi(1, duration_ms), _android_audio_attributes)" in haptic_source and "Input.vibrate_handheld" in haptic_source, "Android explicit non-touch attributes with API24 fallback contract retained")
 	var main_source := FileAccess.get_file_as_string("res://src/ui/main.gd")
-	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and "not OS.has_feature(\"android\")" in main_source and "controller.has_reel_angle = false" in main_source, "Android UI has no touch cast/hook controls, keyboard simulation is desktop-only, and release clears controller reel state")
+	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and "not OS.has_feature(\"android\")" in main_source, "Android UI has no touch cast, hook, or reel-drag control and keyboard simulation is desktop-only")

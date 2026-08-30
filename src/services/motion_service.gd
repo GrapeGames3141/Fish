@@ -6,6 +6,10 @@ const MAX_TRANSITION_SECONDS := 1.10
 const MIN_TRANSITION_SECONDS := 0.08
 const GESTURE_COOLDOWN_SECONDS := 0.32
 const PROFILE_EXAMPLES := 2
+const FIGHT_LOWER_TRAVEL_DEGREES := 14.0
+const FIGHT_PULL_CLOSE_DEGREES := 8.0
+const FIGHT_MIN_TRANSITION_SECONDS := 0.20
+const FIGHT_GYRO_MINIMUM := 0.20
 
 var sensitivity := 1.0
 var sample_provider: Callable
@@ -24,6 +28,13 @@ var _back_gyro_peak := 0.0
 var _noise_peak := 0.0
 var _simulated_cast_pending := false
 var _simulated_hook_pending := false
+var fight_phase := ""
+var fight_load := 0.0
+var _fight_active := false
+var _fight_pull_reference := Vector3.ZERO
+var _fight_lower_reference := Vector3.ZERO
+var _fight_transition_elapsed := 0.0
+var _last_gravity := Vector3.ZERO
 
 func _init(custom_provider: Callable = Callable()) -> void:
 	sample_provider = custom_provider
@@ -35,16 +46,18 @@ func sample() -> Dictionary:
 		return sample_provider.call()
 	return {"gravity": Input.get_gravity(), "accelerometer": Input.get_accelerometer(), "gyro": Input.get_gyroscope()}
 
-func update(delta: float, allow_cast: bool, allow_hook: bool) -> Dictionary:
+func update(delta: float, allow_cast: bool, allow_hook: bool, allow_fight: bool = false) -> Dictionary:
 	var reading := _read_once()
 	if calibration_phase != "idle" and calibration_phase != "complete":
 		return _update_calibration(delta, reading)
 	_cooldown_elapsed = maxf(0.0, _cooldown_elapsed - delta)
-	var event := {"cast_arm": false, "cast_quality": 0.0, "hook": false}
+	var event := {"cast_arm": false, "cast_quality": 0.0, "hook": false, "fight_lower": false, "fight_pull": false, "fight_load": fight_load, "fight_phase": fight_phase}
 	if allow_cast:
 		_update_cast(delta, reading, event)
 	if allow_hook:
 		event.hook = _detect_hook(reading)
+	if allow_fight:
+		_update_fight(delta, reading, event)
 	return event
 
 func begin_calibration() -> void:
@@ -86,6 +99,26 @@ func reset_gesture() -> void:
 	_back_gyro_peak = 0.0
 	_noise_peak = 0.0
 
+func begin_fight(pull_gravity: Vector3 = Vector3.ZERO) -> void:
+	var reference := pull_gravity if pull_gravity.length() >= 1.0 else _last_gravity
+	if reference.length() < 1.0:
+		reset_fight()
+		return
+	_fight_active = true
+	_fight_pull_reference = reference.normalized()
+	_fight_lower_reference = Vector3.ZERO
+	_fight_transition_elapsed = 0.0
+	fight_phase = "LOWER ROD"
+	fight_load = 1.0
+
+func reset_fight() -> void:
+	_fight_active = false
+	_fight_pull_reference = Vector3.ZERO
+	_fight_lower_reference = Vector3.ZERO
+	_fight_transition_elapsed = 0.0
+	fight_phase = ""
+	fight_load = 0.0
+
 func queue_sample(value: Dictionary) -> void:
 	queued_samples.append(value)
 
@@ -103,7 +136,37 @@ func _read_once() -> Dictionary:
 	var linear := accelerometer
 	if gravity.length() >= 1.0 and accelerometer.length() >= 1.0:
 		linear = accelerometer - gravity
-	return {"linear": linear, "gyro": gyro}
+	_last_gravity = gravity
+	return {"gravity": gravity, "linear": linear, "gyro": gyro}
+
+func _update_fight(delta: float, reading: Dictionary, event: Dictionary) -> void:
+	if not _fight_active:
+		return
+	var gravity: Vector3 = reading.gravity
+	var gyro: Vector3 = reading.gyro
+	if gravity.length() < 1.0 or _fight_pull_reference.length() < 0.90:
+		return
+	var pose := gravity.normalized()
+	_fight_transition_elapsed += maxf(delta, 0.0)
+	var pull_angle := rad_to_deg(pose.angle_to(_fight_pull_reference))
+	if fight_phase == "LOWER ROD":
+		fight_load = clampf(1.0 - pull_angle / FIGHT_LOWER_TRAVEL_DEGREES, 0.0, 1.0)
+		if pull_angle >= FIGHT_LOWER_TRAVEL_DEGREES and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
+			_fight_lower_reference = pose
+			fight_phase = "PULL BACK"
+			fight_load = 0.0
+			_fight_transition_elapsed = 0.0
+			event.fight_lower = true
+	elif fight_phase == "PULL BACK" and _fight_lower_reference.length() >= 0.90:
+		var lower_angle := rad_to_deg(pose.angle_to(_fight_lower_reference))
+		fight_load = clampf(1.0 - pull_angle / FIGHT_LOWER_TRAVEL_DEGREES, 0.0, 1.0)
+		if pull_angle <= FIGHT_PULL_CLOSE_DEGREES and lower_angle >= FIGHT_LOWER_TRAVEL_DEGREES * 0.55 and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
+			fight_phase = "LOWER ROD"
+			fight_load = 1.0
+			_fight_transition_elapsed = 0.0
+			event.fight_pull = true
+	event.fight_load = fight_load
+	event.fight_phase = fight_phase
 
 func _update_calibration(delta: float, reading: Dictionary) -> Dictionary:
 	var linear: Vector3 = reading.linear

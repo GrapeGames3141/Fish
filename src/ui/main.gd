@@ -13,8 +13,6 @@ var ads: AdMobService
 var haptics: HapticService
 var prior_state := -1
 var view: FishingView
-var last_reel_angle := 0.0
-var has_reel_angle := false
 var capture_path := ""
 var capture_scenario := "ready"
 
@@ -55,19 +53,26 @@ func _process(delta: float) -> void:
 	if view.overlay == "settings":
 		view.queue_redraw()
 		return
-	var motion_event := motion.update(delta, session.state in [FishingSession.State.READY, FishingSession.State.CAST_ARMED], session.state == FishingSession.State.HOOK_WINDOW)
+	var motion_event := motion.update(delta, session.state in [FishingSession.State.READY, FishingSession.State.CAST_ARMED], session.state == FishingSession.State.HOOK_WINDOW, session.state == FishingSession.State.REELING)
 	if session.state == FishingSession.State.READY and bool(motion_event.get("cast_arm", false)):
 		_arm_cast()
 	if session.state == FishingSession.State.CAST_ARMED and float(motion_event.get("cast_quality", 0.0)) > 0.0:
 		_cast(float(motion_event.cast_quality))
 	if session.state == FishingSession.State.HOOK_WINDOW and bool(motion_event.get("hook", false)):
 		_hook()
+	if session.state == FishingSession.State.REELING:
+		session.set_rod_load(float(motion_event.get("fight_load", 0.0)))
+		if bool(motion_event.get("fight_lower", false)) and session.lower_rod():
+			print("MOTION_FIGHT lower tension=%.2f elapsed=%.2f" % [session.tension, session.fight_elapsed])
+		if bool(motion_event.get("fight_pull", false)) and session.complete_pull():
+			print("MOTION_FIGHT pull progress=%.2f tension=%.2f elapsed=%.2f" % [session.fight_progress, session.tension, session.fight_elapsed])
 	session.tick(delta)
 	haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
 	if prior_state != session.state:
 		if session.state == FishingSession.State.BITE: haptics.cue("bite")
 		elif session.state == FishingSession.State.CAUGHT: haptics.cue("caught")
 		elif session.state == FishingSession.State.ESCAPED: haptics.cue("escaped")
+		if session.state in [FishingSession.State.CAUGHT, FishingSession.State.ESCAPED]: motion.reset_fight()
 		prior_state = session.state
 	if session.state == FishingSession.State.REELING:
 		if not haptics.fighting:
@@ -88,7 +93,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("hook_fallback"):
 		_hook()
 	if event.is_action_pressed("reel_fallback") and session.state == FishingSession.State.REELING:
-		session.add_reel_turns(0.24, 0.1)
+		session.lower_rod(); session.complete_pull()
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		view.overlay = "" if view.overlay == "settings" else "settings"
 
@@ -101,7 +106,7 @@ func _cast(quality: float = 0.78) -> void:
 
 func _hook() -> void:
 	if session.set_hook():
-		has_reel_angle = false
+		motion.begin_fight()
 		haptics.cue("hook")
 		haptics.start_fight(session.fish)
 		print("MOTION_HOOK state=REELING")
@@ -115,8 +120,8 @@ func _finish_catch() -> void:
 func _reset_session() -> void:
 	session.reset()
 	haptics.stop(); prior_state = session.state
-	has_reel_angle = false
 	motion.reset_gesture()
+	motion.reset_fight()
 
 func _start_motion_recalibration() -> void:
 	motion.begin_calibration()
@@ -151,7 +156,7 @@ func _apply_capture_scenario() -> void:
 		"bite":
 			session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.HOOK_WINDOW
 		"reeling":
-			session.state = FishingSession.State.REELING; session.reel_progress = 0.48; session.tension = 0.63
+			session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.63
 		"caught":
 			session.state = FishingSession.State.CAUGHT; session.last_reason = "Bluegill landed!"
 		"escaped":
@@ -171,7 +176,6 @@ class FishingView extends Control:
 	var controller: Node
 	var overlay := ""
 	var synthetic_reserve := 0.0
-	var reel_center := Vector2(360, 980)
 	var settings_rect := Rect2(625, 36, 58, 58)
 	var font: Font
 
@@ -205,7 +209,7 @@ class FishingView extends Control:
 		draw_rect(Rect2(0, 1000, 720, 280), Color("153948"))
 		_draw_header()
 		_draw_state_panel()
-		_draw_reel_or_cast()
+		_draw_fight_status()
 		if synthetic_reserve > 0.0:
 			draw_rect(Rect2(0, 1280 - synthetic_reserve, 720, synthetic_reserve), Color("ff2f5f", 0.68))
 			_text("SYNTHETIC OVERLAY STRESS — NOT NATIVE AD", Vector2(72, 1248), 16, Color.WHITE)
@@ -225,7 +229,7 @@ class FishingView extends Control:
 			FishingSession.State.CAST_ARMED: copy = "Armed — snap forward now!"
 			FishingSession.State.LINE_OUT: copy = "Line is out — %.0f m. Watch the bobber." % s.cast_distance_m
 			FishingSession.State.HOOK_WINDOW: copy = "BITE! Cock back to set the hook."
-			FishingSession.State.REELING: copy = "Reel clockwise. Ease off when tension glows red."
+			FishingSession.State.REELING: copy = "%s — lower, then pull back." % controller.motion.fight_phase
 			FishingSession.State.CAUGHT: copy = "BLUEGILL LANDED! Tap the catch card."
 			FishingSession.State.ESCAPED: copy = s.last_reason + " Tap to cast again."
 		draw_style_box(_panel_style(Color("143c4d", 0.92), Color("a9d4ca")), Rect2(55, 165, 610, 104))
@@ -241,23 +245,17 @@ class FishingView extends Control:
 			draw_style_box(_panel_style(Color("713d47"), Color("e8aa90")), Rect2(102, 318, 516, 138))
 			_text("TRY THE RIPPLE AGAIN", Vector2(166, 397), 24, Color("fff1d1"))
 
-	func _draw_reel_or_cast() -> void:
+	func _draw_fight_status() -> void:
 		var s: FishingSession = controller.session
 		if s.state == FishingSession.State.REELING:
-			_draw_reel(s)
-
-	func _draw_reel(s: FishingSession) -> void:
-		draw_circle(reel_center, 146, Color("d3ac5e"))
-		draw_circle(reel_center, 116, Color("253d4a"))
-		draw_arc(reel_center, 90, -PI / 2.0, -PI / 2.0 + TAU * s.reel_progress, 64, Color("78d8ba"), 18, true)
-		draw_circle(reel_center, 34, Color("e2bd68"))
-		for i in 4:
-			var angle := float(i) * TAU / 4.0 + 0.35
-			draw_line(reel_center, reel_center + Vector2(cos(angle), sin(angle)) * 95, Color("e3ca83"), 9)
-		_text("REEL CLOCKWISE", Vector2(222, 1165), 23, Color("fff1c9"))
-		draw_style_box(_panel_style(Color("391f32"), Color("ff8e73")), Rect2(90, 815, 540, 32))
-		draw_rect(Rect2(95, 820, 530 * s.tension, 22), Color("ed665b") if s.tension >= 0.65 else Color("8cd6aa"))
-		_text("TENSION", Vector2(92, 800), 16, Color("f4e7c3"))
+			draw_style_box(_panel_style(Color("203e50"), Color("a9d4ca")), Rect2(95, 900, 530, 155))
+			_text("FIGHT PROGRESS", Vector2(120, 940), 18, Color("f4e7c3"))
+			draw_rect(Rect2(120, 956, 480 * s.fight_progress, 22), Color("78d8ba"))
+			_text(controller.motion.fight_phase, Vector2(212, 1020), 28, Color("fff1c9"))
+			_text("Lower the rod, then pull back smoothly.", Vector2(128, 1045), 17, Color("d0e9d2"))
+			draw_style_box(_panel_style(Color("391f32"), Color("ff8e73")), Rect2(90, 815, 540, 32))
+			draw_rect(Rect2(95, 820, 530 * s.tension, 22), Color("ed665b") if s.tension >= 0.65 else Color("8cd6aa"))
+			_text("TENSION", Vector2(92, 800), 16, Color("f4e7c3"))
 
 	func _draw_calibration() -> void:
 		draw_rect(Rect2(0, 0, 720, 1280), Color(0.04, 0.11, 0.16, 0.88))
@@ -288,14 +286,8 @@ class FishingView extends Control:
 
 	func _gui_input(event: InputEvent) -> void:
 		if event is InputEventScreenTouch or event is InputEventMouseButton:
-			var pressed: bool = bool(event.pressed)
-			var pos: Vector2 = event.position * Vector2(720.0 / size.x, 1280.0 / size.y)
-			if pressed:
-				_handle_press(pos)
-			else:
-				controller.has_reel_angle = false
-		elif event is InputEventScreenDrag or event is InputEventMouseMotion:
-			_handle_drag(event.position * Vector2(720.0 / size.x, 1280.0 / size.y), event.relative.length())
+			if bool(event.pressed):
+				_handle_press(event.position * Vector2(720.0 / size.x, 1280.0 / size.y))
 
 	func _handle_press(pos: Vector2) -> void:
 		if overlay == "calibration":
@@ -309,19 +301,8 @@ class FishingView extends Control:
 			elif pos.y < 810: controller._start_motion_recalibration()
 			return
 		if settings_rect.has_point(pos): overlay = "settings"; return
-		if controller.session.state == FishingSession.State.REELING:
-			controller.has_reel_angle = true
-			controller.last_reel_angle = (pos - reel_center).angle()
-			return
 		if controller.session.state in [FishingSession.State.CAUGHT, FishingSession.State.ESCAPED]:
 			controller._finish_catch(); controller._reset_session(); return
-
-	func _handle_drag(pos: Vector2, distance: float) -> void:
-		if controller.session.state != FishingSession.State.REELING or not controller.has_reel_angle: return
-		var angle := (pos - reel_center).angle()
-		var delta := wrapf(angle - controller.last_reel_angle, -PI, PI)
-		if delta > 0.0: controller.session.add_reel_turns(delta / TAU, maxf(0.016, distance / 700.0))
-		controller.last_reel_angle = angle
 
 	func _panel_style(background: Color, border: Color) -> StyleBoxFlat:
 		var box := StyleBoxFlat.new(); box.bg_color = background; box.border_color = border
