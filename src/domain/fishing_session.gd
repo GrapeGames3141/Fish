@@ -9,7 +9,9 @@ const CATCH_PROGRESS := 1.0
 const MIN_CAST_DISTANCE_M := 8.0
 const MAX_CAST_DISTANCE_M := 40.0
 const MIN_LANDING_SECONDS := 10.0
-const PULL_PROGRESS := 0.12
+const FIGHT_PROGRESS_PER_SECOND := 0.145
+const RAISED_PRESSURE_PER_SECOND := 0.04
+const LOWERING_RELIEF_PER_SECOND := 0.16
 
 var state: int = State.READY
 var fish: FishDefinition = FishDefinition.bluegill()
@@ -20,7 +22,6 @@ var red_elapsed: float = 0.0
 var fight_progress: float = 0.0
 var fight_elapsed: float = 0.0
 var rod_load: float = 0.0
-var lower_ready := false
 var cast_quality: float = 0.0
 var cast_distance_m: float = 0.0
 var last_reason: String = ""
@@ -55,9 +56,16 @@ func tick(delta: float) -> void:
 			escape("The fish spit the hook.")
 	elif state == State.REELING:
 		fight_elapsed += delta
-		var surge := fish.fight_strength * delta * (0.24 + sin(fight_elapsed * 3.1) * 0.16)
-		var raised_pressure := maxf(0.0, rod_load - 0.35) * delta * 0.16
-		var lowering_relief := maxf(0.0, 0.42 - rod_load) * delta * 0.34
+		# Raising/cocking the rod advances the fish continuously. It is deliberately
+		# fast but raises tension; tilting forward/down is a low-load recovery pose.
+		fight_progress = clampf(fight_progress + rod_load * FIGHT_PROGRESS_PER_SECOND * delta, 0.0, CATCH_PROGRESS)
+		if fight_progress >= CATCH_PROGRESS and fight_elapsed >= MIN_LANDING_SECONDS:
+			state = State.CAUGHT
+			last_reason = "Bluegill landed!"
+			return
+		var surge := fish.fight_strength * delta * (0.07 + sin(fight_elapsed * 3.1) * 0.05)
+		var raised_pressure := rod_load * rod_load * delta * (RAISED_PRESSURE_PER_SECOND + fish.fight_strength * 0.015)
+		var lowering_relief := maxf(0.0, 0.45 - rod_load) * delta * LOWERING_RELIEF_PER_SECOND
 		tension = clampf(tension + surge + raised_pressure - lowering_relief, 0.0, 1.0)
 		elapsed += delta
 		if tension >= 0.9:
@@ -75,32 +83,12 @@ func set_hook() -> bool:
 	fight_elapsed = 0.0
 	fight_progress = 0.0
 	rod_load = 1.0
-	lower_ready = false
 	tension = maxf(tension, 0.3)
 	return true
 
 func set_rod_load(value: float) -> void:
 	if state == State.REELING:
 		rod_load = clampf(value, 0.0, 1.0)
-
-func lower_rod() -> bool:
-	if state != State.REELING:
-		return false
-	lower_ready = true
-	rod_load = 0.0
-	tension = maxf(0.0, tension - 0.045)
-	return true
-
-func complete_pull() -> bool:
-	if state != State.REELING or not lower_ready:
-		return false
-	lower_ready = false
-	rod_load = 1.0
-	fight_progress = clampf(fight_progress + PULL_PROGRESS, 0.0, CATCH_PROGRESS)
-	if fight_progress >= CATCH_PROGRESS and fight_elapsed >= MIN_LANDING_SECONDS:
-		state = State.CAUGHT
-		last_reason = "Bluegill landed!"
-	return true
 
 func escape(reason: String) -> void:
 	state = State.ESCAPED
@@ -115,7 +103,6 @@ func reset() -> void:
 	fight_progress = 0.0
 	fight_elapsed = 0.0
 	rod_load = 0.0
-	lower_ready = false
 	cast_quality = 0.0
 	cast_distance_m = 0.0
 	last_reason = ""

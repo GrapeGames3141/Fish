@@ -47,3 +47,11 @@ The Pixel remained locked/asleep for this install. No physical haptic, foregroun
 - Pixel vibrator-manager evidence attributes the app to `usage: MEDIA`, with finished (not `ignored_for_settings`) bite pulses `70 ms` / `0.85` and `105 ms` / `0.95` at `22:15:00`, hook `55 ms` / `0.60` at `22:15:09`, and later fight/cadence cues including `38 ms` / `0.30` and `62 ms` / `0.58`. Adjacent cadence entries may be superseded as expected.
 
 This validates installed-package delivery, real sensor calibration/cast/hook markers, and Pixel haptic playback routing. The user has not explicitly confirmed subjective haptic strength or feel. The final observed window was the launcher while the app PID remained alive; foreground visuals, UMP/AdMob banner geometry, touch comfort, lifecycle, and performance remain unvalidated.
+
+## V6 physical fight timing gate (superseded by unexported v7 tuning)
+
+- On the physical v6 fight, the hook was recorded at `22:37:35.501`; the first lower marker followed at `0.40 s`.
+- Pull markers arrived at `2.03`, `3.83`, `7.62`, `10.03`, `22.58`, `32.05`, `50.62`, `57.53`, and `66.42 s`. Lower recognition itself was prompt (`0.2–1.9 s` in the observed attempts), and correct lowering kept tension mostly low.
+- The landed Bluegill at `66.42 s` missed Gate 1’s 10–20 second target because v6 required return within 8° of the original hook pose; later valid physical returns took `6.5–18.3 s` to meet that overly strict condition. A second fight was abandoned.
+
+This is useful device evidence for v6 gesture recognition, not acceptance of its timing. Version `0.1.6-gate1` changes to tolerant, continuous raised/lowered rod load and is unexported/uninstalled; physical comfort, timing, and haptic acceptance for that new tuning remain pending.

@@ -62,9 +62,9 @@ func _process(delta: float) -> void:
 		_hook()
 	if session.state == FishingSession.State.REELING:
 		session.set_rod_load(float(motion_event.get("fight_load", 0.0)))
-		if bool(motion_event.get("fight_lower", false)) and session.lower_rod():
+		if bool(motion_event.get("fight_lower", false)):
 			print("MOTION_FIGHT lower tension=%.2f elapsed=%.2f" % [session.tension, session.fight_elapsed])
-		if bool(motion_event.get("fight_pull", false)) and session.complete_pull():
+		if bool(motion_event.get("fight_pull", false)):
 			print("MOTION_FIGHT pull progress=%.2f tension=%.2f elapsed=%.2f" % [session.fight_progress, session.tension, session.fight_elapsed])
 	session.tick(delta)
 	haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
@@ -92,8 +92,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			_cast(0.8)
 	if event.is_action_pressed("hook_fallback"):
 		_hook()
-	if event.is_action_pressed("reel_fallback") and session.state == FishingSession.State.REELING:
-		session.lower_rod(); session.complete_pull()
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
 		view.overlay = "" if view.overlay == "settings" else "settings"
 
@@ -229,7 +227,7 @@ class FishingView extends Control:
 			FishingSession.State.CAST_ARMED: copy = "Armed — snap forward now!"
 			FishingSession.State.LINE_OUT: copy = "Line is out — %.0f m. Watch the bobber." % s.cast_distance_m
 			FishingSession.State.HOOK_WINDOW: copy = "BITE! Cock back to set the hook."
-			FishingSession.State.REELING: copy = "%s — lower, then pull back." % controller.motion.fight_phase
+			FishingSession.State.REELING: copy = "LOWER TO EASE" if s.rod_load >= 0.55 or s.tension >= 0.65 else "PULL BACK SMOOTHLY"
 			FishingSession.State.CAUGHT: copy = "BLUEGILL LANDED! Tap the catch card."
 			FishingSession.State.ESCAPED: copy = s.last_reason + " Tap to cast again."
 		draw_style_box(_panel_style(Color("143c4d", 0.92), Color("a9d4ca")), Rect2(55, 165, 610, 104))
@@ -251,8 +249,8 @@ class FishingView extends Control:
 			draw_style_box(_panel_style(Color("203e50"), Color("a9d4ca")), Rect2(95, 900, 530, 155))
 			_text("FIGHT PROGRESS", Vector2(120, 940), 18, Color("f4e7c3"))
 			draw_rect(Rect2(120, 956, 480 * s.fight_progress, 22), Color("78d8ba"))
-			_text(controller.motion.fight_phase, Vector2(212, 1020), 28, Color("fff1c9"))
-			_text("Lower the rod, then pull back smoothly.", Vector2(128, 1045), 17, Color("d0e9d2"))
+			_text("LOWER TO EASE" if s.rod_load >= 0.55 or s.tension >= 0.65 else "PULL BACK", Vector2(212, 1020), 28, Color("fff1c9"))
+			_text("Raise to pull; tilt forward to ease tension.", Vector2(128, 1045), 17, Color("d0e9d2"))
 			draw_style_box(_panel_style(Color("391f32"), Color("ff8e73")), Rect2(90, 815, 540, 32))
 			draw_rect(Rect2(95, 820, 530 * s.tension, 22), Color("ed665b") if s.tension >= 0.65 else Color("8cd6aa"))
 			_text("TENSION", Vector2(92, 800), 16, Color("f4e7c3"))

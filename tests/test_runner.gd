@@ -72,22 +72,31 @@ func _test_pump_and_recover_fight() -> void:
 	game.set_rod_load(1.0)
 	game.tick(0.8)
 	var raised_tension: float = game.tension
-	game.lower_rod()
+	var raised_progress: float = game.fight_progress
+	game.set_rod_load(0.05)
 	game.tick(0.8)
-	expect(game.tension < raised_tension, "lowering the rod actively relieves tension")
-	var progress_before: float = game.fight_progress
-	expect(game.complete_pull() and game.fight_progress > progress_before, "one lowered-then-pull sequence advances fight progress")
-	var progress_after_pull: float = game.fight_progress
-	expect(not game.complete_pull() and is_equal_approx(game.fight_progress, progress_after_pull), "repeated pull without lowering is rejected")
+	expect(game.fight_progress > 0.0 and raised_progress > 0.0, "raised continuous rod load advances fish progress")
+	expect(game.tension < raised_tension, "tilting forward/down actively relieves tension")
+	expect(game.fight_progress - raised_progress < raised_progress, "low rod load makes little progress while easing tension")
 	var red_game = FishingSession.new(); red_game.state = FishingSession.State.REELING; red_game.tension = 0.96; red_game.set_rod_load(1.0)
 	red_game.tick(FishingSession.RED_ESCAPE_SECONDS + 0.1)
 	expect(red_game.state == FishingSession.State.ESCAPED, "raised holding pressure can still escape at red tension")
 	var nominal = FishingSession.new(); nominal.state = FishingSession.State.REELING
-	for cycle in range(9):
-		nominal.set_rod_load(0.0); nominal.lower_rod(); nominal.tick(0.75)
-		nominal.set_rod_load(0.62); nominal.tick(0.75)
-		nominal.complete_pull()
-	expect(nominal.state == FishingSession.State.CAUGHT and nominal.fight_elapsed >= FishingSession.MIN_LANDING_SECONDS and nominal.fight_elapsed <= 20.0, "nine controlled lower-pull cycles land Bluegill in the 10–20 second target")
+	for cycle in range(8):
+		if nominal.state != FishingSession.State.REELING:
+			break
+		nominal.set_rod_load(0.05); nominal.tick(0.60)
+		nominal.set_rod_load(0.90); nominal.tick(1.20)
+	expect(nominal.state == FishingSession.State.CAUGHT and nominal.fight_elapsed >= 12.0 and nominal.fight_elapsed <= 14.0, "controlled continuous pull/ease rhythm lands Bluegill in the 12–14 second target")
+	var hard_hold = FishingSession.new(); hard_hold.state = FishingSession.State.REELING; hard_hold.set_rod_load(1.0)
+	var hard_hold_peak_tension: float = hard_hold.tension
+	for frame in range(24):
+		if hard_hold.state != FishingSession.State.REELING:
+			break
+		hard_hold.tick(0.5)
+		hard_hold_peak_tension = maxf(hard_hold_peak_tension, hard_hold.tension)
+	expect(hard_hold.state in [FishingSession.State.CAUGHT, FishingSession.State.ESCAPED] and hard_hold.fight_elapsed <= 12.0, "sustained hard pull resolves quickly instead of advancing indefinitely")
+	expect(hard_hold_peak_tension >= 0.65, "sustained hard pull crosses the high haptic warning tier before resolving")
 
 func _test_save_round_trip() -> void:
 	var path := "user://gate1-test-%d.json" % Time.get_ticks_usec()
@@ -172,19 +181,31 @@ func _test_injectable_motion() -> void:
 	fight_motion.begin_fight(Vector3(0, -9.8, 0))
 	fight_motion.queue_sample(_motion_sample(Vector3.ZERO, Vector3(0, 0, 0.5)))
 	var shake := fight_motion.update(0.25, false, false, true)
-	expect(not shake.fight_lower and not shake.fight_pull, "holding or off-axis gyro shake does not advance the fight")
-	fight_motion.queue_sample({"gravity": Vector3(0, -8.0, 4.8), "accelerometer": Vector3(0, -8.0, 4.8), "gyro": Vector3(0, 0, 0.05)})
+	expect(not shake.fight_lower and not shake.fight_pull and float(shake.fight_load) >= 0.95, "raised hook pose begins a continuous pull without a false fight marker")
+	fight_motion.queue_sample({"gravity": Vector3(0, -7.0, 6.8), "accelerometer": Vector3(0, -7.0, 6.8), "gyro": Vector3(0, 0, 0.05)})
 	var no_gyro := fight_motion.update(0.25, false, false, true)
 	expect(not no_gyro.fight_lower, "lower pose without gyro corroboration is rejected")
-	fight_motion.queue_sample({"gravity": Vector3(0, -8.0, 4.8), "accelerometer": Vector3(0, -8.0, 4.8), "gyro": Vector3(0, 0, 0.5)})
+	fight_motion.queue_sample({"gravity": Vector3(0, -7.0, 6.8), "accelerometer": Vector3(0, -7.0, 6.8), "gyro": Vector3(0, 0, 0.5)})
 	var lowered := fight_motion.update(0.25, false, false, true)
 	expect(lowered.fight_lower and lowered.fight_phase == "PULL BACK" and float(lowered.fight_load) <= 0.1, "first deliberate lower captures a relief reference")
-	fight_motion.queue_sample(_motion_sample(Vector3.ZERO, Vector3(0, 0, 0.5)))
+	fight_motion.queue_sample({"gravity": Vector3(0, -8.6, 4.2), "accelerometer": Vector3(0, -8.6, 4.2), "gyro": Vector3(0, 0, 0.5)})
+	var halfway := fight_motion.update(0.25, false, false, true)
+	expect(not halfway.fight_pull and float(halfway.fight_load) > 0.2 and float(halfway.fight_load) < 0.7, "halfway return gives a partial continuous load without claiming a pull marker")
+	fight_motion.queue_sample({"gravity": Vector3(0, -9.4, 2.4), "accelerometer": Vector3(0, -9.4, 2.4), "gyro": Vector3(0, 0, 0.5)})
+	var partial_return := fight_motion.update(0.25, false, false, true)
+	expect(partial_return.fight_pull and partial_return.fight_phase == "LOWER ROD" and float(partial_return.fight_load) > 0.60, "clearly directional partial return is accepted without an exact original-pose match")
+	fight_motion.queue_sample({"gravity": Vector3(0, -7.0, 6.8), "accelerometer": Vector3(0, -7.0, 6.8), "gyro": Vector3(0, 0, 0.5)})
+	var lowered_again := fight_motion.update(0.25, false, false, true)
+	expect(lowered_again.fight_lower, "a new lower transition can refresh the passive fight instruction")
+	fight_motion.queue_sample({"gravity": Vector3(7.0, -6.8, 0), "accelerometer": Vector3(7.0, -6.8, 0), "gyro": Vector3(0, 0, 0.5)})
+	var off_axis := fight_motion.update(0.25, false, false, true)
+	expect(not off_axis.fight_pull, "off-axis return motion is rejected even when it has gyro energy")
+	fight_motion.queue_sample({"gravity": Vector3(0, -9.4, 2.4), "accelerometer": Vector3(0, -9.4, 2.4), "gyro": Vector3(0, 0, 0.5)})
 	var pulled := fight_motion.update(0.25, false, false, true)
-	expect(pulled.fight_pull and pulled.fight_phase == "LOWER ROD" and float(pulled.fight_load) >= 0.9, "returning to pull pose completes one physical pull")
-	fight_motion.queue_sample(_motion_sample(Vector3.ZERO, Vector3(0, 0, 0.5)))
+	expect(pulled.fight_pull, "directional return can mark a pull after the off-axis rejection")
+	fight_motion.queue_sample({"gravity": Vector3(0, -9.4, 2.4), "accelerometer": Vector3(0, -9.4, 2.4), "gyro": Vector3(0, 0, 0.5)})
 	var repeated_pull := fight_motion.update(0.25, false, false, true)
-	expect(not repeated_pull.fight_pull, "repeated pull without another lower is rejected")
+	expect(not repeated_pull.fight_pull, "holding a pull pose without another lower does not repeat its marker")
 
 func _test_admob_contract() -> void:
 	var ads = AdMobService.new()
@@ -310,7 +331,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 6 and export_config.get_value("preset.0.options", "version/name") == "0.1.5-gate1", "debug package version is bumped")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 7 and export_config.get_value("preset.0.options", "version/name") == "0.1.6-gate1", "debug package version is bumped")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
@@ -321,4 +342,4 @@ func _test_project_source_settings() -> void:
 	var haptic_source := FileAccess.get_file_as_string("res://src/services/haptic_service.gd")
 	expect("AndroidRuntime" in haptic_source and "getSystemService(\"vibrator\")" in haptic_source and "VibrationEffect" in haptic_source and "createOneShot" in haptic_source and "Build$VERSION" in haptic_source and "SDK_INT" in haptic_source and "VibrationAttributes" in haptic_source and "createForUsage" in haptic_source and "USAGE_MEDIA" in haptic_source and "AudioAttributes$Builder" in haptic_source and "USAGE_GAME" in haptic_source and "CONTENT_TYPE_SONIFICATION" in haptic_source and "vibrate(effect, _android_vibration_attributes)" in haptic_source and "vibrate(effect, _android_audio_attributes)" in haptic_source and "_android_vibrator.vibrate(maxi(1, duration_ms), _android_audio_attributes)" in haptic_source and "Input.vibrate_handheld" in haptic_source, "Android explicit non-touch attributes with API24 fallback contract retained")
 	var main_source := FileAccess.get_file_as_string("res://src/ui/main.gd")
-	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and "not OS.has_feature(\"android\")" in main_source, "Android UI has no touch cast, hook, or reel-drag control and keyboard simulation is desktop-only")
+	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and not "reel_fallback" in main_source and "not OS.has_feature(\"android\")" in main_source, "Android UI has no touch cast, hook, or reel fallback and keyboard simulation is desktop-only")

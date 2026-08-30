@@ -7,7 +7,9 @@ const MIN_TRANSITION_SECONDS := 0.08
 const GESTURE_COOLDOWN_SECONDS := 0.32
 const PROFILE_EXAMPLES := 2
 const FIGHT_LOWER_TRAVEL_DEGREES := 14.0
-const FIGHT_PULL_CLOSE_DEGREES := 8.0
+const FIGHT_PULL_RETURN_TRAVEL_DEGREES := 10.0
+const FIGHT_RETURN_HYSTERESIS_DEGREES := 3.0
+const FIGHT_RETURN_DIRECTION_DOT := 0.70
 const FIGHT_MIN_TRANSITION_SECONDS := 0.20
 const FIGHT_GYRO_MINIMUM := 0.20
 
@@ -150,6 +152,8 @@ func _update_fight(delta: float, reading: Dictionary, event: Dictionary) -> void
 	_fight_transition_elapsed += maxf(delta, 0.0)
 	var pull_angle := rad_to_deg(pose.angle_to(_fight_pull_reference))
 	if fight_phase == "LOWER ROD":
+		# Before the first lower pose is learned, the hook/raised pose is already
+		# a full pull. This lets the fight react continuously from the hook onward.
 		fight_load = clampf(1.0 - pull_angle / FIGHT_LOWER_TRAVEL_DEGREES, 0.0, 1.0)
 		if pull_angle >= FIGHT_LOWER_TRAVEL_DEGREES and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
 			_fight_lower_reference = pose
@@ -159,10 +163,17 @@ func _update_fight(delta: float, reading: Dictionary, event: Dictionary) -> void
 			event.fight_lower = true
 	elif fight_phase == "PULL BACK" and _fight_lower_reference.length() >= 0.90:
 		var lower_angle := rad_to_deg(pose.angle_to(_fight_lower_reference))
-		fight_load = clampf(1.0 - pull_angle / FIGHT_LOWER_TRAVEL_DEGREES, 0.0, 1.0)
-		if pull_angle <= FIGHT_PULL_CLOSE_DEGREES and lower_angle >= FIGHT_LOWER_TRAVEL_DEGREES * 0.55 and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
+		var reference_span := rad_to_deg(_fight_lower_reference.angle_to(_fight_pull_reference))
+		# Pose load is continuous between the learned lower and pull references.
+		# Equal angular distance is a neutral load; moving toward the raised pull
+		# reference drives progress and tension without requiring a perfect return.
+		fight_load = clampf((lower_angle - pull_angle + reference_span) / maxf(2.0 * reference_span, 0.01), 0.0, 1.0)
+		var return_axis := (_fight_pull_reference - _fight_lower_reference).normalized()
+		var pose_axis := (pose - _fight_lower_reference).normalized()
+		var return_alignment := return_axis.dot(pose_axis)
+		var clearly_toward_pull := pull_angle + FIGHT_RETURN_HYSTERESIS_DEGREES < lower_angle
+		if lower_angle >= FIGHT_PULL_RETURN_TRAVEL_DEGREES and clearly_toward_pull and return_alignment >= FIGHT_RETURN_DIRECTION_DOT and gyro.length() >= FIGHT_GYRO_MINIMUM and _fight_transition_elapsed >= FIGHT_MIN_TRANSITION_SECONDS:
 			fight_phase = "LOWER ROD"
-			fight_load = 1.0
 			_fight_transition_elapsed = 0.0
 			event.fight_pull = true
 	event.fight_load = fight_load
