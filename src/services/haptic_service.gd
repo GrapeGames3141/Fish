@@ -19,6 +19,10 @@ var active_fish: FishDefinition
 var next_phrase_at := 0.0
 var warning_tier := "normal"
 var phrase_started := false
+var _android_vibrator = null
+var _android_vibration_effect = null
+var _android_vibrator_checked := false
+var _android_sdk_int := -1
 
 func _init(custom_emitter: Callable = Callable()) -> void:
 	emitter = custom_emitter
@@ -123,5 +127,41 @@ func _dispatch_due() -> void:
 		var pulse: Dictionary = pending.pop_front()
 		if emitter.is_valid():
 			emitter.call(int(pulse.duration), float(pulse.amplitude))
-		else:
+		elif not _try_android_vibrate(int(pulse.duration), float(pulse.amplitude)):
 			Input.vibrate_handheld(int(pulse.duration), float(pulse.amplitude))
+
+static func android_amplitude(amplitude: float) -> int:
+	return clampi(roundi(clampf(amplitude, 0.0, 1.0) * 255.0), 1, 255)
+
+func _try_android_vibrate(duration_ms: int, amplitude: float) -> bool:
+	if OS.get_name() != "Android":
+		return false
+	if not _android_vibrator_checked:
+		_android_vibrator_checked = true
+		var android_runtime = Engine.get_singleton("AndroidRuntime")
+		if android_runtime == null:
+			return false
+		var context = android_runtime.getApplicationContext()
+		if context == null:
+			return false
+		_android_vibrator = context.getSystemService("vibrator")
+		if _android_vibrator == null or not _android_vibrator.hasVibrator():
+			_android_vibrator = null
+			return false
+		var build_version = JavaClassWrapper.wrap("android.os.Build$VERSION")
+		if build_version == null:
+			_android_vibrator = null
+			return false
+		_android_sdk_int = int(build_version.SDK_INT)
+		if _android_sdk_int >= 26:
+			_android_vibration_effect = JavaClassWrapper.wrap("android.os.VibrationEffect")
+	if _android_vibrator == null or _android_sdk_int < 0:
+		return false
+	if _android_sdk_int >= 26:
+		if _android_vibration_effect == null:
+			return false
+		var effect = _android_vibration_effect.createOneShot(maxi(1, duration_ms), android_amplitude(amplitude))
+		_android_vibrator.vibrate(effect)
+	else:
+		_android_vibrator.vibrate(maxi(1, duration_ms))
+	return true

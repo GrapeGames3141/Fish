@@ -115,6 +115,8 @@ func _test_admob_contract() -> void:
 	expect(banner_requests.size() == 1, "duplicate SDK completion callback is ignored")
 
 func _test_haptic_signatures() -> void:
+	expect(HapticService.android_amplitude(-0.2) == 1 and HapticService.android_amplitude(0.0) == 1, "Android haptic amplitude has a nonzero lower bound")
+	expect(HapticService.android_amplitude(0.5) == 128 and HapticService.android_amplitude(1.0) == 255 and HapticService.android_amplitude(2.0) == 255, "Android haptic amplitude maps and clamps to 1..255")
 	var keys: Dictionary = {}
 	for fish in FishDefinition.all_planned():
 		var signature := str(fish.fight_pulse) + "|" + str(fish.fight_cycle_seconds)
@@ -203,7 +205,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 3 and export_config.get_value("preset.0.options", "version/name") == "0.1.2-gate1", "debug package version is bumped")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 4 and export_config.get_value("preset.0.options", "version/name") == "0.1.3-gate1", "debug package version is bumped")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
@@ -211,3 +213,5 @@ func _test_project_source_settings() -> void:
 	expect("build/**" in excluded and "reports/**" in excluded and "addons/admob/internal/editor/**" in excluded and "addons/admob/internal/mock/**" in excluded and not "addons/admob/gdscript/src/mediation/**" in excluded, "non-runtime material is recursively excluded while runtime mediation dependencies remain")
 	var source := FileAccess.get_file_as_string("res://src/services/admob_service.gd")
 	expect("ConsentInformation" in source and "MAX_AD_CONTENT_RATING_PG" in source and "failed_closed" in source and "game_content_reserve_height" in source and "OnInitializationCompleteListener" in source and "sdk_initializing" in source and "banner_requested" in source, "consent-first SDK-sequenced AdMob contract retained")
+	var haptic_source := FileAccess.get_file_as_string("res://src/services/haptic_service.gd")
+	expect("AndroidRuntime" in haptic_source and "getSystemService(\"vibrator\")" in haptic_source and "VibrationEffect" in haptic_source and "createOneShot" in haptic_source and "Build$VERSION" in haptic_source and "SDK_INT" in haptic_source and "_android_vibrator.vibrate(maxi(1, duration_ms))" in haptic_source and "Input.vibrate_handheld" in haptic_source, "Android API26 amplitude and API24 legacy vibrator contract retained")

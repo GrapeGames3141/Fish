@@ -19,3 +19,7 @@ A locked/doze launch of the identical-code export left Android PID `28318` alive
 - A v3 launch attempt created Android PID `4707` with zero bad-pattern matches, but the phone relocked and NotificationShade had focus; taps reached the lockscreen and vibrator history had zero app matches.
 
 The final v3 install proves package/permission delivery only. It does not validate physical haptics, foreground interaction, UMP, banner layout, touch, lifecycle, or visuals.
+
+## Direct haptic correction pending
+
+The installed v3 save has haptics enabled and Android VIBRATE is granted, but app vibration logs/history remain empty while the Pixel system has `haptic_feedback_enabled=0`, `vibrate_on=1`, and `zen_mode=0`. Version 0.1.3-gate1 replaces the default Android dispatch with the bundled Godot AndroidRuntime vibrator-service / VibrationEffect path. It has not been built or installed, so this is not physical-device haptic validation.

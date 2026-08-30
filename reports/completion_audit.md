@@ -3,7 +3,7 @@
 | Requirement | Evidence | Status |
 | --- | --- | --- |
 | Core fishing state loop | `tests/test_runner.gd`; `gate1-domain-final` logs | Verified headlessly |
-| Sensor/haptic runtime | Deterministic motion traces and injected haptic scheduler tests; live Pixel log diagnosis; final v3 package/install evidence | Final v3 package declares `VIBRATE` and `dumpsys` reports it granted. Physical vibration remains unvalidated because the v3 device launch relocked before app interaction and vibrator history has zero app matches. |
+| Sensor/haptic runtime | Deterministic motion traces and injected haptic scheduler tests; live Pixel log diagnosis; final v3 package/install evidence | Final v3 package declares `VIBRATE` and `dumpsys` reports it granted, but Godot bridge vibration was absent. Corrected v4 defaults to cached direct AndroidRuntime vibrator emission with tested amplitude bounds; build/install/device validation remains pending. |
 | Eyes-up haptic cadence | `tests/test_runner.gd`; `gate1-haptic-cadence-domain` stdout/stderr | Verified headlessly: bounded phrase queue, normal/high/red reset, disabled suppression, and distinct terminal cues |
 | Native AdMob | Pinned adapter + test ID + zero-reserve contract; deterministic SDK-completion seam; final v3 package audit | Headless sequencing verified: no banner before SDK completion and one request after it. Final package contains 10 `MediationExtras` entries; foreground UMP/banner validation remains pending. |
 | Concept direction | `concepts/gate1/pine-lake-reel-concept-v01.png` | Pending human approval |
