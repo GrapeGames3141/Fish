@@ -89,3 +89,10 @@ This proves v8 export/install, permission delivery, and initial cast/hook/lower 
 - `adb install -r` succeeded on the Pixel 9 Pro (`caiman`, `192.168.1.234:43875`). `dumpsys` confirms versionCode `9` and `android.permission.VIBRATE` `granted=true`.
 - The Godot activity displayed/launched and inspected output had no fatal exception or script-error marker.
 - Secure lock / NotificationShade blocked an actual device visual capture. Desktop 720×1280 captures remain the visual evidence. Real v9 motion, haptic, and timing validation remains open for the next physical test session.
+
+## V10 rod-line correction install and launch
+
+- Signed `0.2.1-ui2` / versionCode `10` APK: 46,073,176 bytes; SHA-256 `12E40F6FD0B6467A767005F794D1CF1D1018FA49BE844E42CD397B2103EE3FD1`.
+- After an in-sandbox `adb connect` failure (`10013`), restarting ADB outside the sandbox reconnected the Pixel 9 Pro (`caiman`, `192.168.1.234:43875`). `adb install -r` reported `Success`; `dumpsys` confirms versionCode `10` and VIBRATE `granted=true`.
+- Launch intent was sent. The inspected 400-line log window had no fatal exception, script error, or parse marker.
+- The phone remained locked, so this is not a physical visual, motion, haptic, or timing validation. No phone screenshot was taken or retained for this v10 pass; prior temporary lock-screen captures were deleted locally and from `/sdcard`. C: delivery copies of the APK and ready/reeling evidence match source size and SHA-256 where applicable.

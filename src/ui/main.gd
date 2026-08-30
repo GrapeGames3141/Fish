@@ -135,6 +135,10 @@ func _capture_after_draw() -> void:
 	print("SCREENSHOT_CAPTURED path=%s error=%s" % [capture_path, error]); get_tree().quit(0 if error == OK else 1)
 
 class FishingView extends Control:
+	# Source-local terminal guide contacts for the three 512×1024 rod atlas frames.
+	const ROD_DESTINATION := Rect2(-85, 545, 435, 870)
+	const ROD_FRAME_SIZE := Vector2(512, 1024)
+	const ROD_TIP_ANCHORS := [Vector2(467, 15), Vector2(461, 36), Vector2(412.5, 94)]
 	var controller: Node
 	var overlay := ""
 	var synthetic_reserve := 0.0
@@ -171,8 +175,10 @@ class FishingView extends Control:
 		if submerged:
 			bobber_pos.y += 44.0 + (0.0 if reduced else sin(controller.ui_time * 9.0) * 3.0)
 		var rod_region := 0 if s.state != FishingSession.State.REELING else clampi(int(round(maxf(s.tension, s.rod_load) * 2.0)), 0, 2)
-		draw_line(Vector2(87, 1070), bobber_pos, Color("f4e6bf", 0.9), 2.4)
-		if controller.rod_texture: draw_texture_rect_region(controller.rod_texture, Rect2(-85, 545, 435, 870), Rect2(rod_region * 512, 0, 512, 1024))
+		var rod_tip := _rod_tip_for_frame(rod_region)
+		# Draw the external line behind the rod; the rod atlas owns handle-to-terminal-guide pixels.
+		draw_line(rod_tip, bobber_pos, Color("f4e6bf", 0.9), 2.4)
+		if controller.rod_texture: draw_texture_rect_region(controller.rod_texture, ROD_DESTINATION, Rect2(rod_region * 512, 0, 512, 1024))
 		if not submerged and controller.bobber_texture:
 			draw_texture_rect(controller.bobber_texture, Rect2(bobber_pos - Vector2(21, 25), Vector2(42, 50)), false)
 		elif submerged:
@@ -191,6 +197,12 @@ class FishingView extends Control:
 				draw_arc(bobber_pos + Vector2(0, 5), radius, 0.15, TAU - 0.15, 28, Color("d9f6ea", 0.72 - ring * 0.17), 1.6)
 		if s.state == FishingSession.State.REELING and not reduced:
 			draw_circle(bobber_pos + Vector2(18, 18), 7 + sin(controller.ui_time * 12.0) * 2, Color("e8fbf4", 0.78))
+	func _rod_tip_for_frame(frame: int) -> Vector2:
+		var source_tip: Vector2 = ROD_TIP_ANCHORS[clampi(frame, 0, ROD_TIP_ANCHORS.size() - 1)]
+		return ROD_DESTINATION.position + Vector2(
+			source_tip.x / ROD_FRAME_SIZE.x * ROD_DESTINATION.size.x,
+			source_tip.y / ROD_FRAME_SIZE.y * ROD_DESTINATION.size.y
+		)
 	func _draw_top_chrome(s: FishingSession) -> void:
 		draw_style_box(_panel_style(Color(0.03, 0.13, 0.18, 0.72), Color("74b7a8")), Rect2(24, 22, 672, 100)); _text("CAST & CRANK", Vector2(46, 66), 30, Color("fff4d1")); _text("PINE LAKE  •  %s" % s.fish.display_name.to_upper(), Vector2(48, 98), 16, Color("b9e2d3"))
 		draw_circle(Vector2(580, 54), 20, Color("d9bf72")); _text("≡", Vector2(571, 63), 21, Color("173a48")); draw_circle(Vector2(644, 54), 20, Color("d9bf72")); _text("⚙", Vector2(633, 64), 20, Color("173a48"))
