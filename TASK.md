@@ -37,3 +37,9 @@ The user authorized generation and integration of this first ImageGen UI pass. H
 - Implemented for the next build: only the post-cock forward snap has a lower learned-profile threshold and bounded relaxed final axis/polarity tolerances; cock, hook, gyro, and both handedness modes keep their prior contracts. Derived failures now name only the stage and reason.
 - Signed v15 `0.3.2-snapfix1` is exported, audited, installed, and cold-launched on the paired Pixel 9 Pro. VIBRATE is granted and the scoped startup log has no fatal, script, parse, SIGSEGV, or crash marker.
 - Still pending: physical snap-left reliability confirmation. No device-feel claim is made for this follow-up.
+
+## Continuous-gesture follow-up checkpoint
+
+- Implemented for the next build: continuous cock/snap bursts ignore rising sub-threshold frames, can recover from one bad above-threshold axis/gyro frame, and keep only one derived failure record per burst. Runtime cock/snap/gyro/timing gates are separately tuned from calibration.
+- Signed v16 `0.3.3-gesturefix1` is exported, audited, installed, and cold-launched on the paired Pixel 9 Pro. VIBRATE is granted and the scoped startup log has no fatal, script, parse, SIGSEGV, or crash marker.
+- Still pending: physical cast distance/recognition validation on the paired device. No device-feel claim is made for this follow-up.
