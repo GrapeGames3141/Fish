@@ -7,6 +7,8 @@ var simulated := false
 var simulated_cast_pending := false
 var simulated_hook_pending := false
 var _back_seen := false
+var sample_provider: Callable
+var queued_samples: Array[Dictionary] = []
 
 func calibrate() -> void:
 	neutral_gravity = Input.get_gravity()
@@ -14,6 +16,8 @@ func calibrate() -> void:
 		neutral_gravity = Vector3(0, -9.8, 0)
 
 func sample() -> Dictionary:
+	if not queued_samples.is_empty(): return queued_samples.pop_front()
+	if sample_provider.is_valid(): return sample_provider.call()
 	var gravity := Input.get_gravity()
 	var accelerometer := Input.get_accelerometer()
 	var gyro := Input.get_gyroscope()
@@ -24,9 +28,9 @@ func detect_cast() -> float:
 		simulated_cast_pending = false
 		_back_seen = false
 		return 0.85
-	var acceleration: Vector3 = Input.get_accelerometer()
-	var back_threshold := 2.5 * sensitivity
-	var forward_threshold := 4.0 * sensitivity
+	var acceleration: Vector3 = sample().accelerometer
+	var back_threshold := 2.5 / sensitivity
+	var forward_threshold := 4.0 / sensitivity
 	if acceleration.y < -back_threshold:
 		_back_seen = true
 	if _back_seen and acceleration.y > forward_threshold:
@@ -38,8 +42,11 @@ func detect_hook() -> bool:
 	if simulated_hook_pending:
 		simulated_hook_pending = false
 		return true
-	var gravity := Input.get_gravity()
-	return gravity.y - neutral_gravity.y > 3.2 * sensitivity
+	var gravity: Vector3 = sample().gravity
+	return gravity.y - neutral_gravity.y > 3.2 / sensitivity
+
+func queue_sample(value: Dictionary) -> void:
+	queued_samples.append(value)
 
 func queue_simulated_cast() -> void:
 	simulated_cast_pending = true
