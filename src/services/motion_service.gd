@@ -22,6 +22,10 @@ const RIGHT_HANDED_BACK_AXIS := Vector3(1, 0, 0)
 const PROFILE_HANDEDNESS_ALIGNMENT := 0.48
 const CALIBRATION_HANDEDNESS_ALIGNMENT := 0.34
 const RUNTIME_X_POLARITY_ALIGNMENT := 0.18
+const SNAP_MIN_AXIS_TOLERANCE := 0.38
+const SNAP_AXIS_PROFILE_SCALE := 0.68
+const SNAP_MIN_POLARITY_TOLERANCE := 0.06
+const SNAP_POLARITY_SCALE := 0.45
 const LOAD_RESPONSE_SECONDS := 0.10
 const LOAD_DEADBAND := 0.035
 
@@ -263,7 +267,7 @@ func _update_calibration(delta: float, reading: Dictionary) -> Dictionary:
 		if calibration_progress >= PROFILE_EXAMPLES:
 			event.calibration_complete = _finish_calibration()
 		return event
-	if linear.length() > 0.0 and absf(linear.normalized().dot(_back_axis)) < 0.45: _fail("axis")
+	if linear.length() > 0.0 and absf(linear.normalized().dot(_back_axis)) < 0.45: _fail("calibration", "axis")
 	return event
 
 func _retry_calibration_example() -> void:
@@ -332,19 +336,25 @@ func _update_cast(delta: float, reading: Dictionary, event: Dictionary) -> void:
 			diagnostics.cock_attempts += 1
 			if back_projection >= _back_threshold() and back_match >= float(profile.direction_tolerance) and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold():
 				_back_axis = -axis; _back_peak = back_projection; _back_gyro_peak = gyro.length(); _gesture_elapsed = 0.0; event.cast_arm = true
-			else: _classify_failure(linear, gyro, back_match, handed_match, _back_threshold(), "cock")
+			else:
+				# Keep one derived failure per continuous candidate burst. A new
+				# opposite/quiet projection clears this latch in _new_candidate.
+				_candidate_latched.cock = true
+				_classify_failure(linear, gyro, back_match, handed_match, _back_threshold(), "cock")
 		return
 	_gesture_elapsed += delta
 	if _gesture_elapsed > MAX_TRANSITION_SECONDS:
-		_fail("timeout"); reset_gesture()
+		_fail("snap", "timeout"); reset_gesture()
 		return
 	var forward_projection := linear.dot(axis)
 	var forward_match := linear.normalized().dot(axis) if linear.length() > 0.0 else -1.0
 	var handed_match := linear.normalized().dot(_forward_axis()) if linear.length() > 0.0 else -1.0
 	if _new_candidate("snap", forward_projection, _forward_threshold()):
-		if forward_projection >= _forward_threshold() and forward_match >= float(profile.direction_tolerance) and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold():
+		if forward_projection >= _forward_threshold() and forward_match >= _snap_axis_tolerance() and handed_match >= _snap_polarity_tolerance() and gyro.length() >= _gyro_threshold():
 			event.cast_quality = _cast_quality(forward_projection); diagnostics.completed_casts += 1; reset_gesture(); _cooldown_elapsed = GESTURE_COOLDOWN_SECONDS
-		else: _classify_failure(linear, gyro, forward_match, handed_match, _forward_threshold(), "snap")
+		else:
+			_candidate_latched.snap = true
+			_classify_failure(linear, gyro, forward_match, handed_match, _forward_threshold(), "snap")
 
 func _detect_hook(reading: Dictionary) -> bool:
 	if not is_calibrated() or _cooldown_elapsed > 0.0:
@@ -364,6 +374,7 @@ func _detect_hook(reading: Dictionary) -> bool:
 	if back_projection >= _hook_threshold() and back_match >= float(profile.direction_tolerance) * 0.82 and handed_match >= RUNTIME_X_POLARITY_ALIGNMENT and gyro.length() >= _gyro_threshold() * 0.65:
 		_cooldown_elapsed = GESTURE_COOLDOWN_SECONDS
 		return true
+	_candidate_latched.hook = true
 	_classify_failure(linear, gyro, back_match, handed_match, _hook_threshold(), "hook")
 	return false
 
@@ -371,13 +382,19 @@ func _back_threshold() -> float:
 	return maxf(float(profile.noise_floor) * 1.6, float(profile.back_peak) * 0.42) / maxf(sensitivity, 0.5)
 
 func _forward_threshold() -> float:
-	return maxf(float(profile.noise_floor) * 1.8, float(profile.forward_peak) * 0.42) / maxf(sensitivity, 0.5)
+	return maxf(float(profile.noise_floor) * 1.4, float(profile.forward_peak) * 0.32) / maxf(sensitivity, 0.5)
 
 func _hook_threshold() -> float:
 	return maxf(float(profile.noise_floor) * 1.6, float(profile.back_peak) * 0.30) / maxf(sensitivity, 0.5)
 
 func _gyro_threshold() -> float:
 	return clampf(float(profile.gyro_peak) * 0.16 / maxf(sensitivity, 0.5), 0.10, 0.60)
+
+func _snap_axis_tolerance() -> float:
+	return maxf(SNAP_MIN_AXIS_TOLERANCE, float(profile.get("direction_tolerance", 0.62)) * SNAP_AXIS_PROFILE_SCALE)
+
+func _snap_polarity_tolerance() -> float:
+	return maxf(SNAP_MIN_POLARITY_TOLERANCE, RUNTIME_X_POLARITY_ALIGNMENT * SNAP_POLARITY_SCALE)
 
 func _cast_quality(forward_projection: float) -> float:
 	var threshold := _forward_threshold()
@@ -395,18 +412,20 @@ func _pull_pose_travel_degrees(pose: Vector3, reference: Vector3) -> float:
 func _smooth_fight_load(target: float, delta: float) -> void:
 	fight_load = move_toward(fight_load, clampf(target, 0.0, 1.0), maxf(delta, 0.0) / LOAD_RESPONSE_SECONDS)
 
-func _fail(reason: String) -> void:
+func _fail(stage: String, reason: String) -> void:
 	if not diagnostics.reasons.has(reason): return
 	diagnostics.reasons[reason] = int(diagnostics.reasons[reason]) + 1
 	if _diagnostic_elapsed >= 0.75:
-		print("MOTION_FAIL reason=%s count=%d" % [reason, int(diagnostics.reasons[reason])])
+		print("MOTION_FAIL stage=%s reason=%s count=%d" % [stage, reason, int(diagnostics.reasons[reason])])
 		_diagnostic_elapsed = 0.0
 
-func _classify_failure(linear: Vector3, gyro: Vector3, axis_match: float, polarity_match: float, threshold: float, _stage: String) -> void:
-	if linear.length() < threshold: _fail("linear")
-	elif polarity_match < RUNTIME_X_POLARITY_ALIGNMENT: _fail("polarity")
-	elif axis_match < float(profile.get("direction_tolerance", 0.62)): _fail("axis")
-	elif gyro.length() < _gyro_threshold(): _fail("gyro")
+func _classify_failure(linear: Vector3, gyro: Vector3, axis_match: float, polarity_match: float, threshold: float, stage: String) -> void:
+	var polarity_tolerance := _snap_polarity_tolerance() if stage == "snap" else RUNTIME_X_POLARITY_ALIGNMENT
+	var axis_tolerance := _snap_axis_tolerance() if stage == "snap" else float(profile.get("direction_tolerance", 0.62))
+	if linear.length() < threshold: _fail(stage, "linear")
+	elif polarity_match < polarity_tolerance: _fail(stage, "polarity")
+	elif axis_match < axis_tolerance: _fail(stage, "axis")
+	elif gyro.length() < _gyro_threshold(): _fail(stage, "gyro")
 
 func _new_candidate(stage: String, directed_projection: float, threshold: float) -> bool:
 	# Enter a stage only when energy is already travelling in that stage's learned
