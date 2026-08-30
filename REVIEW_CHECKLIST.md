@@ -2,6 +2,7 @@
 
 - [ ] Cast gesture is comfortable and accidental casts are uncommon.
 - [ ] Bite and hook timing are understandable without reading a manual.
+- [ ] Eyes-up haptics distinguish bite, hook, normal fish rhythm, high/red tension warnings, catch, and escape; quiet gaps prevent continuous vibration.
 - [ ] Circular reeling feels natural and tension is forgiving.
 - [ ] Pine Lake concept direction is worth promoting into a production asset brief.
 - [ ] The bottom region has no duplicate in-game ad reserve or disclosure.

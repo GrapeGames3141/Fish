@@ -29,7 +29,7 @@ func _ready() -> void:
 	save.load_data()
 	motion.sensitivity = float(save.data.settings.get("sensitivity", 1.0))
 	ads.initialize()
-	haptics.enabled = bool(save.data.settings.get("haptics", true))
+	haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
 	view = FishingView.new()
 	view.controller = self
 	add_child(view)
@@ -50,14 +50,19 @@ func _process(delta: float) -> void:
 			_cast(quality)
 	elif session.state == FishingSession.State.HOOK_WINDOW and motion.detect_hook():
 		_hook()
-	session.tick(delta); haptics.enabled = bool(save.data.settings.get("haptics", true)); haptics.tick(delta)
+	session.tick(delta)
+	haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
 	if prior_state != session.state:
-		if session.state == FishingSession.State.BITE: haptics.enqueue("bite")
-		elif session.state == FishingSession.State.REELING: haptics.enqueue("hook")
-		elif session.state == FishingSession.State.CAUGHT: haptics.enqueue("caught")
-		elif session.state == FishingSession.State.ESCAPED: haptics.enqueue("escaped")
+		if session.state == FishingSession.State.BITE: haptics.cue("bite")
+		elif session.state == FishingSession.State.CAUGHT: haptics.cue("caught")
+		elif session.state == FishingSession.State.ESCAPED: haptics.cue("escaped")
 		prior_state = session.state
-	if session.state == FishingSession.State.REELING: haptics.enqueue("fight", session.fish, session.tension)
+	if session.state == FishingSession.State.REELING:
+		if not haptics.fighting:
+			haptics.start_fight(session.fish)
+		haptics.update_fight(delta, session.fish, session.tension)
+	else:
+		haptics.tick(delta)
 	view.queue_redraw()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -84,7 +89,8 @@ func _cast(quality: float = 0.78) -> void:
 func _hook() -> void:
 	if session.set_hook():
 		has_reel_angle = false
-		haptics.enqueue("hook")
+		haptics.cue("hook")
+		haptics.start_fight(session.fish)
 
 
 func _finish_catch() -> void:

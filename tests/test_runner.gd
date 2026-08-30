@@ -96,17 +96,78 @@ func _test_admob_contract() -> void:
 func _test_haptic_signatures() -> void:
 	var keys: Dictionary = {}
 	for fish in FishDefinition.all_planned():
-		var signature := str(fish.fight_pulse)
-		expect(not keys.has(signature), "planned fish signatures are unique: " + fish.id)
+		var signature := str(fish.fight_pulse) + "|" + str(fish.fight_cycle_seconds)
+		expect(not keys.has(signature), "planned fish signature and cadence are unique: " + fish.id)
+		expect(fish.fight_cycle_seconds > 0.0, "planned fish has an intentional cadence: " + fish.id)
 		keys[signature] = true
 	var fired: Array[Dictionary] = []
 	var haptics := HapticService.new(func(duration, amplitude): fired.append({"duration": duration, "amplitude": amplitude}))
-	haptics.enqueue("fight", FishDefinition.bluegill(), 0.2); haptics.tick(1.0)
-	expect(fired.size() == 2, "bluegill fight emits deterministic rhythm")
-	fired.clear(); haptics.enqueue("fight", FishDefinition.bluegill(), 0.95); haptics.tick(1.0)
-	expect(fired.size() == 2 and haptics.warning_active, "red warning overrides species rhythm")
-	fired.clear(); haptics.stop(); haptics.enqueue("caught"); haptics.tick(1.0); var caught := fired.size(); fired.clear(); haptics.enqueue("escaped"); haptics.tick(1.0)
-	expect(caught == 3 and fired.size() == 1, "terminal cues are distinct")
+	var bluegill := FishDefinition.bluegill()
+	haptics.start_fight(bluegill)
+	var max_pending := 0
+	for frame in range(300):
+		haptics.update_fight(0.01, bluegill, 0.2)
+		max_pending = maxi(max_pending, haptics.pending.size())
+	expect(max_pending <= HapticService.MAX_PENDING_PULSES, "fight queue remains bounded")
+	expect(fired.size() >= 4 and fired.size() <= 6, "fight cadence avoids per-frame vibration spam")
+
+	var high_fired: Array[Dictionary] = []
+	var high_haptics := HapticService.new(func(duration, amplitude): high_fired.append({"duration": duration, "amplitude": amplitude}))
+	high_haptics.start_fight(FishDefinition.all_planned()[1])
+	for frame in range(60):
+		high_haptics.update_fight(0.05, FishDefinition.all_planned()[1], 0.70)
+	expect(high_haptics.warning_tier == "high" and high_fired.size() >= 6 and int(high_fired[0].duration) == 58, "high warning repeats on its universal cadence")
+
+	var red_fired: Array[Dictionary] = []
+	var red_haptics := HapticService.new(func(duration, amplitude): red_fired.append({"duration": duration, "amplitude": amplitude}))
+	red_haptics.start_fight(FishDefinition.all_planned()[2])
+	for frame in range(60):
+		red_haptics.update_fight(0.05, FishDefinition.all_planned()[2], 0.95)
+	expect(red_haptics.warning_tier == "red" and red_fired.size() >= 10 and int(red_fired[0].duration) == 90, "red warning repeats on its universal cadence")
+	expect(red_fired.size() > high_fired.size(), "red warning cadence is faster than high across fish")
+
+	var reset_fired: Array[Dictionary] = []
+	var reset_haptics := HapticService.new(func(duration, amplitude): reset_fired.append({"duration": duration, "amplitude": amplitude}))
+	reset_haptics.start_fight(bluegill)
+	reset_haptics.update_fight(0.23, bluegill, 0.70)
+	reset_haptics.update_fight(0.30, bluegill, 0.70)
+	expect(reset_haptics.warning_tier == "high" and reset_fired.size() == 2 and int(reset_fired[0].duration) == 58, "high tension overrides species rhythm")
+	reset_fired.clear()
+	reset_haptics.update_fight(0.01, bluegill, 0.95)
+	reset_haptics.update_fight(0.30, bluegill, 0.95)
+	expect(reset_haptics.warning_tier == "red" and reset_fired.size() == 2 and int(reset_fired[0].duration) == 90, "red tension emits urgent override")
+	reset_fired.clear()
+	reset_haptics.update_fight(0.01, bluegill, 0.2)
+	expect(reset_haptics.warning_tier == "normal" and not reset_fired.is_empty() and int(reset_fired[0].duration) == 38, "falling tension restores species rhythm")
+
+	var hook_fired: Array[Dictionary] = []
+	var hook_haptics := HapticService.new(func(duration, amplitude): hook_fired.append({"duration": duration, "amplitude": amplitude}))
+	hook_haptics.cue("hook")
+	hook_haptics.start_fight(bluegill)
+	hook_haptics.update_fight(0.01, bluegill, 0.2)
+	expect(hook_fired.size() == 1 and int(hook_fired[0].duration) == 55, "hook cue does not overlap first fish phrase")
+	hook_haptics.update_fight(0.22, bluegill, 0.2)
+	expect(hook_fired.size() == 2 and int(hook_fired[1].duration) == 38, "species phrase begins after hook delay")
+
+	var before_disable := reset_fired.size()
+	reset_haptics.set_enabled(false)
+	for frame in range(120):
+		reset_haptics.update_fight(0.01, bluegill, 0.95)
+	expect(reset_haptics.pending.is_empty() and reset_fired.size() == before_disable, "disabled haptics clear and suppress pending cues")
+
+	var terminal: Array[Dictionary] = []
+	var terminal_haptics := HapticService.new(func(duration, amplitude): terminal.append({"duration": duration, "amplitude": amplitude}))
+	terminal_haptics.start_fight(bluegill)
+	terminal_haptics.update_fight(0.01, bluegill, 0.2)
+	terminal.clear()
+	terminal_haptics.cue("caught")
+	terminal_haptics.tick(1.0)
+	var caught_signature := str(terminal)
+	expect(not terminal_haptics.fighting and terminal.size() == 3, "caught stops the fight and emits a lift cue")
+	terminal.clear()
+	terminal_haptics.cue("escaped")
+	terminal_haptics.tick(1.0)
+	expect(terminal.size() == 1 and caught_signature != str(terminal), "escaped terminal cue is distinct")
 
 func _test_project_source_settings() -> void:
 	var config := ConfigFile.new()
