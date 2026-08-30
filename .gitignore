@@ -7,6 +7,8 @@ android/build/.cxx/
 android/build/outputs/
 android/.gradle/
 reports/runtime/*.log
+reports/runtime/*.png
+reports/runtime/*.txt
 *.tmp
 *.import
 addons/admob/downloads/
