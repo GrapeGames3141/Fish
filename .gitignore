@@ -1,6 +1,8 @@
 .godot/
 .godot-task-cache/
 build/
+android/build/
+android/.gradle/
 reports/runtime/*.log
 *.tmp
 *.import

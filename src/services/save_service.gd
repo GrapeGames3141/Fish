@@ -18,11 +18,13 @@ func load_data() -> Dictionary:
 		data = default_data()
 		return data
 	var file := FileAccess.open(path, FileAccess.READ)
-	var parsed = JSON.parse_string(file.get_as_text())
+	var json := JSON.new()
+	var parse_error := json.parse(file.get_as_text())
 	file.close()
-	if typeof(parsed) != TYPE_DICTIONARY:
+	if parse_error != OK or typeof(json.data) != TYPE_DICTIONARY:
 		data = default_data()
 		return data
+	var parsed: Dictionary = json.data
 	data = default_data()
 	for key in parsed:
 		data[key] = parsed[key]
