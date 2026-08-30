@@ -23,3 +23,12 @@ The final v3 install proves package/permission delivery only. It does not valida
 ## Direct haptic correction pending
 
 The installed v3 save has haptics enabled and Android VIBRATE is granted, but app vibration logs/history remain empty while the Pixel system has `haptic_feedback_enabled=0`, `vibrate_on=1`, and `zen_mode=0`. Version 0.1.3-gate1 replaces the default Android dispatch with the bundled Godot AndroidRuntime vibrator-service / VibrationEffect path. It has not been built or installed, so this is not physical-device haptic validation.
+
+## Final v4 update
+
+- Final 0.1.3-gate1 APK: 38,964,971 bytes; SHA-256 `B3823D65C96D502D9F2C70FCB0405D3AC6195F75864465FB7230AA9F64FBAB78`.
+- Installed on the Pixel 9 Pro with `adb install -r` at `21:31:53`; installation succeeded.
+- `dumpsys` confirms versionCode `4`, versionName `0.1.3-gate1`, and VIBRATE granted.
+- Package inspection retains HapticService entries `2` and MediationExtras entries `10`.
+
+The Pixel remained locked/asleep for this install. No physical haptic, foreground interaction, UMP, banner, touch, lifecycle, or visual validation is claimed.
