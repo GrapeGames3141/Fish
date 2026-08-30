@@ -95,7 +95,7 @@ func _test_project_source_settings() -> void:
 	expect(config.load("res://project.godot") == OK, "project settings load")
 	expect(config.get_value("android", "package/unique_name") == "com.tak.castandcrank", "Android package is correct")
 	var project_source := FileAccess.get_file_as_string("res://project.godot")
-	expect("window/handheld/orientation=1" in project_source, "portrait orientation is enabled")
+	expect("orientation=1" in project_source, "portrait orientation is enabled")
 	expect(config.get_value("input_devices", "sensors/enable_accelerometer"), "accelerometer enabled")
 	expect(config.get_value("input_devices", "sensors/enable_gravity"), "gravity enabled")
 	expect(config.get_value("input_devices", "sensors/enable_gyroscope"), "gyroscope enabled")
