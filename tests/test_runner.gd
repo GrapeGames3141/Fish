@@ -93,6 +93,27 @@ func _test_admob_contract() -> void:
 	expect("desktop fallback" in ads.describe_desktop_fallback(), "desktop fallback is documented")
 	expect(not ads.available and not ads.initialized, "desktop ads remain inert")
 
+	var initialization_callbacks: Array[Callable] = []
+	var banner_requests: Array[bool] = []
+	var sequenced_ads := AdMobService.new(
+		func(on_complete: Callable): initialization_callbacks.append(on_complete),
+		func(): banner_requests.append(true)
+	)
+	sequenced_ads.begin_sdk_initialization_for_test()
+	expect(sequenced_ads.consent_state == "sdk_initializing" and initialization_callbacks.size() == 1 and banner_requests.is_empty(), "banner waits for SDK initialization completion")
+	var stale_callback := initialization_callbacks[0]
+	sequenced_ads.begin_sdk_initialization_for_test()
+	stale_callback.call(null)
+	expect(banner_requests.is_empty() and not sequenced_ads.initialized, "reinitialize destroys and invalidates a pending SDK callback")
+	expect(initialization_callbacks.size() == 2 and banner_requests.is_empty(), "reinitialize creates one current SDK callback")
+	stale_callback.call(null)
+	expect(banner_requests.is_empty(), "stale SDK callback remains inert after restart")
+	initialization_callbacks[0].call(null)
+	initialization_callbacks[1].call(null)
+	expect(sequenced_ads.consent_state == "banner_requested" and sequenced_ads.initialized and banner_requests.size() == 1, "SDK completion requests exactly one native banner")
+	initialization_callbacks[1].call(null)
+	expect(banner_requests.size() == 1, "duplicate SDK completion callback is ignored")
+
 func _test_haptic_signatures() -> void:
 	var keys: Dictionary = {}
 	for fish in FishDefinition.all_planned():
@@ -181,5 +202,11 @@ func _test_project_source_settings() -> void:
 	var export_config := ConfigFile.new(); expect(export_config.load("res://export_presets.cfg") == OK, "export settings load")
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 2 and export_config.get_value("preset.0.options", "version/name") == "0.1.1-gate1", "debug package version is bumped")
+	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
+	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
+	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
+	var excluded := str(export_config.get_value("preset.0", "exclude_filter"))
+	expect("build/**" in excluded and "reports/**" in excluded and "addons/admob/internal/editor/**" in excluded and "addons/admob/internal/mock/**" in excluded, "non-runtime package material is recursively excluded")
 	var source := FileAccess.get_file_as_string("res://src/services/admob_service.gd")
-	expect("ConsentInformation" in source and "MAX_AD_CONTENT_RATING_PG" in source and "failed_closed" in source and "game_content_reserve_height" in source, "consent-first AdMob contract retained")
+	expect("ConsentInformation" in source and "MAX_AD_CONTENT_RATING_PG" in source and "failed_closed" in source and "game_content_reserve_height" in source and "OnInitializationCompleteListener" in source and "sdk_initializing" in source and "banner_requested" in source, "consent-first SDK-sequenced AdMob contract retained")

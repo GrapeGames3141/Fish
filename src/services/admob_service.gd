@@ -11,8 +11,20 @@ var native_height_px := 0.0
 var banner = null
 var consent_state := "desktop_inert"
 var diagnostic := ""
+var banner_requested := false
+var _sdk_initializing := false
+var _sdk_callback_consumed := false
+var _sdk_generation := 0
+var _initialization_request: Callable
+var _banner_request: Callable
+
+func _init(initialization_request: Callable = Callable(), banner_request: Callable = Callable()) -> void:
+	_initialization_request = initialization_request
+	_banner_request = banner_request
 
 func initialize() -> void:
+	destroy()
+	diagnostic = ""
 	available = OS.get_name() == "Android" and Engine.has_singleton("PoingGodotAdMob") and Engine.has_singleton("PoingGodotAdMobConsentInformation") and Engine.has_singleton("PoingGodotAdMobUserMessagingPlatform")
 	if not available:
 		initialized = false
@@ -46,26 +58,73 @@ func _show_consent_form(form: ConsentForm) -> void:
 	)
 
 func _on_consent_error(error) -> void:
+	destroy()
 	consent_state = "failed_closed"
 	diagnostic = "UMP consent unavailable: %s" % str(error)
 	initialized = false
 
 func _load_banner_after_consent() -> void:
-	MobileAds.initialize()
-	var size := AdSize.get_current_orientation_anchored_adaptive_banner_ad_size(AdSize.FULL_WIDTH)
-	banner = AdView.new(TEST_BANNER_AD_UNIT, size, AdPosition.BOTTOM)
-	banner.load_ad(AdRequest.new())
+	_begin_sdk_initialization()
+
+func begin_sdk_initialization_for_test() -> void:
+	destroy()
+	diagnostic = ""
+	available = true
+	consent_state = "consent_obtained_test"
+	_begin_sdk_initialization()
+
+func _begin_sdk_initialization() -> void:
+	if not available or _sdk_initializing or _sdk_callback_consumed or banner_requested:
+		return
+	_sdk_initializing = true
+	consent_state = "sdk_initializing"
+	var generation := _sdk_generation
+	var completed := func(status): _on_sdk_initialized(generation, status)
+	if _initialization_request.is_valid():
+		_initialization_request.call(completed)
+		return
+	var listener := OnInitializationCompleteListener.new()
+	listener.on_initialization_complete = completed
+	MobileAds.initialize(listener)
+
+func _on_sdk_initialized(generation: int, _status) -> void:
+	if generation != _sdk_generation or not _sdk_initializing or _sdk_callback_consumed or banner_requested:
+		return
+	_sdk_callback_consumed = true
+	_sdk_initializing = false
+	_request_native_bottom_banner()
+
+func _request_native_bottom_banner() -> void:
+	if not available or banner_requested:
+		return
+	if _banner_request.is_valid():
+		_banner_request.call()
+	else:
+		var size := AdSize.get_current_orientation_anchored_adaptive_banner_ad_size(AdSize.FULL_WIDTH)
+		banner = AdView.new(TEST_BANNER_AD_UNIT, size, AdPosition.BOTTOM)
+		banner.load_ad(AdRequest.new())
+	banner_requested = true
 	initialized = true
 	consent_state = "banner_requested"
+	diagnostic = "SDK initialized; native-bottom test banner requested."
+
+func _invalidate_pending_initialization() -> void:
+	_sdk_generation += 1
+	_sdk_initializing = false
+	_sdk_callback_consumed = false
 
 func refresh_native_banner_diagnostics() -> void:
 	if banner != null:
 		native_height_px = maxf(0.0, float(banner.get_height_in_pixels()))
 
 func destroy() -> void:
+	_invalidate_pending_initialization()
 	if banner != null:
 		banner.destroy()
 		banner = null
+	banner_requested = false
+	initialized = false
+	native_height_px = 0.0
 
 func game_content_reserve_height() -> float:
 	return 0.0
