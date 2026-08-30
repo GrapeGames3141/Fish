@@ -1,0 +1,6 @@
+.godot/
+.godot-task-cache/
+build/
+reports/runtime/*.log
+*.tmp
+addons/admob/assets/*.import
