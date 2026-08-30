@@ -35,5 +35,5 @@ The user authorized generation and integration of this first ImageGen UI pass. H
 ## Snap-left follow-up checkpoint
 
 - Implemented for the next build: only the post-cock forward snap has a lower learned-profile threshold and bounded relaxed final axis/polarity tolerances; cock, hook, gyro, and both handedness modes keep their prior contracts. Derived failures now name only the stage and reason.
-- Signed v15 `0.3.2-snapfix1` is exported and audited. Installation is pending because the Pixel's prior wireless-debug endpoint stopped answering after the ADB daemon restarted and no replacement mDNS endpoint was advertised.
-- Still pending: install and physical snap-left reliability confirmation. No device-feel claim is made for this follow-up.
+- Signed v15 `0.3.2-snapfix1` is exported, audited, installed, and cold-launched on the paired Pixel 9 Pro. VIBRATE is granted and the scoped startup log has no fatal, script, parse, SIGSEGV, or crash marker.
+- Still pending: physical snap-left reliability confirmation. No device-feel claim is made for this follow-up.
