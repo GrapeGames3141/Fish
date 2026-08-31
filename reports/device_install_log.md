@@ -108,3 +108,9 @@ The first dwell wrapper was invalid because PowerShell reserves `$PID`. The corr
 `0.3.12-profileguard3` was exported, audited, and installed on the paired Pixel. The arm64 APK was 44,228,117 bytes (SHA-256 `1487E48DEB317D27054C5F5156D22CB6B9C044B9261212F5B2F1E5ABE4CAE784`), versionCode 25, min SDK 24, target SDK 36, VIBRATE-present, 812 entries, zero forbidden entries, and v2-signed with the existing debug certificate.
 
 Two corrected untouched 15-second dwells, app PIDs `30931` and `31349`, recorded zero cast, hook, cancellation, failure, and fatal markers. These text-only dwells do not establish physical cast/hook feel, comfort, or gameplay acceptance. No phone screenshot was taken.
+
+## V26 UI v2 final optimized build
+
+`0.4.0-ui3` / versionCode `26` was installed on the paired Pixel 9 Pro (`192.168.1.234:39865`) with `adb install -r` `Success`. The audited arm64-only APK is `49,959,406` bytes, SHA-256 `B81DA18B6A2DE2E15547C69009A3E0E51866455F77145524825551521B15694A`, minSdk `24`, targetSdk `36`, VIBRATE-present, and v2-signed by the existing debug certificate `c26373b2320fa530be93f5b6d255a4c8e10e6aa4476e430dedb6106a4de865dc`. `dumpsys` confirms versionName `0.4.0-ui3` and VIBRATE `granted=true`.
+
+Cold launch completed in `504ms`; Android PID `8535` remained alive and the scoped log scan has no FATAL EXCEPTION, SIGSEGV, Fatal signal, SCRIPT ERROR, Parse Error, or CRASH marker. No phone screenshot was taken. This validates package/install/startup only: physical cast, hook, fight timing, haptic feel, and user acceptance remain pending.

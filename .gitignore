@@ -7,10 +7,14 @@ android/build/.cxx/
 android/build/outputs/
 android/.gradle/
 reports/runtime/*.log
+reports/runtime/**/*.log
+reports/ui-v2-control-rod/**/*.log
+reports/ui-v2-720/polish-*/**/*.log
 reports/runtime/*.png
 reports/runtime/*.txt
 *.tmp
 *.import
 !art/ui_v1/runtime_source/*.png.import
+!art/ui_v1/runtime/*.png.import
 addons/admob/downloads/
 addons/admob/ios/
