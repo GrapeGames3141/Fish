@@ -10,3 +10,11 @@
 - Destination `LastWriteTimeUtc`: `2026-08-31T02:09:09.523Z`
 
 This verifies only the local DriveFS copy. It does not claim cloud-sync completion.
+
+## Cast & Crank 0.4.1-navfix1
+
+- Local DriveFS destination: `H:\My Drive\AI Projects\Haptic Fish\CastAndCrank-0.4.1-navfix1-arm64-debug.apk`
+- Source: `E:\AI Projects\games\haptic fish\build\android\CastAndCrank-Gate1-debug.apk`
+- Helper and independent verification: `51,793,264` bytes, SHA-256 `094A4B70A84B28F1083D1EB5256F31B546EC7DE1DA770C90125C8BAB5B3CE17F`; source/destination length and hash parity are both true.
+
+This proves the local DriveFS copy only. It does not claim cloud-sync completion.

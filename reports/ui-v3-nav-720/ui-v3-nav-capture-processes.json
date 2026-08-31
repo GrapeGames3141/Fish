@@ -1,0 +1,96 @@
+{
+  "started": "2026-08-31T08:33:54.1933185-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "project": "E:\\CodexCache\\haptic-fish-project",
+  "user_data": "E:\\CodexCache\\haptic-fish-nav-v27\\user",
+  "resolution": "720x1280",
+  "wrapper_note": "Initial malformed PID 10664 received empty key/value capture args, produced no capture, and was terminated exactly with no children/WerFault; accepted retry begins PID 32072.",
+  "results": [
+    {
+      "scenario": "top_nav_ready",
+      "pid": 32072,
+      "observed_pids": [
+        32072
+      ],
+      "exit": 0,
+      "width": 720,
+      "height": 1280,
+      "bytes": 1107590,
+      "stderr_bytes": 0,
+      "remaining_pids": [],
+      "copied": true
+    },
+    {
+      "scenario": "top_nav_safe_top",
+      "pid": 11640,
+      "observed_pids": [
+        11640
+      ],
+      "exit": 0,
+      "width": 720,
+      "height": 1280,
+      "bytes": 1061754,
+      "stderr_bytes": 0,
+      "remaining_pids": [],
+      "copied": true
+    },
+    {
+      "scenario": "settings_button_line_out_safe_top",
+      "pid": 46044,
+      "observed_pids": [
+        46044
+      ],
+      "exit": 0,
+      "width": 720,
+      "height": 1280,
+      "bytes": 973550,
+      "stderr_bytes": 0,
+      "remaining_pids": [],
+      "copied": true
+    },
+    {
+      "scenario": "waters_button_ready_safe_top",
+      "pid": 23992,
+      "observed_pids": [
+        23992
+      ],
+      "exit": 0,
+      "width": 720,
+      "height": 1280,
+      "bytes": 937257,
+      "stderr_bytes": 0,
+      "remaining_pids": [],
+      "copied": true
+    },
+    {
+      "scenario": "records_button_ready_safe_top",
+      "pid": 41428,
+      "observed_pids": [
+        41428
+      ],
+      "exit": 0,
+      "width": 720,
+      "height": 1280,
+      "bytes": 1376559,
+      "stderr_bytes": 0,
+      "remaining_pids": [],
+      "copied": true
+    },
+    {
+      "scenario": "top_nav_active_locked",
+      "pid": 4984,
+      "observed_pids": [
+        4984
+      ],
+      "exit": 0,
+      "width": 720,
+      "height": 1280,
+      "bytes": 1036844,
+      "stderr_bytes": 0,
+      "remaining_pids": [],
+      "copied": true
+    }
+  ],
+  "new_werfault": [],
+  "remaining_task_processes": []
+}

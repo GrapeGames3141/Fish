@@ -114,3 +114,7 @@ Two corrected untouched 15-second dwells, app PIDs `30931` and `31349`, recorded
 `0.4.0-ui3` / versionCode `26` was installed on the paired Pixel 9 Pro (`192.168.1.234:39865`) with `adb install -r` `Success`. The audited arm64-only APK is `49,959,406` bytes, SHA-256 `B81DA18B6A2DE2E15547C69009A3E0E51866455F77145524825551521B15694A`, minSdk `24`, targetSdk `36`, VIBRATE-present, and v2-signed by the existing debug certificate `c26373b2320fa530be93f5b6d255a4c8e10e6aa4476e430dedb6106a4de865dc`. `dumpsys` confirms versionName `0.4.0-ui3` and VIBRATE `granted=true`.
 
 Cold launch completed in `504ms`; Android PID `8535` remained alive and the scoped log scan has no FATAL EXCEPTION, SIGSEGV, Fatal signal, SCRIPT ERROR, Parse Error, or CRASH marker. No phone screenshot was taken. This validates package/install/startup only: physical cast, hook, fight timing, haptic feel, and user acceptance remain pending.
+
+## V27 navigation delivery — device gate pending
+
+The signed `0.4.1-navfix1` / versionCode `27` APK was not installed or started in this pass. ADB restarted and no device was listed; the prior Pixel 9 Pro endpoint `192.168.1.234:39865` did not reconnect, mDNS found no service, and only ports `39865`, `43875`, `35273`, `38543`, and `36265` were checked, each timing out. No phone screenshot was taken. Pixel navigation touch/safe-inset behavior and physical cast/hook/fight/haptic-feel validation remain pending.

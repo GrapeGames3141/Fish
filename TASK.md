@@ -102,3 +102,9 @@ The user authorized generation and integration of this first ImageGen UI pass. H
 
 - The genuine ten-cast replay has minimum scalar snap axis `.8203` and physical polarity `.6668`. V25 `0.3.12-profileguard3` raises only the runtime snap floors to `.78` / `.62`, retaining all ten recorded intended examples while rejecting the v24 `.69` / `.51` false signature. Hooks now require a deliberate three-sample `.055` sweep and log derived scalar telemetry; haptic settle is `.30s`.
 - V25 was exported, audited, and installed. Two corrected untouched 15-second dwells (PIDs `30931` and `31349`) recorded zero cast, hook, cancel, failure, and fatal markers. This does not establish physical cast/hook feel, comfort, or gameplay acceptance.
+
+## UI v3 navigation correction
+
+- Implemented in v27: a single opaque three-target ImageGen strip owns the closed-ledger `RECORDS`, waters-map `WATERS`, and gear `SETTINGS` artwork. Rendering and press handling refresh one shared safe-area geometry source; Records/Waters visibly lock while fishing is active, while Settings remains available in every normal world state.
+- Records and water selection now exit through a safe-area-aware, art-backed `BACK TO FISHING` plaque. Existing motion-only gameplay controls are unchanged.
+- Version `0.4.1-navfix1` / code `27` is exported and package-audited. Parser/import, deterministic domain checks, and selected 720×1280 desktop navigation captures are complete; Pixel reconnection/install and physical touch acceptance remain pending, as does human aesthetic approval.
