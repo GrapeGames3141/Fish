@@ -264,8 +264,10 @@ func _apply_capture_scenario() -> void:
 		"catch_recast_ready": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; session.terminal_elapsed = FishingSession.TERMINAL_RECAST_DWELL_SECONDS; session.terminal_still_elapsed = FishingSession.TERMINAL_STILL_SECONDS; caught_recorded = true
 		"catch_tail_mid": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; session.terminal_elapsed = 0.32; ui_time = 0.16; caught_recorded = true
 		"settings": view.overlay = "settings"
+		"settings_safe_top_91": view.safe_top_override = 91.0; view.overlay = "settings"
 		"settings_safe_top_180": view.safe_top_override = 180.0; view.overlay = "settings"
 		"motion_setup": view.overlay = "motion_setup"
+		"motion_setup_safe_top_180": view.safe_top_override = 180.0; view.overlay = "motion_setup"
 		"diagnostics": view.overlay = "diagnostics"
 		"top_nav_ready": _capture_top_nav_press("settings", 0.0); view.overlay = ""
 		"top_nav_safe_top": _capture_top_nav_press("settings", 91.0); view.overlay = ""
@@ -338,17 +340,20 @@ class FishingView extends Control:
 	var back_to_fishing_rect := Rect2(420, 18, 264, 64)
 	var location_pine_rect := Rect2(42, 240, 636, 380)
 	var location_cedar_rect := Rect2(42, 680, 636, 380)
+	var modal_panel_rect := Rect2(55, 150, 610, 960)
+	var modal_header_rect := Rect2(226, 178, 272, 102)
+	var modal_footer_rect := Rect2(222, 992, 278, 104)
 	var settings_haptics_rect := Rect2(98, 304, 524, 72)
 	var settings_reduced_motion_rect := Rect2(98, 394, 524, 72)
 	var settings_handedness_rect := Rect2(98, 484, 524, 72)
-	var settings_test_haptics_rect := Rect2(98, 592, 524, 72)
-	var settings_motion_setup_rect := Rect2(98, 682, 524, 72)
-	var settings_footer_close_rect := Rect2(110, 1030, 500, 72)
-	var motion_sensitivity_rect := Rect2(98, 310, 524, 70)
-	var motion_recalibrate_rect := Rect2(98, 400, 524, 70)
-	var motion_capture_rect := Rect2(98, 490, 524, 70)
-	var motion_diagnostics_rect := Rect2(98, 580, 524, 70)
-	var motion_back_rect := Rect2(110, 1018, 500, 72)
+	var settings_test_haptics_rect := Rect2(98, 640, 524, 72)
+	var settings_motion_setup_rect := Rect2(98, 740, 524, 72)
+	var settings_footer_close_rect := Rect2(222, 992, 278, 104)
+	var motion_sensitivity_rect := Rect2(98, 304, 524, 72)
+	var motion_recalibrate_rect := Rect2(98, 394, 524, 72)
+	var motion_capture_rect := Rect2(98, 484, 524, 72)
+	var motion_diagnostics_rect := Rect2(98, 574, 524, 72)
+	var motion_back_rect := Rect2(222, 992, 278, 104)
 	var catch_continue_rect := Rect2(92, 914, 250, 70)
 	var catch_records_rect := Rect2(378, 914, 250, 70)
 	var journal_slot_rects := [Rect2(68, 236, 280, 284), Rect2(372, 236, 280, 284), Rect2(68, 548, 280, 284), Rect2(372, 548, 280, 284), Rect2(68, 860, 280, 284), Rect2(372, 860, 280, 284)]
@@ -363,10 +368,12 @@ class FishingView extends Control:
 		font = ThemeDB.fallback_font
 		_cache_rod_frames()
 		_refresh_top_nav_geometry()
+		_refresh_modal_layout()
 		queue_redraw()
 	func _notification(what: int) -> void:
 		if what == NOTIFICATION_RESIZED:
 			_refresh_top_nav_geometry()
+			_refresh_modal_layout()
 	func _virtual_safe_top() -> float:
 		if safe_top_override >= 0.0: return clampf(safe_top_override, 0.0, 180.0)
 		var screen_size := DisplayServer.screen_get_size()
@@ -385,6 +392,36 @@ class FishingView extends Control:
 		records_rect = Rect2(top_nav_strip_rect.position, Vector2(button_width, top_nav_strip_rect.size.y))
 		locations_rect = Rect2(top_nav_strip_rect.position + Vector2(button_width, 0), Vector2(button_width, top_nav_strip_rect.size.y))
 		settings_rect = Rect2(top_nav_strip_rect.position + Vector2(button_width * 2.0, 0), Vector2(button_width, top_nav_strip_rect.size.y))
+	func _refresh_modal_layout() -> void:
+		var panel_y := maxf(150.0, _virtual_safe_top() + 20.0)
+		modal_panel_rect = Rect2(55, panel_y, 610, 960)
+		# The opaque source modal owns its header/footer plaques. Map their source
+		# bounds through this same transform for native labels and hit targets.
+		var source: Rect2 = CONTROL_REGIONS.modal
+		var scale := modal_panel_rect.size / source.size
+		modal_header_rect = Rect2(modal_panel_rect.position + (Rect2(168, 774, 228, 72).position - source.position) * scale, Rect2(168, 774, 228, 72).size * scale)
+		modal_footer_rect = Rect2(modal_panel_rect.position + (Rect2(164, 1352, 234, 74).position - source.position) * scale, Rect2(164, 1352, 234, 74).size * scale)
+		settings_haptics_rect = Rect2(98, panel_y + 154, 524, 72)
+		settings_reduced_motion_rect = Rect2(98, panel_y + 244, 524, 72)
+		settings_handedness_rect = Rect2(98, panel_y + 334, 524, 72)
+		settings_test_haptics_rect = Rect2(98, panel_y + 490, 524, 72)
+		settings_motion_setup_rect = Rect2(98, panel_y + 590, 524, 72)
+		settings_footer_close_rect = modal_footer_rect
+		motion_sensitivity_rect = Rect2(98, panel_y + 154, 524, 72)
+		motion_recalibrate_rect = Rect2(98, panel_y + 244, 524, 72)
+		motion_capture_rect = Rect2(98, panel_y + 334, 524, 72)
+		motion_diagnostics_rect = Rect2(98, panel_y + 424, 524, 72)
+		motion_back_rect = modal_footer_rect
+	func _draw_modal_panel() -> void:
+		if controller.control_kit_texture: draw_texture_rect_region(controller.control_kit_texture, modal_panel_rect, CONTROL_REGIONS.modal)
+		else: draw_style_box(_control_style("modal"), modal_panel_rect)
+	func _modal_footer_font_size(label: String) -> int:
+		# Keep labels between the baked footer's two brass bolts rather than relying
+		# on a shorter neighboring label to imply that long copy will fit.
+		var usable_width := modal_footer_rect.size.x - 96.0
+		for point_size in range(18, 11, -1):
+			if font.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, point_size).x <= usable_width: return point_size
+		return 12
 	func _draw() -> void:
 		var size := get_size(); draw_set_transform(Vector2.ZERO, 0.0, Vector2(size.x / 720.0, size.y / 1280.0))
 		if controller.loading_active: _draw_loading()
@@ -565,32 +602,33 @@ class FishingView extends Control:
 		_text(copy, Vector2(90, 510), 21, Color("173a48"))
 		_text("Calibration starts automatically — no buttons.", Vector2(112, 580), 18, Color("416b72"))
 	func _draw_settings() -> void:
-		var panel_y := maxf(150.0, _virtual_safe_top() + 20.0)
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.88)); draw_style_box(_control_style("modal"), Rect2(55, panel_y, 610, 960)); draw_style_box(_control_style("plaque_normal"), Rect2(168, panel_y + 18, 384, 78)); _text("SETTINGS", Vector2(243, panel_y + 72), 34, Color("fff4d1")); var settings: Dictionary = controller.save.data.settings
+		_refresh_modal_layout()
+		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.88)); _draw_modal_panel(); _centered_text("SETTINGS", modal_header_rect.get_center() + Vector2(0, 10), 30, Color("fff4d1")); var settings: Dictionary = controller.save.data.settings
 		_draw_setting_row(settings_haptics_rect, "HAPTICS", "ON" if settings.haptics else "OFF")
 		_draw_setting_row(settings_reduced_motion_rect, "REDUCED MOTION", "ON" if settings.reduced_motion else "OFF")
 		_draw_setting_row(settings_handedness_rect, "HANDEDNESS", "LEFT" if settings.left_handed else "RIGHT")
-		_centered_text("Changing handedness resets the active session", Vector2(360, 576), 16, Color("123942")); _centered_text("and starts motion setup again.", Vector2(360, 598), 16, Color("123942"))
+		_centered_text("Changing handedness resets the active session", Vector2(360, modal_panel_rect.position.y + 442), 16, Color("123942")); _centered_text("and starts motion setup again.", Vector2(360, modal_panel_rect.position.y + 464), 16, Color("123942"))
 		draw_style_box(_control_style("plaque_normal"), settings_test_haptics_rect); _centered_text("TEST VIBRATION", settings_test_haptics_rect.get_center() + Vector2(0, 6), 20, Color("fff4d1"))
 		draw_style_box(_control_style("plaque_normal"), settings_motion_setup_rect); _centered_text("MOTION SETUP", settings_motion_setup_rect.get_center() + Vector2(0, 6), 20, Color("fff4d1"))
-		draw_style_box(_control_style("plaque_normal"), settings_footer_close_rect); _centered_text("BACK TO FISHING", settings_footer_close_rect.get_center() + Vector2(0, 6), 18, Color("fff4d1"))
+		_centered_text("BACK TO FISHING", settings_footer_close_rect.get_center() + Vector2(0, 6), 17, Color("fff4d1"))
 	func _draw_setting_row(rect: Rect2, title: String, value: String) -> void:
 		draw_style_box(_control_style("row_selected"), rect); _text(title, rect.position + Vector2(28, 44), 20, Color("fff5d8")); _text(value, rect.position + Vector2(414, 44), 20, Color("f3d979"))
 	func _draw_motion_setup() -> void:
-		var panel_y := maxf(150.0, _virtual_safe_top() + 20.0)
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.90)); draw_style_box(_control_style("modal"), Rect2(55, panel_y, 610, 960)); draw_style_box(_control_style("plaque_normal"), Rect2(150, panel_y + 18, 420, 78)); _centered_text("MOTION SETUP", Vector2(360, panel_y + 72), 34, Color("fff4d1"))
+		_refresh_modal_layout()
+		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.90)); _draw_modal_panel(); _centered_text("MOTION SETUP", modal_header_rect.get_center() + Vector2(0, 8), 22, Color("fff4d1"))
 		_draw_setting_row(motion_sensitivity_rect, "SENSITIVITY", "%.1f" % float(controller.save.data.settings.sensitivity))
 		for rect in [motion_recalibrate_rect, motion_capture_rect, motion_diagnostics_rect]: draw_style_box(_control_style("plaque_normal"), rect)
 		_centered_text("RECALIBRATE MOTION", motion_recalibrate_rect.get_center() + Vector2(0, 6), 20, Color("fff4d1")); _centered_text("RECORD 10 CASTS", motion_capture_rect.get_center() + Vector2(0, 6), 20, Color("fff4d1")); _centered_text("MOTION DIAGNOSTICS", motion_diagnostics_rect.get_center() + Vector2(0, 6), 20, Color("fff4d1"))
-		_centered_text("Recalibration clears the active cast and starts", Vector2(360, 704), 16, Color("123942")); _centered_text("two practice casts.", Vector2(360, 726), 16, Color("123942"))
-		draw_style_box(_control_style("plaque_normal"), motion_back_rect); _centered_text("BACK TO SETTINGS", motion_back_rect.get_center() + Vector2(0, 6), 18, Color("fff4d1"))
+		_centered_text("Recalibration clears the active cast and starts", Vector2(360, modal_panel_rect.position.y + 534), 16, Color("123942")); _centered_text("two practice casts.", Vector2(360, modal_panel_rect.position.y + 556), 16, Color("123942"))
+		_centered_text("BACK TO SETTINGS", motion_back_rect.get_center() + Vector2(0, 6), 17, Color("fff4d1"))
 	func _draw_cast_capture() -> void:
+		_refresh_modal_layout()
 		var data: Dictionary = controller.cast_capture.status()
 		var done := int(data.get("cast_index", 0))
 		var phase := str(data.get("phase", "idle"))
 		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.90)); draw_style_box(_panel_style(Color("eff3dc"), Color("fff6c5")), Rect2(54, 330, 612, 490)); _text("CAST TUNING CAPTURE", Vector2(142, 412), 30, Color("173a48"))
 		if phase == "saved":
-			_text("10 CASTS SAVED", Vector2(210, 505), 29, Color("1e665d")); _text("Raw trace is stored only for this", Vector2(155, 558), 20, Color("416b72")); _text("explicit capture. Return to Motion Setup.", Vector2(132, 592), 20, Color("416b72")); draw_style_box(_control_style("plaque_normal"), motion_back_rect); _centered_text("BACK TO MOTION SETUP", motion_back_rect.get_center() + Vector2(0, 6), 18, Color("fff4d1")); return
+			_text("10 CASTS SAVED", Vector2(210, 505), 29, Color("1e665d")); _text("Raw trace is stored only for this", Vector2(155, 558), 20, Color("416b72")); _text("explicit capture. Return to Motion Setup.", Vector2(132, 592), 20, Color("416b72")); draw_style_box(_control_style("plaque_normal"), motion_back_rect); _centered_text("BACK TO MOTION SETUP", motion_back_rect.get_center() + Vector2(0, 6), _modal_footer_font_size("BACK TO MOTION SETUP"), Color("fff4d1")); return
 		var copy := "GET READY — WINDOWS BEGIN SOON"
 		if phase == "active": copy = "CAST NOW — COCK, THEN SNAP"
 		elif phase == "rest": copy = "REST — NEXT WINDOW WILL VIBRATE"
@@ -635,8 +673,9 @@ class FishingView extends Control:
 			draw_style_box(_panel_style(Color("123942", 0.92), Color("f0d579")), Rect2(rect.position + Vector2(rect.size.x - 146, 18), Vector2(120, 42)))
 			_text("SELECTED", rect.position + Vector2(rect.size.x - 129, 47), 15, Color("fff2c9"))
 	func _draw_diagnostics() -> void:
+		_refresh_modal_layout()
 		var data: Dictionary = controller.motion.get_diagnostics(); var reasons: Dictionary = data.reasons
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.88)); draw_style_box(_panel_style(Color("eaf2dc"), Color("fff6c5")), Rect2(55, 300, 610, 590)); _text("MOTION DIAGNOSTICS", Vector2(150, 390), 30, Color("173a48")); _text("Cock attempts: %d" % int(data.cock_attempts), Vector2(125, 465), 21, Color("173a48")); _text("Completed casts: %d" % int(data.completed_casts), Vector2(125, 510), 21, Color("173a48")); _text("Hook attempts: %d" % int(data.hook_attempts), Vector2(125, 555), 21, Color("173a48")); _text("Fails L/A/P/G/T: %d / %d / %d / %d / %d" % [int(reasons.linear), int(reasons.axis), int(reasons.polarity), int(reasons.gyro), int(reasons.timeout)], Vector2(82, 620), 18, Color("416b72")); _text("Derived counts only. Raw traces exist only after", Vector2(92, 694), 17, Color("416b72")); _text("an explicit RECORD 10 CASTS session.", Vector2(132, 722), 17, Color("416b72")); draw_style_box(_control_style("plaque_normal"), motion_back_rect); _centered_text("BACK TO MOTION SETUP", motion_back_rect.get_center() + Vector2(0, 6), 18, Color("fff4d1"))
+		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.88)); draw_style_box(_panel_style(Color("eaf2dc"), Color("fff6c5")), Rect2(55, 300, 610, 590)); _text("MOTION DIAGNOSTICS", Vector2(150, 390), 30, Color("173a48")); _text("Cock attempts: %d" % int(data.cock_attempts), Vector2(125, 465), 21, Color("173a48")); _text("Completed casts: %d" % int(data.completed_casts), Vector2(125, 510), 21, Color("173a48")); _text("Fails L/A/P/G/T: %d / %d / %d / %d / %d" % [int(reasons.linear), int(reasons.axis), int(reasons.polarity), int(reasons.gyro), int(reasons.timeout)], Vector2(82, 620), 18, Color("416b72")); _text("Derived counts only. Raw traces exist only after", Vector2(92, 694), 17, Color("416b72")); _text("an explicit RECORD 10 CASTS session.", Vector2(132, 722), 17, Color("416b72")); draw_style_box(_control_style("plaque_normal"), motion_back_rect); _centered_text("BACK TO MOTION SETUP", motion_back_rect.get_center() + Vector2(0, 6), _modal_footer_font_size("BACK TO MOTION SETUP"), Color("fff4d1"))
 	func _draw_records() -> void:
 		var safe_top := _virtual_safe_top()
 		var page := _journal_page_rect(safe_top)
@@ -751,6 +790,7 @@ class FishingView extends Control:
 			if controller.accepts_primary_press(false, bool(event.pressed), event.button_index == MOUSE_BUTTON_LEFT, event.device): _handle_press(event.position * Vector2(720.0 / size.x, 1280.0 / size.y))
 	func _handle_press(pos: Vector2) -> void:
 		_refresh_top_nav_geometry()
+		_refresh_modal_layout()
 		if overlay == "calibration" or overlay == "capture": return
 		if overlay == "capture_saved":
 			if motion_back_rect.has_point(pos): overlay = "motion_setup"

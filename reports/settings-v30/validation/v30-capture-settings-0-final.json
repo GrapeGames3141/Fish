@@ -1,0 +1,31 @@
+{
+  "label": "v30-capture-settings-0-final",
+  "started": "2026-09-08T17:05:29.9392493-05:00",
+  "finished": "2026-09-08T17:05:32.8085548-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\settings-v30\\gallery\\settings-0.png",
+    "--capture-scenario=settings"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-settings-v30",
+  "rootPid": 31048,
+  "observedPids": [
+    31048
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\settings-v30\\validation\\v30-capture-settings-0-final.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\settings-v30\\validation\\v30-capture-settings-0-final.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

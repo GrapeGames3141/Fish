@@ -1,0 +1,20 @@
+{
+  "label": "v30-capture-settings-180-final",
+  "rootPid": 58716,
+  "observedPids": [
+    58716
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\settings-v30\\gallery\\settings-180.png",
+    "--capture-scenario=settings_safe_top_180"
+  ],
+  "started": "2026-09-08T17:06:12.2128727-05:00"
+}

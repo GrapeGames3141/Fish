@@ -1,0 +1,20 @@
+{
+  "label": "v30-capture-motion-180-final2",
+  "rootPid": 69140,
+  "observedPids": [
+    69140
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\settings-v30\\gallery\\motion-setup-180.png",
+    "--capture-scenario=motion_setup_safe_top_180"
+  ],
+  "started": "2026-09-08T17:12:55.7759857-05:00"
+}

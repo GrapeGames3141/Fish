@@ -322,13 +322,46 @@ func _test_ui_controller_interactions() -> void:
 	var controller := GameMain.new()
 	controller.session = FishingSession.new(); controller.motion = MotionService.new(); controller.haptics = HapticService.new(); controller.preview_haptics = HapticService.new(); controller.cast_capture = CastCaptureService.new("user://ui-controller-capture-%d.json" % Time.get_ticks_usec(), Callable(controller.motion, "sample"))
 	controller.save = SaveService.new("user://ui-controller-%d.json" % Time.get_ticks_usec()); controller.save.data = SaveService.default_data()
-	var view = GameMain.FishingView.new(); view.controller = controller; view.size = Vector2(720, 1280); controller.view = view
+	var view = GameMain.FishingView.new(); view.controller = controller; view.size = Vector2(720, 1280); view.font = ThemeDB.fallback_font; controller.view = view
 	for safe_top in [0.0, 91.0, 180.0]:
 		view.safe_top_override = safe_top; view.overlay = ""; view._refresh_top_nav_geometry(); view._handle_press(view.settings_rect.get_center())
 		expect(view.overlay == "settings", "Settings press routes through its current shared safe-top target at %.0f" % safe_top)
+		view._refresh_modal_layout()
+		var controls := [view.settings_haptics_rect, view.settings_reduced_motion_rect, view.settings_handedness_rect, view.settings_test_haptics_rect, view.settings_motion_setup_rect, view.settings_footer_close_rect]
+		var all_inside: bool = view.modal_panel_rect.position.y >= safe_top and view.modal_panel_rect.end.y <= 1280.0 and view.settings_footer_close_rect.position.y >= view.modal_panel_rect.position.y and view.settings_footer_close_rect.end.y <= view.modal_panel_rect.end.y and view.settings_footer_close_rect.size.y >= 64.0 and view.settings_footer_close_rect == view.modal_footer_rect
+		for control_index in range(controls.size()):
+			all_inside = all_inside and controls[control_index].position.x >= view.modal_panel_rect.position.x and controls[control_index].end.x <= view.modal_panel_rect.end.x and controls[control_index].position.y >= view.modal_panel_rect.position.y and controls[control_index].end.y <= view.modal_panel_rect.end.y
+			for later_index in range(control_index + 1, controls.size()): all_inside = all_inside and not controls[control_index].intersects(controls[later_index])
+		expect(all_inside and view.settings_test_haptics_rect.position.y >= view.modal_panel_rect.position.y + 490.0 and view.settings_motion_setup_rect.position.y >= view.modal_panel_rect.position.y + 590.0, "safe-aware Settings layout keeps one baked footer target and clear nonoverlapping controls at %.0f" % safe_top)
+		view._handle_press(view.settings_footer_close_rect.get_center())
+		expect(view.overlay == "", "current Settings baked-footer target closes exactly once at safe-top %.0f" % safe_top)
 		controller._close_overlay()
 		view.overlay = ""; view._handle_press(view.settings_rect.position - Vector2(1, 1)); expect(view.overlay == "", "nav boundary outside is inert at safe-top %.0f" % safe_top)
-	view.safe_top_override = 0.0; view.overlay = "settings"
+	view.safe_top_override = 180.0; view.overlay = "motion_setup"; view._refresh_modal_layout()
+	var motion_controls := [view.motion_sensitivity_rect, view.motion_recalibrate_rect, view.motion_capture_rect, view.motion_diagnostics_rect, view.motion_back_rect]
+	var motion_inside: bool = view.motion_back_rect == view.modal_footer_rect and view.motion_back_rect.size.y >= 64.0
+	for motion_index in range(motion_controls.size()):
+		motion_inside = motion_inside and view.modal_panel_rect.encloses(motion_controls[motion_index])
+		for later_motion_index in range(motion_index + 1, motion_controls.size()): motion_inside = motion_inside and not motion_controls[motion_index].intersects(motion_controls[later_motion_index])
+	expect(motion_inside, "Motion Setup uses the same safe-aware baked footer geometry at safe-top 180")
+	var motion_title_width: float = view.font.get_string_size("MOTION SETUP", HORIZONTAL_ALIGNMENT_LEFT, -1, 22).x
+	var motion_footer_size: int = view._modal_footer_font_size("BACK TO MOTION SETUP")
+	var motion_footer_width: float = view.font.get_string_size("BACK TO MOTION SETUP", HORIZONTAL_ALIGNMENT_LEFT, -1, motion_footer_size).x
+	expect(motion_title_width <= view.modal_header_rect.size.x - 100.0 and motion_footer_width <= view.modal_footer_rect.size.x - 96.0, "Motion Setup title and long return label fit inside the baked plaque clear spans at safe-top 180 (title=%.1f footer=%d/%.1f)" % [motion_title_width, motion_footer_size, motion_footer_width])
+	view._handle_press(view.motion_back_rect.get_center()); expect(view.overlay == "settings", "Motion Setup footer routes through the current baked-footer target")
+	view.overlay = "diagnostics"; view._refresh_modal_layout(); view._handle_press(view.motion_back_rect.get_center())
+	expect(view.overlay == "motion_setup", "Diagnostics returns through the refreshed shared motion footer target")
+	view.overlay = "capture_saved"; view._refresh_modal_layout(); view._handle_press(view.motion_back_rect.get_center())
+	expect(view.overlay == "motion_setup", "Saved capture returns through the refreshed shared motion footer target")
+	view.safe_top_override = 0.0; view.overlay = "settings"; view._refresh_modal_layout()
+	var old_footer: Rect2 = view.settings_footer_close_rect
+	view.safe_top_override = 180.0; view.overlay = "settings"
+	var new_panel_y := maxf(150.0, view.safe_top_override + 20.0)
+	var resized_footer_point := Vector2(360.0, new_panel_y + ((1426.0 - 754.0) / 682.0) * 960.0 - 2.0)
+	expect(not old_footer.has_point(resized_footer_point), "new safe-top footer-bottom point is outside the stale pre-resize target")
+	view._handle_press(resized_footer_point)
+	expect(view.overlay == "", "immediate safe-top change refreshes the Settings footer before hit routing")
+	view.safe_top_override = 0.0; view.overlay = "settings"; view._refresh_modal_layout()
 	var touch := InputEventScreenTouch.new(); touch.pressed = true; touch.index = 0; touch.device = 0; touch.position = view.settings_haptics_rect.get_center()
 	var emulated_mouse := InputEventMouseButton.new(); emulated_mouse.pressed = true; emulated_mouse.button_index = MOUSE_BUTTON_LEFT; emulated_mouse.device = InputEvent.DEVICE_ID_EMULATION; emulated_mouse.position = touch.position
 	var original_haptics := bool(controller.save.data.settings.haptics); view._gui_input(touch); view._gui_input(emulated_mouse)
@@ -911,7 +944,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 29 and export_config.get_value("preset.0.options", "version/name") == "0.5.0-livingfish1", "living fish package version is bumped")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 30 and export_config.get_value("preset.0.options", "version/name") == "0.5.1-settingsfix1", "Settings footer repair package version is bumped")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
@@ -994,4 +1027,4 @@ func _test_project_source_settings() -> void:
 	var locations_source := main_source.get_slice("func _draw_locations() -> void:", 1).get_slice("func _draw_location_card", 0)
 	expect("records_safe_top" in main_source and "safe_top_override = 91.0" in main_source and "_journal_page_rect" in main_source and "_draw_back_to_fishing(safe_top)" in locations_source and "BACK TO FISHING" in main_source and not "back_medallion" in records_source and not "back_medallion" in locations_source and not "_text(\"BACK\"" in locations_source, "Records page and locations retain safe-aware Back to Fishing controls without page-turn arrows")
 	expect("top_nav_ready" in main_source and "top_nav_safe_top" in main_source and "settings_button_line_out_safe_top" in main_source and "waters_button_ready_safe_top" in main_source and "records_button_ready_safe_top" in main_source and "top_nav_active_locked" in main_source and "_capture_top_nav_press" in main_source and "view._handle_press(view.settings_rect.get_center())" in main_source and "view._handle_press(view.locations_rect.get_center())" in main_source and "view._handle_press(view.records_rect.get_center())" in main_source, "deterministic navigation capture fixtures use the same current-geometry press handler")
-	expect("settings_footer_close_rect" in main_source and "draw_style_box(_control_style(\"plaque_normal\"), settings_footer_close_rect)" in main_source and "settings_footer_close_rect.has_point(pos)" in main_source and "settings_haptics_rect.has_point(pos)" in main_source and "motion_sensitivity_rect.has_point(pos)" in main_source, "Settings and Motion Setup route only through their visible named targets")
+	expect("_refresh_modal_layout()" in main_source and "_draw_modal_panel()" in main_source and "modal_footer_rect" in main_source and "settings_footer_close_rect.has_point(pos)" in main_source and "settings_haptics_rect.has_point(pos)" in main_source and "motion_sensitivity_rect.has_point(pos)" in main_source and not "draw_style_box(_control_style(\"plaque_normal\"), settings_footer_close_rect)" in main_source, "Settings and Motion Setup route through one safe-aware baked-footer target without a duplicate runtime plaque")
