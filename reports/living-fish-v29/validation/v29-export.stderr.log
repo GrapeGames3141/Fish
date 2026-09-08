@@ -1,0 +1,6 @@
+ERROR: Invalid export preset name: Android.
+The following presets were detected in this project's `export_presets.cfg`:
+
+        "Android Gate 1 Debug"
+
+   at: _fs_changed (editor/editor_node.cpp:1417)

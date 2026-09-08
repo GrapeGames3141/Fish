@@ -1,0 +1,8 @@
+SCRIPT ERROR: Parse Error: Cannot infer the type of "slot" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://src/ui/main.gd:642)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "history" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://src/ui/main.gd:668)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "history" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://src/ui/main.gd:728)
+ERROR: Failed to load script "res://src/ui/main.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)

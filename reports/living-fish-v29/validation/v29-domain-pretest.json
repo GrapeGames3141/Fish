@@ -1,0 +1,28 @@
+{
+  "label": "v29-domain-pretest",
+  "started": "2026-09-08T07:04:02.6906157-05:00",
+  "finished": "2026-09-08T07:04:48.0555108-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-livingfish-v29",
+  "rootPid": 72068,
+  "observedPids": [
+    72068
+  ],
+  "completed": false,
+  "exitCode": null,
+  "cleanupPids": [
+    72068
+  ],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-domain-pretest.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-domain-pretest.stderr.log",
+  "stderrMarker": "SCRIPT ERROR: Parse Error: Cannot infer the type of \"slot\" variable because the value doesn't have a set type.",
+  "error": null
+}

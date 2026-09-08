@@ -12,6 +12,8 @@
 
 ## UI production checkpoint
 
+- Living-fish/journal v29 implementation, evidence matrix, selected captures, and runtime-art provenance: [docs/living-fish-v29.md](docs/living-fish-v29.md). Physical/device and human aesthetic acceptance remain separate from automated evidence.
+
 - The user explicitly authorizes a first-pass, versioned ImageGen UI family: icon, splash, gameplay, catch, and records presentation. Keep dynamic copy as native UI text.
 - Gameplay remains motion-only: no cast, hook, or fight touch fallback. Build layered animated pond, rod, line, and bobber states, including bite submerge, fight ripples/splash, and rod bend; provide a glanceable styled motion hint.
 - Records must show count and best for every planned fish, not only the active Bluegill. Produce fresh 720×1280 captures and a fresh build after implementation.

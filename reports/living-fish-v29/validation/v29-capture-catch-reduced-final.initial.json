@@ -1,0 +1,20 @@
+{
+  "label": "v29-capture-catch-reduced-final",
+  "rootPid": 70280,
+  "observedPids": [
+    70280
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\gallery\\catch-reduced-final.png",
+    "--capture-scenario=reduced_catch"
+  ],
+  "started": "2026-09-08T07:41:49.6668115-05:00"
+}

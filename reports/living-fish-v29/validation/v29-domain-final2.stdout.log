@@ -1,0 +1,10 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MOTION_FAIL stage=snap reason=timeout count=1
+MOTION_CAST quality=1.00 distance_m=40.0 snap_projection=104.83 axis_match=1.00 polarity=1.00 gyro=0.72 reversal_s=0.120 cock_projection=12.95
+MOTION_FIGHT caught elapsed=0.00 progress=0.00 tension=0.12
+MOTION_FAIL stage=snap reason=timeout count=1
+MOTION_FAIL stage=cock reason=polarity count=1
+MOTION_FAIL stage=snap reason=timeout count=1
+MOTION_FAIL stage=snap reason=timeout count=1
+PASS: Cast & Crank Gate 1 domain tests

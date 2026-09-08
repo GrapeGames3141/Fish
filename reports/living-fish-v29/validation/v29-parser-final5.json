@@ -1,0 +1,29 @@
+{
+  "label": "v29-parser-final5",
+  "started": "2026-09-08T07:51:57.4640523-05:00",
+  "finished": "2026-09-08T07:52:09.6961886-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--editor",
+    "--quit"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-livingfish-v29",
+  "rootPid": 75148,
+  "observedPids": [
+    75148
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-parser-final5.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-parser-final5.stderr.log",
+  "stderrMarker": "SCRIPT ERROR: Parse Error: Expected statement, found \"Indent\" instead.",
+  "error": null
+}

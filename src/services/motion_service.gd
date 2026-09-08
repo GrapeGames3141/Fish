@@ -87,7 +87,10 @@ func update(delta: float, allow_cast: bool, allow_hook: bool, allow_fight: bool 
 	if calibration_phase != "idle" and calibration_phase != "complete":
 		return _update_calibration(delta, reading)
 	_cooldown_elapsed = maxf(0.0, _cooldown_elapsed - delta)
-	var event := {"cast_arm": false, "cast_quality": 0.0, "cast_cancel": false, "snap_projection": 0.0, "snap_axis_match": 0.0, "snap_polarity_match": 0.0, "snap_gyro": 0.0, "reversal_seconds": 0.0, "cock_projection": 0.0, "hook": false, "hook_projection": 0.0, "hook_alignment": 0.0, "hook_gyro": 0.0, "hook_sweep_samples": 0, "fight_lower": false, "fight_pull": false, "fight_load": fight_load, "fight_phase": fight_phase}
+	var gravity_valid := (reading.gravity as Vector3).length() >= 1.0
+	var linear_magnitude := (reading.linear as Vector3).length()
+	var gyro_magnitude := (reading.gyro as Vector3).length()
+	var event := {"cast_arm": false, "cast_quality": 0.0, "cast_cancel": false, "snap_projection": 0.0, "snap_axis_match": 0.0, "snap_polarity_match": 0.0, "snap_gyro": 0.0, "reversal_seconds": 0.0, "cock_projection": 0.0, "hook": false, "hook_projection": 0.0, "hook_alignment": 0.0, "hook_gyro": 0.0, "hook_sweep_samples": 0, "fight_lower": false, "fight_pull": false, "fight_load": fight_load, "fight_phase": fight_phase, "sensor_gravity_valid": gravity_valid, "sensor_linear": linear_magnitude, "sensor_gyro": gyro_magnitude, "sensor_quiet": gravity_valid and linear_magnitude <= 0.42 and gyro_magnitude <= 0.20}
 	if allow_cast:
 		_update_cast(delta, reading, event)
 	if allow_hook:

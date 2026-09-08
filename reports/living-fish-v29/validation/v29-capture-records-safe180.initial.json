@@ -1,0 +1,20 @@
+{
+  "label": "v29-capture-records-safe180",
+  "rootPid": 67528,
+  "observedPids": [
+    67528
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\gallery\\records-safe-top-180.png",
+    "--capture-scenario=records_safe_top_180"
+  ],
+  "started": "2026-09-08T07:34:48.2799078-05:00"
+}

@@ -1,0 +1,31 @@
+{
+  "label": "v29-capture-catch-safe-top",
+  "started": "2026-09-08T07:19:44.0459079-05:00",
+  "finished": "2026-09-08T07:19:47.7811376-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\gallery\\catch-safe-top-180.png",
+    "--capture-scenario=catch_safe_top_180"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-livingfish-v29",
+  "rootPid": 74084,
+  "observedPids": [
+    74084
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-capture-catch-safe-top.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-capture-catch-safe-top.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

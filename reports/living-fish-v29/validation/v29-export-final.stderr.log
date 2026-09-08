@@ -1,0 +1,31 @@
+ERROR: Export: Building of Android project failed, check output for the error:
+
+Starting a Gradle Daemon, 1 incompatible and 1 stopped Daemons could not be reused, use --status for details
+
+> Configure project :
+WARNING: The option setting 'android.overridePathCheck=true' is experimental.
+The current default is 'false'.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Could not determine the dependencies of task ':compileStandardDebugJavaWithJavac'.
+> Several environment variables and/or system properties contain different paths to the SDK.
+  Please correct and use only one way to inject the SDK location.
+  
+  ANDROID_HOME: E:\CodexCache\godot-android-4.7.1\android-sdk
+  ANDROID_SDK_ROOT: C:\Users\Tak\AppData\Local\Android\Sdk
+  
+  It is recommended to use ANDROID_HOME as other methods are deprecated
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 31s
+
+   at: add_message (./editor/export/editor_export_platform.h:270)
+ERROR: Project export for preset "Android Gate 1 Debug" failed.
+   at: _fs_changed (editor/editor_node.cpp:1417)

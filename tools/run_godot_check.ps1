@@ -2,13 +2,14 @@ param(
     [Parameter(Mandatory=$true)][string]$Label,
     [Parameter(Mandatory=$true)][string[]]$Arguments,
     [int]$TimeoutSeconds = 45,
-    [string]$CacheRoot = 'E:\CodexCache\haptic-fish-polish-v28',
+    [string]$CacheRoot = 'E:\CodexCache\haptic-fish-livingfish-v29',
     [string]$Engine = 'E:\CodexCache\godot-android-4.7.1\godot\Godot_v4.7.1-stable_win64.exe',
+    [string]$EvidenceRoot = 'E:\AI Projects\games\haptic fish\reports\living-fish-v29\validation',
     [switch]$UseDesktopProfile
 )
 
 $project = 'E:\CodexCache\haptic-fish-project'
-$evidence = 'E:\AI Projects\games\haptic fish\reports\ui-v4-polish-720\validation'
+$evidence = $EvidenceRoot
 New-Item -ItemType Directory -Force -Path $evidence | Out-Null
 $safeLabel = $Label -replace '[^A-Za-z0-9._-]', '_'
 $stdout = Join-Path $evidence ($safeLabel + '.stdout.log')

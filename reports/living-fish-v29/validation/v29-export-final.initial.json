@@ -1,0 +1,19 @@
+{
+  "label": "v29-export-final",
+  "rootPid": 69932,
+  "observedPids": [
+    69932
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--audio-driver",
+    "Dummy",
+    "--export-debug",
+    "Android Gate 1 Debug",
+    "E:\\AI Projects\\games\\haptic fish\\build\\android\\CastAndCrank-0.5.0-livingfish1-arm64-debug.apk"
+  ],
+  "started": "2026-09-08T07:29:38.8709222-05:00"
+}

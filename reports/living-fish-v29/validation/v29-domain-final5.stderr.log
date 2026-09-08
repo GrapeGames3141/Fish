@@ -1,0 +1,20 @@
+SCRIPT ERROR: Parse Error: Could not preload resource script "res://src/ui/main.gd".
+   at: GDScript::reload (res://tests/test_runner.gd:10)
+SCRIPT ERROR: Parse Error: Could not resolve script "res://src/ui/main.gd".
+   at: GDScript::reload (res://tests/test_runner.gd:10)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "min_landed" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:307)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "mid_landed" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:308)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "max_landed" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:309)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "controller" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:322)
+SCRIPT ERROR: Parse Error: Could not resolve script "res://src/ui/main.gd".
+   at: GDScript::reload (res://tests/test_runner.gd:325)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "resumed_pull" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:344)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "preview_guard" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:350)
+ERROR: Failed to load script "res://tests/test_runner.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)

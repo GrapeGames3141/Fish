@@ -1,0 +1,20 @@
+{
+  "label": "v29-capture-records-full",
+  "rootPid": 72432,
+  "observedPids": [
+    72432
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\gallery\\records-full.png",
+    "--capture-scenario=records"
+  ],
+  "started": "2026-09-08T07:34:45.3366085-05:00"
+}

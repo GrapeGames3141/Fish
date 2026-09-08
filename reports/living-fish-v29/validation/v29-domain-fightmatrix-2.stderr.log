@@ -1,0 +1,24 @@
+ERROR: 300ms-delayed pull/ease lands channel_catfish in 10–20 seconds at 60Hz / roll 0.00
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://tests/test_runner.gd:31)
+ERROR: UI polish package version is bumped
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://tests/test_runner.gd:31)
+ERROR: bite haptics are guarded before hook detection, the full-viewport view preserves safe-top chrome/touch handling, and gameplay has no touch path
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://tests/test_runner.gd:31)
+ERROR: Records uses the cohesive v02 master and overlays only row-major native names/stats without duplicate runtime framing, fish, or cards
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://tests/test_runner.gd:31)
+ERROR: Records keeps its authored crest clear while Records and Locations use safe-aware Back to Fishing plaques without an arrow/page-turn metaphor
+   at: push_error (core/variant/variant_utility.cpp:1023)
+   GDScript backtrace (most recent call first):
+       [0] _init (res://tests/test_runner.gd:31)
+WARNING: 12 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 5 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

@@ -1,0 +1,20 @@
+{
+  "label": "v29-capture-tail-mid",
+  "rootPid": 63712,
+  "observedPids": [
+    63712
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\gallery\\catch-tail-mid.png",
+    "--capture-scenario=catch_tail_mid"
+  ],
+  "started": "2026-09-08T07:34:51.1295870-05:00"
+}

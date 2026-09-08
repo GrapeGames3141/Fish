@@ -1,0 +1,27 @@
+{
+  "label": "v29-domain-tail-final",
+  "started": "2026-09-08T07:24:31.5173357-05:00",
+  "finished": "2026-09-08T07:24:36.8885597-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "-s",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-livingfish-v29",
+  "rootPid": 71068,
+  "observedPids": [
+    71068
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-domain-tail-final.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-domain-tail-final.stderr.log",
+  "stderrMarker": "ERROR: terminal recast requires dwell plus valid still sensor credit",
+  "error": null
+}

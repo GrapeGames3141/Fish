@@ -1,0 +1,27 @@
+{
+  "label": "v29-domain-controller-final",
+  "started": "2026-09-08T07:27:01.7786979-05:00",
+  "finished": "2026-09-08T07:27:07.9820432-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "-s",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-livingfish-v29",
+  "rootPid": 1232,
+  "observedPids": [
+    1232
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-domain-controller-final.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-domain-controller-final.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

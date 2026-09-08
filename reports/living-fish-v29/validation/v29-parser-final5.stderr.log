@@ -1,0 +1,4 @@
+SCRIPT ERROR: Parse Error: Expected statement, found "Indent" instead.
+   at: GDScript::reload (res://src/ui/main.gd:659)
+ERROR: Failed to load script "res://src/ui/main.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)

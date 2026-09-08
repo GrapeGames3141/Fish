@@ -1,0 +1,30 @@
+{
+  "label": "v29-capture-records-empty",
+  "started": "2026-09-08T07:15:48.7108238-05:00",
+  "finished": "2026-09-08T07:16:49.0891265-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\gallery\\records-empty.png",
+    "--capture-scenario=records_empty"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-livingfish-v29",
+  "rootPid": 9072,
+  "observedPids": [
+    9072
+  ],
+  "completed": false,
+  "exitCode": null,
+  "cleanupPids": [
+    9072
+  ],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-capture-records-empty.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-capture-records-empty.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

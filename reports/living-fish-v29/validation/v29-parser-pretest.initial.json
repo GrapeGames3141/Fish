@@ -1,0 +1,16 @@
+{
+  "label": "v29-parser-pretest",
+  "rootPid": 9512,
+  "observedPids": [
+    9512
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--editor",
+    "--quit"
+  ],
+  "started": "2026-09-08T07:03:36.4417308-05:00"
+}

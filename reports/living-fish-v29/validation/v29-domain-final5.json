@@ -1,0 +1,29 @@
+{
+  "label": "v29-domain-final5",
+  "started": "2026-09-08T07:51:24.2032766-05:00",
+  "finished": "2026-09-08T07:51:25.9030215-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--audio-driver",
+    "Dummy",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "-s",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-livingfish-v29",
+  "rootPid": 76600,
+  "observedPids": [
+    76600
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-domain-final5.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-domain-final5.stderr.log",
+  "stderrMarker": "SCRIPT ERROR: Parse Error: Could not preload resource script \"res://src/ui/main.gd\".",
+  "error": null
+}

@@ -1,0 +1,15 @@
+{
+  "label": "v29-domain-2",
+  "rootPid": 39336,
+  "observedPids": [
+    39336
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "res://tests/test_runner.gd"
+  ],
+  "started": "2026-09-08T07:06:22.4868491-05:00"
+}

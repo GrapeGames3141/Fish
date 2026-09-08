@@ -1,0 +1,27 @@
+{
+  "label": "v29-domain-fightmatrix-1",
+  "started": "2026-09-08T07:10:14.4433906-05:00",
+  "finished": "2026-09-08T07:10:18.9326939-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "-s",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-livingfish-v29",
+  "rootPid": 70176,
+  "observedPids": [
+    70176
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-domain-fightmatrix-1.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\living-fish-v29\\validation\\v29-domain-fightmatrix-1.stderr.log",
+  "stderrMarker": "ERROR: delayed pull/ease response lands channel_catfish in 10–20 seconds at 30Hz",
+  "error": null
+}

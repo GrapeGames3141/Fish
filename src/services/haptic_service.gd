@@ -71,7 +71,7 @@ func start_fight(fish: FishDefinition) -> void:
 	phrase_started = false
 	next_phrase_at = elapsed + INITIAL_FIGHT_DELAY_SECONDS
 
-func update_fight(delta: float, fish: FishDefinition, tension: float) -> void:
+func update_fight(delta: float, fish: FishDefinition, tension: float, effort := 1.0) -> void:
 	tick(delta)
 	if not enabled or not fighting or fish == null:
 		return
@@ -82,6 +82,15 @@ func update_fight(delta: float, fish: FishDefinition, tension: float) -> void:
 		pending.clear()
 		if phrase_started:
 			next_phrase_at = elapsed
+	# Fish lulls are intentionally quiet. The universal high/red warnings remain
+	# immediate so a player can learn one relief cue by feel across all species.
+	if warning_tier == "normal" and effort < 0.42:
+		# A run can end between pulses. Those normal-effort fish pulses describe
+		# the run, so never replay an overdue phrase when it resumes. High/red
+		# warnings are deliberately outside this branch and remain immediate.
+		pending.clear()
+		next_phrase_at = maxf(next_phrase_at, elapsed + 0.08)
+		return
 	if elapsed >= next_phrase_at and pending.is_empty():
 		_schedule_phrase(_phrase_for_tier(warning_tier))
 		phrase_started = true
