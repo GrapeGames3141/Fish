@@ -5,6 +5,8 @@ android/build/.gradle/
 android/build/build/
 android/build/.cxx/
 android/build/outputs/
+# Generated Godot Android library archives; export rebuilds these from source.
+android/build/libs/**/*.aar
 android/.gradle/
 reports/runtime/*.log
 reports/runtime/**/*.log
