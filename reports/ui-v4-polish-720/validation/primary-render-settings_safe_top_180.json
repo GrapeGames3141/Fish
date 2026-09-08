@@ -1,0 +1,30 @@
+{
+  "label": "primary-render-settings_safe_top_180",
+  "started": "2026-09-07T22:46:49.0531711-05:00",
+  "finished": "2026-09-07T22:46:52.3571844-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\settings_safe_top_180.png",
+    "--capture-scenario=settings_safe_top_180"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-polish-v28",
+  "rootPid": 61280,
+  "observedPids": [
+    61280
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "timeoutCleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\validation\\primary-render-settings_safe_top_180.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\validation\\primary-render-settings_safe_top_180.stderr.log",
+  "stderrMarker": null
+}

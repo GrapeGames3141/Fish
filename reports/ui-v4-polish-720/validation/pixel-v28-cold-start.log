@@ -1,0 +1,7 @@
+Starting: Intent { cmp=com.tak.castandcrank/com.godot.game.GodotAppLauncher }
+Status: ok
+LaunchState: COLD
+Activity: com.tak.castandcrank/com.godot.game.GodotApp
+TotalTime: 590
+WaitTime: 592
+Complete

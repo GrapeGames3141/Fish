@@ -100,6 +100,9 @@ func tick(delta: float) -> void:
 func is_motion_guarded() -> bool:
 	return _motion_guard_remaining > 0.0
 
+func motion_guard_seconds() -> float:
+	return _motion_guard_remaining
+
 func stop() -> void:
 	pending.clear()
 	_motion_guard_remaining = 0.0

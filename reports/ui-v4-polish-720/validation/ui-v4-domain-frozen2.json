@@ -1,0 +1,28 @@
+{
+  "label": "ui-v4-domain-frozen2",
+  "started": "2026-09-07T22:41:38.6081257-05:00",
+  "finished": "2026-09-07T22:41:41.4914907-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64_console.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "-s",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-polish-v28",
+  "rootPid": 38052,
+  "observedPids": [
+    38052,
+    51488,
+    59948
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "timeoutCleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\validation\\ui-v4-domain-frozen2.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\validation\\ui-v4-domain-frozen2.stderr.log",
+  "stderrMarker": "ERROR: 5 resources still in use at exit (run with --verbose for details)."
+}

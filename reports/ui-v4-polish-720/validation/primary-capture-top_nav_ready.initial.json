@@ -1,0 +1,20 @@
+{
+  "label": "primary-capture-top_nav_ready",
+  "rootPid": 62476,
+  "observedPids": [
+    62476
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--",
+    "--capture=",
+    "E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\top_nav_ready.png",
+    "--capture-scenario=",
+    "top_nav_ready"
+  ],
+  "started": "2026-09-07T22:45:22.0726852-05:00"
+}

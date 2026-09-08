@@ -1,0 +1,84 @@
+--------- beginning of main
+09-07 22:52:46.125 17707 17707 I libprocessgroup: Created cgroup /sys/fs/cgroup/apps/uid_10387/pid_17707
+09-07 22:52:46.130 17707 17707 I Zygote  : Process 17707 created for com.tak.castandcrank
+09-07 22:52:46.131 17707 17707 I ak.castandcrank: Late-enabling -Xcheck:jni
+09-07 22:52:46.144 17707 17707 I ak.castandcrank: Using generational CollectorTypeCMC GC.
+09-07 22:52:46.149 17707 17707 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+09-07 22:52:46.352 17707 17707 D nativeloader: Configuring clns-9 for other apk /data/app/~~B0t8wDKMbdr_cWlsYDjoGA==/com.tak.castandcrank-F-xBiUQxhlgkJPSD_8ZoEQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~B0t8wDKMbdr_cWlsYDjoGA==/com.tak.castandcrank-F-xBiUQxhlgkJPSD_8ZoEQ==/lib/arm64:/data/app/~~B0t8wDKMbdr_cWlsYDjoGA==/com.tak.castandcrank-F-xBiUQxhlgkJPSD_8ZoEQ==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.tak.castandcrank
+09-07 22:52:46.358 17707 17707 V GraphicsEnvironment: Currently set values for:
+09-07 22:52:46.358 17707 17707 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[com.android.angle]
+09-07 22:52:46.358 17707 17707 V GraphicsEnvironment:   angle_gl_driver_selection_values=[angle]
+09-07 22:52:46.358 17707 17707 V GraphicsEnvironment: com.tak.castandcrank is not listed in per-application setting
+09-07 22:52:46.359 17707 17707 V GraphicsEnvironment: No special selections for ANGLE, returning default driver choice
+09-07 22:52:46.359 17707 17707 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+09-07 22:52:46.365 17707 17707 D WM-WrkMgrInitializer: Initializing WorkManager with default configuration.
+--------- beginning of system
+09-07 22:52:46.379 17707 17760 I DisplayManager: Choreographer implicitly registered for the refresh rate.
+09-07 22:52:46.381 17707 17760 D vulkan  : searching for layers in '/data/app/~~B0t8wDKMbdr_cWlsYDjoGA==/com.tak.castandcrank-F-xBiUQxhlgkJPSD_8ZoEQ==/lib/arm64'
+09-07 22:52:46.381 17707 17760 D vulkan  : searching for layers in '/data/app/~~B0t8wDKMbdr_cWlsYDjoGA==/com.tak.castandcrank-F-xBiUQxhlgkJPSD_8ZoEQ==/base.apk!/lib/arm64-v8a'
+09-07 22:52:46.397 17707 17707 D DesktopExperienceFlags: Toggle override initialized to: false
+09-07 22:52:46.404 17707 17707 D CompatChangeReporter: Compat change id reported: 377864165; UID 10387; state: ENABLED
+09-07 22:52:46.407 17707 17707 D GodotActivity: Project command line parameters: [--xr_mode_regular, --xr-mode, off, --fullscreen, --background_color, #000000]
+09-07 22:52:46.408 17707 17707 D GodotActivity: Launch intent Intent { flg=0x10000000 xflg=0x5 cmp=com.tak.castandcrank/com.godot.game.GodotAppLauncher } with parameters []
+09-07 22:52:46.414 17707 17707 V GodotActivity: Creating new Godot fragment instance.
+09-07 22:52:46.423 17707 17707 V Godot   : Initializing Godot plugin registry
+09-07 22:52:46.427 17707 17707 I GodotPluginRegistry: Registering runtime plugin AndroidRuntime
+09-07 22:52:46.427 17707 17707 I GodotPluginRegistry: Initializing Godot plugin PoingGodotAdMob
+09-07 22:52:46.430 17707 17707 I GodotPluginRegistry: Completed initialization for Godot plugin PoingGodotAdMob
+09-07 22:52:46.430 17707 17707 I GodotPluginRegistry: Initializing Godot plugin PoingGodotAdMobNativeOverlayAd
+09-07 22:52:46.430 17707 17707 I GodotPluginRegistry: Completed initialization for Godot plugin PoingGodotAdMobNativeOverlayAd
+09-07 22:52:46.430 17707 17707 I GodotPluginRegistry: Initializing Godot plugin PoingGodotAdMobAppOpenAd
+09-07 22:52:46.430 17707 17707 I GodotPluginRegistry: Completed initialization for Godot plugin PoingGodotAdMobAppOpenAd
+09-07 22:52:46.430 17707 17707 I GodotPluginRegistry: Initializing Godot plugin PoingGodotAdMobRewardedAd
+09-07 22:52:46.430 17707 17707 I GodotPluginRegistry: Completed initialization for Godot plugin PoingGodotAdMobRewardedAd
+09-07 22:52:46.430 17707 17707 I GodotPluginRegistry: Initializing Godot plugin PoingGodotAdMobUserMessagingPlatform
+09-07 22:52:46.431 17707 17707 I GodotPluginRegistry: Completed initialization for Godot plugin PoingGodotAdMobUserMessagingPlatform
+09-07 22:52:46.431 17707 17707 I GodotPluginRegistry: Initializing Godot plugin PoingGodotAdMobRewardedInterstitialAd
+09-07 22:52:46.431 17707 17707 I GodotPluginRegistry: Completed initialization for Godot plugin PoingGodotAdMobRewardedInterstitialAd
+09-07 22:52:46.431 17707 17707 I GodotPluginRegistry: Initializing Godot plugin PoingGodotAdMobAdSize
+09-07 22:52:46.431 17707 17707 I GodotPluginRegistry: Completed initialization for Godot plugin PoingGodotAdMobAdSize
+09-07 22:52:46.431 17707 17707 I GodotPluginRegistry: Initializing Godot plugin PoingGodotAdMobAdView
+09-07 22:52:46.431 17707 17707 I GodotPluginRegistry: Completed initialization for Godot plugin PoingGodotAdMobAdView
+09-07 22:52:46.431 17707 17707 I GodotPluginRegistry: Initializing Godot plugin PoingGodotAdMobConsentInformation
+09-07 22:52:46.431 17707 17707 I GodotPluginRegistry: Completed initialization for Godot plugin PoingGodotAdMobConsentInformation
+09-07 22:52:46.431 17707 17707 I GodotPluginRegistry: Initializing Godot plugin PoingGodotAdMobInterstitialAd
+09-07 22:52:46.431 17707 17707 I GodotPluginRegistry: Completed initialization for Godot plugin PoingGodotAdMobInterstitialAd
+09-07 22:52:46.432 17707 17707 V Godot   : InitEngine with params: [--xr_mode_regular, --xr-mode, off, --fullscreen, --background_color, #000000]
+09-07 22:52:46.439 17707 17707 D nativeloader: Load /data/app/~~B0t8wDKMbdr_cWlsYDjoGA==/com.tak.castandcrank-F-xBiUQxhlgkJPSD_8ZoEQ==/lib/arm64/libgodot_android.so using class loader ns clns-9 (caller=/data/app/~~B0t8wDKMbdr_cWlsYDjoGA==/com.tak.castandcrank-F-xBiUQxhlgkJPSD_8ZoEQ==/base.apk!classes5.dex): ok
+09-07 22:52:46.440 17707 17707 V Godot   : Godot native layer initialization completed: true
+09-07 22:52:46.440 17707 17707 V Godot   : Setting up native layer with params: [--xr-mode, off, --fullscreen]
+09-07 22:52:46.458 17707 17707 V Godot   : Godot native layer setup completed
+09-07 22:52:46.458 17707 17707 V Godot   : OnInitRenderView: GodotFragment{74b8737} (d6c4828f-f6c1-4640-8cff-a26bfe712083 id=0x7f0800a5)
+09-07 22:52:46.468 17707 17707 D Godot   : Render view should be transparent: false
+09-07 22:52:46.468 17707 17707 D Godot   : renderingDevice: opengl3 (ProjectSettings)
+09-07 22:52:46.468 17707 17707 D Godot   : 			renderer: gl_compatibility (ProjectSettings)
+09-07 22:52:46.475 17707 17707 V Godot   : OnStart: GodotFragment{74b8737} (d6c4828f-f6c1-4640-8cff-a26bfe712083 id=0x7f0800a5)
+09-07 22:52:46.475 17707 17707 I ContentCaptureHelper: Setting logging level to OFF
+09-07 22:52:46.480 17707 17707 V Godot   : OnResume: GodotFragment{74b8737} (d6c4828f-f6c1-4640-8cff-a26bfe712083 id=0x7f0800a5)
+09-07 22:52:46.487 17707 17707 D InsetsController: Setting requestedVisibleTypes to 496 (was 503)
+09-07 22:52:46.490 17707 17707 V Godot   : OnPause: GodotFragment{74b8737} (d6c4828f-f6c1-4640-8cff-a26bfe712083 id=0x7f0800a5)
+09-07 22:52:46.492 17707 17707 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): android.app.Activity$$ExternalSyntheticLambda0@2d846ce
+09-07 22:52:46.493 17707 17707 D WindowOnBackDispatcher: setTopOnBackInvokedCallback (unwrapped): androidx.activity.OnBackPressedDispatcher$Api34Impl$createOnBackAnimationCallback$1@3850cfc
+09-07 22:52:46.494 17707 17707 D VRI[GodotAppLauncher]: WindowInsets changed: 960x2142 statusBars:[0,153,0,0] mandatorySystemGestures:[0,180,0,108] 
+09-07 22:52:46.495 17707 17707 I HWUI    : Using FreeType backend (prop=Auto)
+09-07 22:52:46.500 17707 17707 I Surface : Creating surface for consumer unnamed-17707-0 with slotExpansion=1 for 64 slots
+09-07 22:52:46.503 17707 17707 I Surface : Creating surface for consumer VRI[GodotAppLauncher]#0(BLAST Consumer)0 with slotExpansion=1 for 64 slots
+09-07 22:52:46.508 17707 17707 I Surface : Creating surface for consumer unnamed-17707-1 with slotExpansion=1 for 64 slots
+09-07 22:52:46.508 17707 17707 I Surface : Creating surface for consumer ab660b SurfaceView[com.tak.castandcrank/com.godot.game.GodotAppLauncher]#1(BLAST Consumer)1 with slotExpansion=1 for 64 slots
+09-07 22:52:46.555 17707 17778 W RegularContextFactory: creating OpenGL ES 3.0 context :
+09-07 22:52:46.618 17707 17778 I godot   : Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+09-07 22:52:46.671 17707 17707 V Godot   : OnStop: GodotFragment{74b8737} (d6c4828f-f6c1-4640-8cff-a26bfe712083 id=0x7f0800a5)
+09-07 22:52:47.175 17707 17778 I godot   : OpenGL API OpenGL ES 3.2 v1.r54p3-00eac0.03d8d836cbf5c9f29d765e58a6bdfb98 - Compatibility - Using Device: ARM - Mali-G715
+09-07 22:52:47.182 17707 17778 D AudioSystem: onNewServiceWithAdapter: media.audio_flinger service obtained 0xb40000714c906430
+09-07 22:52:47.183 17707 17778 D AudioSystem: getService: IAudioFlingerService retrieved: 0xb40000711ca00df0  IAudioFlinger cached: 0xb40000714c906430
+09-07 22:52:47.184 17707 17778 D ak.castandcrank: PlayerBase::PlayerBase()
+09-07 22:52:47.185 17707 17778 D ak.castandcrank: TrackPlayerBase::TrackPlayerBase()
+09-07 22:52:47.185 17707 17778 I libOpenSLES: Emulating old channel mask behavior (ignoring positional mask 0x3, using default mask 0x3 based on channel count of 2)
+09-07 22:52:47.240 17707 17778 I godot   : 
+09-07 22:52:47.617 17707 17811 E SurfaceSyncGroup: Failed to receive transaction ready in 1000ms. Marking SurfaceSyncGroup(wmsSync-VRI[GodotAppLauncher]#1) as ready
+09-07 22:52:47.619 17707 17811 E SurfaceSyncGroup: Failed to receive transaction ready in 1000ms. Marking SurfaceSyncGroup(VRI[GodotAppLauncher]#2) as ready
+09-07 22:52:47.620 17707 17811 E SurfaceSyncGroup: Failed to receive transaction ready in 1000ms. Marking SurfaceSyncGroup(SurfaceView[com.tak.castandcrank/com.godot.game.GodotAppLauncher]#0) as ready
+09-07 22:52:47.797 17707 17778 E BufferQueueProducer: [ab660b SurfaceView[com.tak.castandcrank/com.godot.game.GodotAppLauncher]#1(BLAST Consumer)1](id:452b00000001,api:0,p:-1,c:17707) dequeueBuffer: BufferQueue has been abandoned
+09-07 22:52:47.799 17707 17778 W GLThread: eglSwapBuffers failed: EGL_BAD_SURFACE
+09-07 22:52:47.800 17707 17778 W GLSurfaceView: Warning, !readyToDraw() but waiting for draw finished! Early reporting draw finished.
+09-07 22:52:49.035 17707 17713 I ak.castandcrank: Compiler allocated 5295KB to compile void android.view.ViewRootImpl.performTraversals(long)

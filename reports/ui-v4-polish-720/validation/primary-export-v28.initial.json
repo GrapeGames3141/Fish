@@ -1,0 +1,17 @@
+{
+  "label": "primary-export-v28",
+  "rootPid": 52168,
+  "observedPids": [
+    52168
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--export-debug",
+    "Android Gate 1 Debug",
+    "E:\\AI Projects\\games\\haptic fish\\build\\android\\CastAndCrank-0.4.2-uipolish1-arm64-debug.apk"
+  ],
+  "started": "2026-09-07T22:48:01.2300434-05:00"
+}

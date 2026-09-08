@@ -1,0 +1,30 @@
+{
+  "label": "primary-render-reeling_high",
+  "started": "2026-09-07T22:46:42.4824176-05:00",
+  "finished": "2026-09-07T22:46:45.7738514-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\reeling_high.png",
+    "--capture-scenario=reeling_high"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-polish-v28",
+  "rootPid": 26836,
+  "observedPids": [
+    26836
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "timeoutCleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\validation\\primary-render-reeling_high.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\validation\\primary-render-reeling_high.stderr.log",
+  "stderrMarker": null
+}

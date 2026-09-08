@@ -1,0 +1,26 @@
+{
+  "label": "primary-parser",
+  "started": "2026-09-07T22:44:33.0044743-05:00",
+  "finished": "2026-09-07T22:44:42.6104492-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--editor",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--quit"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-polish-v28",
+  "rootPid": 42460,
+  "observedPids": [
+    42460
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "timeoutCleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\validation\\primary-parser.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\validation\\primary-parser.stderr.log",
+  "stderrMarker": null
+}

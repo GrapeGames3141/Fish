@@ -1,0 +1,30 @@
+{
+  "label": "primary-render-top_nav_ready",
+  "started": "2026-09-07T22:46:29.4305306-05:00",
+  "finished": "2026-09-07T22:46:32.6685044-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\top_nav_ready.png",
+    "--capture-scenario=top_nav_ready"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-polish-v28",
+  "rootPid": 47376,
+  "observedPids": [
+    47376
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "timeoutCleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\validation\\primary-render-top_nav_ready.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\validation\\primary-render-top_nav_ready.stderr.log",
+  "stderrMarker": null
+}

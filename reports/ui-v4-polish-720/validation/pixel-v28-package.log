@@ -1,0 +1,6 @@
+
+    versionCode=28 minSdk=24 targetSdk=36
+    versionName=0.4.2-uipolish1
+      android.permission.VIBRATE
+      android.permission.VIBRATE: granted=true
+

@@ -1,0 +1,20 @@
+{
+  "label": "primary-render-catch_first",
+  "rootPid": 12460,
+  "observedPids": [
+    12460
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\catch_first.png",
+    "--capture-scenario=catch_first"
+  ],
+  "started": "2026-09-07T22:47:08.9299805-05:00"
+}

@@ -1,0 +1,20 @@
+{
+  "label": "primary-render-catch_tie",
+  "rootPid": 36072,
+  "observedPids": [
+    36072
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\catch_tie.png",
+    "--capture-scenario=catch_tie"
+  ],
+  "started": "2026-09-07T22:47:15.4999397-05:00"
+}

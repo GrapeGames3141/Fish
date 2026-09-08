@@ -1,0 +1,20 @@
+{
+  "label": "primary-render-catch_long_species",
+  "rootPid": 61356,
+  "observedPids": [
+    61356
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\catch_long_species.png",
+    "--capture-scenario=catch_long_species"
+  ],
+  "started": "2026-09-07T22:47:18.8727653-05:00"
+}

@@ -1,0 +1,22 @@
+SCRIPT ERROR: Invalid call. Nonexistent function 'is_active' in base 'Nil'.
+   at: _process (res://src/ui/main.gd:75)
+   GDScript backtrace (most recent call first):
+       [0] _process (res://src/ui/main.gd:75)
+       [1] _test_ui_controller_interactions (res://tests/test_runner.gd:315)
+       [2] _init (res://tests/test_runner.gd:20)
+SCRIPT ERROR: Invalid call. Nonexistent function 'is_active' in base 'Nil'.
+   at: _process (res://src/ui/main.gd:75)
+   GDScript backtrace (most recent call first):
+       [0] _process (res://src/ui/main.gd:75)
+       [1] _test_ui_controller_interactions (res://tests/test_runner.gd:317)
+       [2] _init (res://tests/test_runner.gd:20)
+SCRIPT ERROR: Invalid call. Nonexistent function 'is_active' in base 'Nil'.
+   at: _process (res://src/ui/main.gd:75)
+   GDScript backtrace (most recent call first):
+       [0] _process (res://src/ui/main.gd:75)
+       [1] _test_ui_controller_interactions (res://tests/test_runner.gd:317)
+       [2] _init (res://tests/test_runner.gd:20)
+WARNING: 12 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 5 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

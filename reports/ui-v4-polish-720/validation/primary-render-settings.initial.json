@@ -1,0 +1,20 @@
+{
+  "label": "primary-render-settings",
+  "rootPid": 55192,
+  "observedPids": [
+    55192
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\ui-v4-polish-720\\settings.png",
+    "--capture-scenario=settings"
+  ],
+  "started": "2026-09-07T22:46:45.7804936-05:00"
+}

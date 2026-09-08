@@ -1,0 +1,8 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MOTION_FAIL stage=snap reason=timeout count=1
+MOTION_FAIL stage=snap reason=timeout count=1
+MOTION_FAIL stage=cock reason=polarity count=1
+MOTION_FAIL stage=snap reason=timeout count=1
+MOTION_FAIL stage=snap reason=timeout count=1
+PASS: Cast & Crank Gate 1 domain tests
