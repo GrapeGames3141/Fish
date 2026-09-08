@@ -115,6 +115,11 @@ Two corrected untouched 15-second dwells, app PIDs `30931` and `31349`, recorded
 
 Cold launch completed in `504ms`; Android PID `8535` remained alive and the scoped log scan has no FATAL EXCEPTION, SIGSEGV, Fatal signal, SCRIPT ERROR, Parse Error, or CRASH marker. No phone screenshot was taken. This validates package/install/startup only: physical cast, hook, fight timing, haptic feel, and user acceptance remain pending.
 
-## V27 navigation delivery — device gate pending
+## V27 navigation install and startup
 
-The signed `0.4.1-navfix1` / versionCode `27` APK was not installed or started in this pass. ADB restarted and no device was listed; the prior Pixel 9 Pro endpoint `192.168.1.234:39865` did not reconnect, mDNS found no service, and only ports `39865`, `43875`, `35273`, `38543`, and `36265` were checked, each timing out. No phone screenshot was taken. Pixel navigation touch/safe-inset behavior and physical cast/hook/fight/haptic-feel validation remain pending.
+- The supplied pairing endpoint `192.168.1.234:39637` had already closed and two `adb pair` attempts returned protocol faults. Restarting only the local ADB daemon then rediscovered `_adb-tls-connect._tcp` service `adb-45291FDAP0080L-NMUskl` at `192.168.1.234:43705`; `adb devices -l` listed the previously paired Pixel 9 Pro as product/model/device `caiman` / `Pixel_9_Pro` / `caiman`.
+- Exact source package `build/android/CastAndCrank-Gate1-debug.apk`: `51,793,264` bytes, SHA-256 `094A4B70A84B28F1083D1EB5256F31B546EC7DE1DA770C90125C8BAB5B3CE17F`, package `com.tak.castandcrank`, versionCode `27`, versionName `0.4.1-navfix1`, min/target SDK `24`/`36`, arm64-v8a only, VIBRATE-present, and v2-signed with the existing debug certificate.
+- `adb install -r` returned `Success`; dumpsys confirms versionCode `27`, versionName `0.4.1-navfix1`, and `android.permission.VIBRATE` `granted=true`.
+- Text-only cold launch of `com.tak.castandcrank/com.godot.game.GodotAppLauncher` returned `Status: ok`, `LaunchState: COLD`, activity `com.tak.castandcrank/com.godot.game.GodotApp`, `TotalTime: 544ms`, and `WaitTime: 548ms`. Android PID `1133` remained alive and the launcher was top-resumed. Its 283-line PID-scoped log had zero `FATAL EXCEPTION`, `SIGSEGV`, `Fatal signal`, `SCRIPT ERROR`, `Parse Error`, or `CRASH` markers.
+
+This validates pairing continuity, package installation, permission delivery, and basic startup only. It does not validate physical Settings/Records/Waters touch, safe-inset behavior, cast/hook/fight/haptic feel, ads, device visual quality, or human aesthetic approval. No phone screenshot was taken.
