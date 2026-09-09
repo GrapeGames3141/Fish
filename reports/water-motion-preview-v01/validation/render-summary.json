@@ -1,0 +1,69 @@
+{
+  "source": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-preview-v01\\source\\willow-line-out-720.png",
+  "dimensions": [
+    720,
+    1280
+  ],
+  "fps": 20,
+  "seconds": 6,
+  "frames": 120,
+  "gif": {
+    "path": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-preview-v01\\gallery\\willow-water-motion-v01.gif",
+    "bytes": 14296724
+  },
+  "webm": {
+    "path": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-preview-v01\\gallery\\willow-water-motion-v01.webm",
+    "bytes": 3014051
+  },
+  "mask": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-preview-v01\\gallery\\willow-water-motion-v01-mask.png",
+  "protectedFrameChecks": [
+    {
+      "name": "top_chrome_and_sky",
+      "x": 0,
+      "y": 0,
+      "w": 720,
+      "h": 500,
+      "maxChannelDelta": 0
+    },
+    {
+      "name": "rod_tip",
+      "x": 314,
+      "y": 449,
+      "w": 14,
+      "h": 14,
+      "maxChannelDelta": 0
+    },
+    {
+      "name": "fine_line_midpoint",
+      "x": 412,
+      "y": 545,
+      "w": 10,
+      "h": 10,
+      "maxChannelDelta": 8
+    },
+    {
+      "name": "bobber",
+      "x": 495,
+      "y": 606,
+      "w": 32,
+      "h": 32,
+      "maxChannelDelta": 11
+    }
+  ],
+  "seamMeanChannelDeltaFrame119To0": 0.08867549189814815,
+  "protectedPixels": "The shader multiplies hand-authored mask luminance by alpha. The shoreline, rod-alpha silhouette, fine line, bobber and foreground fade constrain motion before Sharp encodes the complete animated GIF.",
+  "encodedGifVerification": {
+    "width": 720,
+    "height": 1280,
+    "frames": 120,
+    "frameDelayMs": 50,
+    "loop": 0,
+    "durationMs": 6000,
+    "decoder": "Sharp animated GIF metadata"
+  },
+  "independentReview": {
+    "top500pxMaxChannelDeltaAtFrames40_80_119": 0,
+    "waterRoiMeanChannelChangeAtFrames40_80_119": [5.79, 6.09, 4.74],
+    "webm": "720x1280; playback advances; browser-recorded duration is approximately 7.29 seconds"
+  }
+}

@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Willow Pond — water motion preview v01</title>
+<style>
+  html,body{margin:0;width:100%;height:100%;background:#10100d;display:grid;place-items:center}
+  video,img{max-width:100vw;max-height:100vh;width:auto;height:auto;display:block}
+  img{display:none}
+</style>
+<video autoplay loop muted playsinline controls>
+  <source src="willow-water-motion-v01.webm" type="video/webm">
+</video>
+<img src="willow-water-motion-v01.gif" alt="Willow Pond animated water preview">
+<script>document.querySelector('video').addEventListener('error',()=>{document.querySelector('video').style.display='none';document.querySelector('img').style.display='block'});</script>
