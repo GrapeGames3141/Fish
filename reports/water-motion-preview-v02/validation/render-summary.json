@@ -1,0 +1,84 @@
+{
+  "source": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-preview-v02\\source\\willow-line-out-720.png",
+  "dimensions": [
+    720,
+    1280
+  ],
+  "fps": 20,
+  "seconds": 6,
+  "frames": 120,
+  "gif": {
+    "path": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-preview-v02\\gallery\\willow-water-motion-v02.gif",
+    "bytes": 13909539
+  },
+  "mp4": {
+    "path": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-preview-v02\\gallery\\willow-water-motion-v02.mp4",
+    "bytes": 2898323
+  },
+  "mask": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-preview-v02\\gallery\\willow-water-motion-v02-mask.png",
+  "protectedFrameChecks": [
+    {
+      "name": "top_chrome_and_sky",
+      "x": 0,
+      "y": 0,
+      "w": 720,
+      "h": 500,
+      "maxChannelDelta": 0
+    },
+    {
+      "name": "rod_tip",
+      "x": 314,
+      "y": 449,
+      "w": 14,
+      "h": 14,
+      "maxChannelDelta": 0
+    },
+    {
+      "name": "fine_line_midpoint",
+      "x": 412,
+      "y": 545,
+      "w": 10,
+      "h": 10,
+      "maxChannelDelta": 5
+    },
+    {
+      "name": "bobber",
+      "x": 495,
+      "y": 606,
+      "w": 32,
+      "h": 32,
+      "maxChannelDelta": 9
+    }
+  ],
+  "seamMeanChannelDeltaFrame119To0": 0.2144285300925926,
+  "protectedPixels": "The shader multiplies hand-authored mask luminance by alpha. The shoreline, rod-alpha silhouette, fine line, bobber and foreground fade constrain motion before Sharp encodes the complete animated GIF.",
+  "gifVerification": {
+    "decoder": "Sharp animated GIF metadata",
+    "width": 720,
+    "height": 1280,
+    "frames": 120,
+    "frameDelayMs": 50,
+    "loop": 0,
+    "durationMs": 6000
+  },
+  "motionComparison": {
+    "sameWaterRoiMeanChannelDeltaFrame0To40": {
+      "v01": 2.0974,
+      "v02": 4.8643,
+      "multiple": 2.32
+    }
+  },
+  "phoneScaleViewerCheck": {
+    "viewerWidthPx": 360,
+    "waterPixelDeltaOver1_3Seconds": 4.0065,
+    "topChromePixelDelta": 0
+  },
+  "mp4Playback": {
+    "viewer": "view-water-motion-v02.html",
+    "width": 720,
+    "height": 1280,
+    "durationSeconds": 7.2627,
+    "advancedToSecondsAfterPlay": 0.745616,
+    "error": null
+  }
+}

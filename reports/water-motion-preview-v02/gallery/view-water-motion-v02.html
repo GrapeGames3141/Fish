@@ -1,0 +1,17 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Willow Pond water motion v02</title>
+<style>
+  html,body{margin:0;width:100%;height:100%;background:#10100d;color:#eee;font:14px system-ui;display:grid;place-items:center}
+  main{max-width:100vw;max-height:100vh;text-align:center} img,video{max-width:100vw;max-height:calc(100vh - 42px);display:block}video{display:none}button{margin:8px;padding:5px 10px}
+</style>
+<main>
+  <img id="gif" src="willow-water-motion-v02.gif" alt="Willow Pond water motion preview v02">
+  <video id="video" loop muted playsinline controls src="willow-water-motion-v02.mp4"></video>
+  <button id="showGif">GIF</button><button id="showVideo">Full-colour video</button>
+</main>
+<script>
+const gif=document.querySelector('#gif'), video=document.querySelector('#video');
+document.querySelector('#showGif').onclick=()=>{video.pause();video.style.display='none';gif.style.display='block'};
+document.querySelector('#showVideo').onclick=()=>{gif.style.display='none';video.style.display='block';video.play()};
+</script>
