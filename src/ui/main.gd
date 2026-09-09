@@ -41,22 +41,17 @@ var leaderboard_motion_fight := false
 var leaderboard_reel_sensor_seconds := 0.0
 var leaderboard_catch_token := 0
 
-var pine_lake_texture: Texture2D = load("res://art/ui_v1/runtime_source/pine-lake-clean-v01.png")
+var pine_lake_texture: Texture2D = load("res://art/ui_v1/runtime_source/pine-lake-photoreal-v03.png")
 var cedar_river_texture: Texture2D = load("res://art/ui_v1/runtime_source/cedar-river-photo-v03.png")
 var pine_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/pine-fish-atlas-v02.png")
 var cedar_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/cedar-fish-atlas-v02.png")
-var rod_texture: Texture2D = load("res://art/ui_v1/runtime_source/rod-bend-repacked-v02.png")
 var photoreal_rod_texture: Texture2D = load("res://art/ui_v1/runtime_source/rod-photoreal-alpha-v01.png")
 var bobber_texture: Texture2D = load("res://art/ui_v1/runtime_source/bobber-photoreal-alpha-v01.png")
-var reaction_texture: Texture2D = load("res://art/ui_v1/runtime_source/water-reaction-strip-v01.png")
-var splash_texture: Texture2D = load("res://art/ui_v1/runtime_source/loading-splash-v01.png")
+var splash_texture: Texture2D = load("res://art/ui_v1/runtime_source/cedar-river-photo-v03.png")
 var records_texture: Texture2D = preload("res://art/ui_v1/runtime_source/records-screen-rustic-v01.png")
-var journal_detail_texture: Texture2D = preload("res://art/ui_v1/runtime_source/journal-detail-v01.png")
-var control_kit_texture: Texture2D = load("res://art/ui_v1/runtime/control-kit-alpha-v01.png")
 var top_nav_texture: Texture2D = load("res://art/ui_v1/runtime_source/top-nav-rustic-v01.png")
-var rustic_settings_texture: Texture2D = load("res://art/ui_v1/runtime_source/settings-rustic-v01.png")
+var rustic_settings_texture: Texture2D = load("res://art/ui_v1/runtime_source/rustic-clipboard-blank-v01.png")
 var rustic_waters_texture: Texture2D = load("res://art/ui_v1/runtime_source/waters-rustic-v01.png")
-var rustic_catch_texture: Texture2D = load("res://art/ui_v1/runtime_source/catch-rustic-v01.png")
 
 func _ready() -> void:
 	session = FishingSession.new(); motion = MotionService.new(); save = SaveService.new(); ads = AdMobService.new(); haptics = HapticService.new(); preview_haptics = HapticService.new(); cast_capture = CastCaptureService.new(CastCaptureService.PATH, Callable(motion, "sample"))
@@ -286,6 +281,8 @@ func _apply_capture_scenario() -> void:
 		"hook_window": session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.HOOK_WINDOW; session.bite_elapsed = 0.20
 		"reeling", "reeling_low": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.32; session.rod_load = 0.38; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"reeling_high": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.88; session.rod_load = 0.88; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+		"reeling_danger": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.95; session.rod_load = 0.95; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+		"cedar_reeling_high_safe180": session.set_location("cedar_river", 0.0); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.88; session.rod_load = 0.88; session.cast_quality = 0.86; session.cast_distance_m = 35.5; view.safe_top_override = 180.0
 		"caught", "catch_first": session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 24.0; session.last_reason = "Bluegill landed!"; session.cast_quality = 0.88; session.cast_distance_m = 36.2; caught_recorded = true; _set_capture_catch_record(0, 0.0)
 		"catch_new_best": session.set_location("pine_lake", 0.60); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 44.4; session.cast_distance_m = 32.0; caught_recorded = true; _set_capture_catch_record(2, 41.2)
 		"catch_tie": session.set_location("cedar_river", 0.0); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 42.0; session.cast_distance_m = 32.0; caught_recorded = true; _set_capture_catch_record(4, 42.0)
@@ -302,6 +299,8 @@ func _apply_capture_scenario() -> void:
 		"records_safe_top_180": _seed_capture_records(); view.safe_top_override = 180.0; view.overlay = "records"
 		"records_detail": _seed_capture_records(); save.data.best_cm.northern_pike = 88.6; view.journal_fish_id = "northern_pike"; save.data.catch_history = [{"fish_id": "northern_pike", "length_cm": 72.1, "location_id": "cedar_river", "timestamp_utc": 1699900000, "fight_seconds": 18.2, "cast_distance_m": 31.0}, {"fish_id": "northern_pike", "length_cm": 88.6, "location_id": "cedar_river", "timestamp_utc": 1700000000, "fight_seconds": 16.4, "cast_distance_m": 34.0}]; view.overlay = "journal_detail"
 		"records_detail_safe_top_180": _seed_capture_records(); save.data.best_cm.northern_pike = 88.6; view.journal_fish_id = "northern_pike"; save.data.catch_history = [{"fish_id": "northern_pike", "length_cm": 72.1, "location_id": "cedar_river", "timestamp_utc": 1699900000, "fight_seconds": 18.2, "cast_distance_m": 31.0}, {"fish_id": "northern_pike", "length_cm": 88.6, "location_id": "cedar_river", "timestamp_utc": 1700000000, "fight_seconds": 16.4, "cast_distance_m": 34.0}]; view.safe_top_override = 180.0; view.overlay = "journal_detail"
+		"field_notes": _seed_capture_records(); save.data.best_cm.northern_pike = 88.6; view.journal_fish_id = "northern_pike"; save.data.catch_history = [{"fish_id": "northern_pike", "length_cm": 72.1, "location_id": "cedar_river", "timestamp_utc": 1699900000, "fight_seconds": 18.2, "cast_distance_m": 31.0}, {"fish_id": "northern_pike", "length_cm": 88.6, "location_id": "cedar_river", "timestamp_utc": 1700000000, "fight_seconds": 16.4, "cast_distance_m": 34.0}]; view.overlay = "journal_detail"
+		"world_offline": _seed_capture_records(); view.overlay = "world_records"
 		"catch_safe_top_180": view.safe_top_override = 180.0; session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; caught_recorded = true
 		"catch_recast_ready": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; session.terminal_elapsed = FishingSession.TERMINAL_RECAST_DWELL_SECONDS; session.terminal_still_elapsed = FishingSession.TERMINAL_STILL_SECONDS; caught_recorded = true
 		"catch_tail_mid": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; session.terminal_elapsed = 0.32; ui_time = 0.16; caught_recorded = true
@@ -372,12 +371,17 @@ class FishingView extends Control:
 	const PHOTOREAL_ROD_DESTINATION := Rect2(-80, 434, 480, 852)
 	const PHOTOREAL_ROD_SOURCE_SIZE := Vector2(941, 1672)
 	const PHOTOREAL_ROD_TIP_SOURCE := Vector2(785, 42)
+	# The clean generated clipboard is cropped to the coherent board rather than
+	# stretching its scenic full-frame master behind legacy modal geometry.
+	const CLIPBOARD_BOARD_SOURCE := Rect2(50, 230, 840, 1208)
+	const CLIPBOARD_HEADER_SOURCE := Rect2(203, 307, 524, 124)
+	const CLIPBOARD_FOOTER_SOURCE := Rect2(174, 1314, 592, 106)
+	const CLIPBOARD_INTERIOR_SOURCE := Rect2(104, 450, 727, 847)
 	const CONTROL_REGIONS := {
 		"plaque_normal": Rect2(20, 72, 332, 112), "plaque_pressed": Rect2(364, 72, 332, 112), "plaque_disabled": Rect2(692, 72, 312, 112),
 		"row_normal": Rect2(42, 252, 446, 134), "row_selected": Rect2(532, 252, 446, 134), "card_normal": Rect2(82, 445, 196, 182),
 		"modal": Rect2(24, 754, 512, 682), "teal_long": Rect2(556, 812, 438, 126)
 	}
-	var rod_frames: Array[AtlasTexture] = []
 	var controller: Node
 	var overlay := ""
 	var synthetic_reserve := 0.0
@@ -406,20 +410,31 @@ class FishingView extends Control:
 	var catch_continue_rect := Rect2(92, 914, 250, 70)
 	var catch_records_rect := Rect2(378, 914, 250, 70)
 	var journal_slot_rects := [Rect2(68, 236, 280, 284), Rect2(372, 236, 280, 284), Rect2(68, 548, 280, 284), Rect2(372, 548, 280, 284), Rect2(68, 860, 280, 284), Rect2(372, 860, 280, 284)]
+	var journal_safe_top := 0.0
+	var journal_fish_rects := [Rect2(), Rect2(), Rect2(), Rect2(), Rect2(), Rect2()]
+	var journal_name_rects := [Rect2(), Rect2(), Rect2(), Rect2(), Rect2(), Rect2()]
+	var journal_stats_rects := [Rect2(), Rect2(), Rect2(), Rect2(), Rect2(), Rect2()]
 	var journal_detail_back_rect := Rect2(58, 1124, 270, 72)
 	var journal_detail_next_rect := Rect2(392, 1124, 270, 72)
+	var journal_detail_fish_rect := Rect2(120, 330, 480, 250)
+	var journal_detail_title_rect := Rect2(90, 570, 540, 36)
+	var journal_detail_stats_rect := Rect2(90, 606, 540, 30)
+	var journal_detail_history_rect := Rect2(86, 654, 548, 158)
+	var journal_detail_note_rect := Rect2(94, 826, 532, 48)
 	var journal_fish_id := "bluegill"
 	var journal_history_offset := 0
 	var records_world_rect := Rect2(28, 24, 190, 58)
 	var world_back_rect := Rect2(92, 992, 250, 70)
 	var world_period_rect := Rect2(374, 860, 260, 70)
 	var world_retry_rect := Rect2(86, 860, 260, 70)
+	var world_status_rect := Rect2(86, 360, 548, 80)
+	var world_row_rects := [Rect2(), Rect2(), Rect2(), Rect2(), Rect2(), Rect2()]
+	var tension_meter_rect := Rect2(30, 112, 540, 18)
 	var font: Font
 	func _ready() -> void:
 		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		mouse_filter = Control.MOUSE_FILTER_STOP
 		font = ThemeDB.fallback_font
-		_cache_rod_frames()
 		_refresh_top_nav_geometry()
 		_refresh_modal_layout()
 		queue_redraw()
@@ -447,28 +462,36 @@ class FishingView extends Control:
 		locations_rect = Rect2(496, chrome_y + 17, 87, 86)
 		settings_rect = Rect2(594, chrome_y + 17, 86, 86)
 	func _refresh_modal_layout() -> void:
-		var panel_y := maxf(150.0, _virtual_safe_top() + 20.0)
-		modal_panel_rect = Rect2(55, panel_y, 610, 960)
-		# The opaque source modal owns its header/footer plaques. Map their source
-		# bounds through this same transform for native labels and hit targets.
-		var source: Rect2 = CONTROL_REGIONS.modal
-		var scale := modal_panel_rect.size / source.size
-		modal_header_rect = Rect2(modal_panel_rect.position + (Rect2(168, 774, 228, 72).position - source.position) * scale, Rect2(168, 774, 228, 72).size * scale)
-		modal_footer_rect = Rect2(modal_panel_rect.position + (Rect2(164, 1352, 234, 74).position - source.position) * scale, Rect2(164, 1352, 234, 74).size * scale)
-		settings_haptics_rect = Rect2(98, panel_y + 154, 524, 72)
-		settings_reduced_motion_rect = Rect2(98, panel_y + 244, 524, 72)
-		settings_handedness_rect = Rect2(98, panel_y + 334, 524, 72)
-		settings_test_haptics_rect = Rect2(98, panel_y + 490, 524, 72)
-		settings_motion_setup_rect = Rect2(98, panel_y + 590, 524, 72)
+		# Decorative source maps exactly once at its native portrait transform. Its
+		# usable header/actions already begin below the maximum 180px safe inset;
+		# moving or shrinking it introduced mismatched-photo seams and footer overlap.
+		var scale := 720.0 / 941.0
+		modal_panel_rect = Rect2(Vector2.ZERO, Vector2(720, 1280))
+		modal_header_rect = _clipboard_map_rect(CLIPBOARD_HEADER_SOURCE)
+		modal_footer_rect = _clipboard_map_rect(CLIPBOARD_FOOTER_SOURCE)
+		var interior := _clipboard_map_rect(CLIPBOARD_INTERIOR_SOURCE)
+		settings_haptics_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 44 * scale, interior.size.x - 40 * scale, 68 * scale)
+		settings_reduced_motion_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 166 * scale, interior.size.x - 40 * scale, 68 * scale)
+		settings_handedness_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 288 * scale, interior.size.x - 40 * scale, 68 * scale)
+		settings_test_haptics_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 474 * scale, interior.size.x - 40 * scale, 68 * scale)
+		settings_motion_setup_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 596 * scale, interior.size.x - 40 * scale, 68 * scale)
 		settings_footer_close_rect = modal_footer_rect
-		motion_sensitivity_rect = Rect2(98, panel_y + 154, 524, 72)
-		motion_recalibrate_rect = Rect2(98, panel_y + 244, 524, 72)
-		motion_capture_rect = Rect2(98, panel_y + 334, 524, 72)
-		motion_diagnostics_rect = Rect2(98, panel_y + 424, 524, 72)
+		motion_sensitivity_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 44 * scale, interior.size.x - 40 * scale, 68 * scale)
+		motion_recalibrate_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 166 * scale, interior.size.x - 40 * scale, 68 * scale)
+		motion_capture_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 420 * scale, interior.size.x - 40 * scale, 68 * scale)
+		motion_diagnostics_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 560 * scale, interior.size.x - 40 * scale, 68 * scale)
 		motion_back_rect = modal_footer_rect
-	func _draw_modal_panel() -> void:
-		if controller.control_kit_texture: draw_texture_rect_region(controller.control_kit_texture, modal_panel_rect, CONTROL_REGIONS.modal)
+	func _clipboard_map_rect(source: Rect2) -> Rect2:
+		var scale := modal_panel_rect.size.x / 941.0
+		return Rect2(modal_panel_rect.position + source.position * scale, source.size * scale)
+	func _draw_rustic_clipboard() -> void:
+		if controller.rustic_settings_texture:
+			# One full opaque source owns the ordinary screen; no scaled board is laid
+			# over a second photo/clipboard (which created duplicate lower planks).
+			draw_texture_rect(controller.rustic_settings_texture, modal_panel_rect, false)
 		else: draw_style_box(_control_style("modal"), modal_panel_rect)
+	func _draw_modal_panel() -> void:
+		draw_style_box(_panel_style(Color("eee0bd"), Color("4c321b")), modal_panel_rect)
 	func _modal_footer_font_size(label: String) -> int:
 		# Keep labels between the baked footer's two brass bolts rather than relying
 		# on a shorter neighboring label to imply that long copy will fit.
@@ -483,28 +506,31 @@ class FishingView extends Control:
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	func _draw_loading() -> void:
 		if controller.splash_texture: draw_texture_rect(controller.splash_texture, Rect2(0, 0, 720, 1280), false)
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.03, 0.10, 0.14, clampf(0.28 - controller.loading_elapsed * 0.22, 0.0, 0.28)))
-		_text("CAST & CRANK", Vector2(128, 1040), 46, Color("fff4cf")); _text("PINE LAKE", Vector2(281, 1080), 18, Color("d9f0e2"))
+		_draw_wood_control(Rect2(130, 932, 460, 96)); _centered_text_in_rect("HOOKED", Rect2(130, 944, 460, 42), 32, Color("fff4cf")); _centered_text_in_rect("MOTION FISHING", Rect2(130, 985, 460, 28), 15, Color("fff4cf"))
 	func _draw_world() -> void:
 		var s: FishingSession = controller.session
 		var background: Texture2D = controller.cedar_river_texture if s.location_id == "cedar_river" else controller.pine_lake_texture
 		if background: draw_texture_rect(background, Rect2(0, 0, 720, 1280), false)
 		else: draw_rect(Rect2(0, 0, 720, 1280), Color("1c617d"))
+		# Ordinary opaque screens retain only their natural scenery background. They
+		# never reveal the prior rod, old top beam, or world HUD behind their panel.
+		if overlay != "":
+			if overlay == "calibration": _draw_calibration()
+			elif overlay == "settings": _draw_settings()
+			elif overlay == "records": _draw_records()
+			elif overlay == "journal_detail": _draw_journal_detail()
+			elif overlay == "world_records": _draw_world_records()
+			elif overlay == "locations": _draw_locations()
+			elif overlay == "motion_setup": _draw_motion_setup()
+			elif overlay == "diagnostics": _draw_diagnostics()
+			elif overlay == "capture" or overlay == "capture_saved": _draw_cast_capture()
+			return
 		if s.state == FishingSession.State.CAUGHT:
 			_draw_top_chrome(s); _draw_catch_reveal(s)
 		else:
 			_draw_lake_motion(s); _draw_top_chrome(s); _draw_glance_hint(s); _draw_fight_status(s)
 			if s.state == FishingSession.State.ESCAPED: _draw_escape_card(s)
 		if synthetic_reserve > 0.0: draw_rect(Rect2(0, 1280 - synthetic_reserve, 720, synthetic_reserve), Color("ff2f5f", 0.68)); _text("SYNTHETIC OVERLAY STRESS — NOT NATIVE AD", Vector2(66, 1248), 16, Color.WHITE)
-		if overlay == "calibration": _draw_calibration()
-		elif overlay == "settings": _draw_settings()
-		elif overlay == "records": _draw_records()
-		elif overlay == "journal_detail": _draw_journal_detail()
-		elif overlay == "world_records": _draw_world_records()
-		elif overlay == "locations": _draw_locations()
-		elif overlay == "motion_setup": _draw_motion_setup()
-		elif overlay == "diagnostics": _draw_diagnostics()
-		elif overlay == "capture" or overlay == "capture_saved": _draw_cast_capture()
 	func _draw_lake_motion(s: FishingSession) -> void:
 		var reduced := bool(controller.save.data.settings.get("reduced_motion", false))
 		if s.state in [FishingSession.State.READY, FishingSession.State.CAST_ARMED]:
@@ -522,8 +548,8 @@ class FishingView extends Control:
 		# Keep the external line attached to the stable water-surface contact. The
 		# float itself vanishes beneath that contact during bite/fight; it does not
 		# drag the visible line endpoint downward.
-		var rod_region := 0 if s.state != FishingSession.State.REELING else clampi(int(round(maxf(s.tension, s.rod_load) * 2.0)), 0, 2)
-		var rod_tip := _photoreal_rod_tip() if rod_region == 0 and controller.photoreal_rod_texture else _rod_tip_for_frame(rod_region)
+		var rod_bend := 0.0 if s.state != FishingSession.State.REELING else clampf(maxf(s.tension, s.rod_load), 0.0, 1.0)
+		var rod_tip := _photoreal_rod_tip(rod_bend)
 		# Draw the external line behind the rod; the rod atlas owns handle-to-terminal-guide pixels.
 		var mono := Color("e5eee8", 0.60)
 		if submerged: draw_line(rod_tip, bobber_pos, mono, 1.1, true)
@@ -534,25 +560,20 @@ class FishingView extends Control:
 				var t := float(sample) / 8.0
 				curve.append(rod_tip.lerp(bobber_pos, t) + Vector2(0, sag_depth * 4.0 * t * (1.0 - t)))
 			draw_polyline(curve, mono, 1.0, true)
-		if rod_region == 0: _draw_ready_photoreal_rod()
-		elif rod_region < rod_frames.size(): draw_texture_rect(rod_frames[rod_region], ROD_DESTINATION, false)
+		_draw_photoreal_rod(rod_bend)
 		if not submerged and controller.bobber_texture:
 			# The source canvas has generous transparent padding; map the known visible
 			# body region so distance scaling measures the float rather than its canvas.
 			var float_size := lerpf(30.0, 18.0, clampf(s.cast_distance_m / 42.0, 0.0, 1.0))
 			draw_texture_rect_region(controller.bobber_texture, Rect2(bobber_pos - Vector2(float_size * 0.5, float_size * 0.62), Vector2(float_size, float_size * 1.24)), Rect2(496, 369, 383, 488))
-		if controller.reaction_texture and (submerged or not reduced):
-			var frame := 0 if reduced else int(floor(controller.ui_time * 8.0)) % 6
-			var alpha := 1.0 if submerged else 0.36
-			var reaction_size := Vector2(218, 132) if submerged else Vector2(172, 108)
-			draw_texture_rect_region(controller.reaction_texture, Rect2(bobber_pos - reaction_size * Vector2(0.5, 0.42), reaction_size), Rect2(frame * 362, 0, 362, 724), Color(1, 1, 1, alpha))
 		if submerged:
 			var pulse := 0.0 if reduced else fmod(controller.ui_time * (5.0 if s.state == FishingSession.State.REELING else 3.0), 1.0)
 			for ring in range(3):
-				var radius := 14.0 + ring * 15.0 + pulse * 9.0
-				draw_arc(bobber_pos + Vector2(0, 5), radius, 0.15, TAU - 0.15, 28, Color("d9f6ea", 0.72 - ring * 0.17), 1.6)
+				_draw_water_ripple(bobber_pos + Vector2(0, 5), 14.0 + ring * 15.0 + pulse * 9.0, 0.48 - ring * 0.12)
 		if s.state == FishingSession.State.REELING and not reduced:
-			draw_circle(bobber_pos + Vector2(18, 18), 7 + sin(controller.ui_time * 12.0) * 2, Color("e8fbf4", 0.78))
+			for droplet in range(3):
+				var drift := fmod(controller.ui_time * 18.0 + droplet * 7.0, 18.0)
+				draw_circle(bobber_pos + Vector2(-9 + droplet * 10, -4 - drift), 2.0, Color("e8fbf4", 0.54))
 	func _draw_river_life(s: FishingSession, bobber_pos: Vector2, reduced: bool) -> void:
 		if s.location_id != "cedar_river": return
 		# Code-native life sits only on water; the photographic plate remains the sole
@@ -577,30 +598,46 @@ class FishingView extends Control:
 		# the parent viewport scale at non-720 captures without a transform reset.
 		var silhouette := PackedVector2Array([shadow + Vector2(-body_w * 0.5, 0), shadow + Vector2(-body_w * 0.18, -body_h), shadow + Vector2(body_w * 0.34, -body_h * 0.62), shadow + Vector2(body_w * 0.50, 0), shadow + Vector2(body_w * 0.34, body_h * 0.62), shadow + Vector2(-body_w * 0.18, body_h), shadow + Vector2(-body_w * 0.58, body_h * 0.52), shadow + Vector2(-body_w * 0.76, 0), shadow + Vector2(-body_w * 0.58, -body_h * 0.52)])
 		draw_colored_polygon(silhouette, Color(0.015, 0.10, 0.11, 0.22 + approach * 0.18))
+	func _draw_water_ripple(center: Vector2, radius: float, alpha: float) -> void:
+		var points := PackedVector2Array()
+		for point in range(25):
+			var angle := TAU * float(point) / 24.0
+			points.append(center + Vector2(cos(angle) * radius * 1.45, sin(angle) * radius * 0.34))
+		draw_polyline(points, Color("7da4a5", alpha), 1.25, true)
 	func _rod_tip_for_frame(frame: int) -> Vector2:
 		var source_tip: Vector2 = ROD_TIP_ANCHORS[clampi(frame, 0, ROD_TIP_ANCHORS.size() - 1)]
 		return ROD_DESTINATION.position + Vector2(
 			source_tip.x / ROD_FRAME_SIZE.x * ROD_DESTINATION.size.x,
 			source_tip.y / ROD_FRAME_SIZE.y * ROD_DESTINATION.size.y
 		)
-	func _photoreal_rod_tip() -> Vector2:
-		return PHOTOREAL_ROD_DESTINATION.position + Vector2(
+	func _photoreal_rod_tip(bend := 0.0) -> Vector2:
+		var point := PHOTOREAL_ROD_DESTINATION.position + Vector2(
 			PHOTOREAL_ROD_TIP_SOURCE.x / PHOTOREAL_ROD_SOURCE_SIZE.x * PHOTOREAL_ROD_DESTINATION.size.x,
 			PHOTOREAL_ROD_TIP_SOURCE.y / PHOTOREAL_ROD_SOURCE_SIZE.y * PHOTOREAL_ROD_DESTINATION.size.y
 		)
+		var tip_strength := pow(1.0 - PHOTOREAL_ROD_TIP_SOURCE.y / PHOTOREAL_ROD_SOURCE_SIZE.y, 2.2) * bend
+		return point + Vector2(-42.0 * tip_strength, 25.0 * tip_strength)
 	func _draw_ready_photoreal_rod() -> void:
-		if controller.photoreal_rod_texture:
-			draw_texture_rect(controller.photoreal_rod_texture, PHOTOREAL_ROD_DESTINATION, false)
-		elif not rod_frames.is_empty(): draw_texture_rect(rod_frames[0], ROD_DESTINATION, false)
-	func _cache_rod_frames() -> void:
-		rod_frames.clear()
-		if controller.rod_texture == null: return
-		for frame in range(3):
-			var atlas := AtlasTexture.new()
-			atlas.atlas = controller.rod_texture
-			atlas.region = Rect2(frame * 512, 0, 512, 1024)
-			atlas.filter_clip = true
-			rod_frames.append(atlas)
+		_draw_photoreal_rod(0.0)
+	func _draw_photoreal_rod(bend: float) -> void:
+		if controller.photoreal_rod_texture == null: return
+		# A single textured mesh preserves the hand/reel and gradually bends only the
+		# upper shaft. The same deformation supplies the runtime mono's terminal tip.
+		var bands := PackedFloat32Array([0.0, 0.12, 0.30, 0.58, 1.0])
+		for index in range(bands.size() - 1):
+			var v0: float = bands[index]
+			var v1: float = bands[index + 1]
+			var strength0 := pow(1.0 - v0, 2.2) * bend
+			var strength1 := pow(1.0 - v1, 2.2) * bend
+			var offset0 := Vector2(-42.0 * strength0, 25.0 * strength0)
+			var offset1 := Vector2(-42.0 * strength1, 25.0 * strength1)
+			var y0 := PHOTOREAL_ROD_DESTINATION.position.y + PHOTOREAL_ROD_DESTINATION.size.y * v0
+			var y1 := PHOTOREAL_ROD_DESTINATION.position.y + PHOTOREAL_ROD_DESTINATION.size.y * v1
+			var x0 := PHOTOREAL_ROD_DESTINATION.position.x
+			var x1 := PHOTOREAL_ROD_DESTINATION.end.x
+			var points := PackedVector2Array([Vector2(x0, y0) + offset0, Vector2(x1, y0) + offset0, Vector2(x1, y1) + offset1, Vector2(x0, y1) + offset1])
+			var uvs := PackedVector2Array([Vector2(0, v0), Vector2(1, v0), Vector2(1, v1), Vector2(0, v1)])
+			draw_polygon(points, PackedColorArray([Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE]), uvs, controller.photoreal_rod_texture)
 	func _draw_top_chrome(s: FishingSession) -> void:
 		var chrome_y := _virtual_safe_top()
 		var active := s.state in [FishingSession.State.CAST_ARMED, FishingSession.State.LINE_OUT, FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
@@ -614,11 +651,12 @@ class FishingView extends Control:
 			return
 		_refresh_top_nav_geometry()
 		if controller.top_nav_texture: draw_texture_rect_region(controller.top_nav_texture, top_nav_strip_rect, Rect2(0, 172, 2172, 323))
-		_text(s.location_id.replace("_", " ").to_upper(), Vector2(42, chrome_y + 34), 18, Color("332016"))
+		# The location uses the actual clear left beam, not the old bolt-overlapping x=42 baseline.
+		_centered_text(s.location_id.replace("_", " ").to_upper(), Vector2(214, chrome_y + 37), 15, Color("332016"))
 	func _draw_glance_hint(s: FishingSession) -> void:
 		if controller.ui_notice_remaining > 0.0:
-			var notice_y := _virtual_safe_top() + 126.0
-			draw_style_box(_control_style("plaque_pressed"), Rect2(30, notice_y, 314, 52)); _centered_text(controller.ui_notice, Vector2(187, notice_y + 34), 13, Color("fff7dc")); return
+			var active_notice := s.state in [FishingSession.State.CAST_ARMED, FishingSession.State.LINE_OUT, FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
+			_centered_text(_fit_text(controller.ui_notice, 540.0 if active_notice else 250.0, 15), Vector2(301 if active_notice else 214, _virtual_safe_top() + (51 if active_notice else 68)), 15, Color("332016")); return
 		var copy := "TILT LEFT, THEN SNAP RIGHT" if controller.motion.left_handed else "TILT RIGHT, THEN SNAP LEFT"
 		match s.state:
 			FishingSession.State.CAST_ARMED: copy = "SNAP RIGHT" if controller.motion.left_handed else "SNAP LEFT"
@@ -629,12 +667,13 @@ class FishingView extends Control:
 			FishingSession.State.CAUGHT: copy = "%s LANDED" % s.fish.display_name.to_upper()
 			FishingSession.State.ESCAPED: copy = s.last_reason.to_upper()
 		var compact := s.state in [FishingSession.State.CAST_ARMED, FishingSession.State.LINE_OUT, FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
+		# Every state shares the same top origin; only copy changes, never its plaque.
 		var hint_y := _virtual_safe_top() + (12.0 if compact else 36.0)
 		if compact:
-			_centered_text(copy, Vector2(301, hint_y + 36), 16, Color("332016"))
+			_centered_text(_fit_text(copy, 540.0, 16), Vector2(301, hint_y + 39), 16, Color("332016"))
 			return
 		if s.state == FishingSession.State.READY:
-			_centered_text("TILT %s" % ("LEFT" if controller.motion.left_handed else "RIGHT"), Vector2(214, hint_y + 30), 18, Color("332016")); _centered_text("THEN SNAP %s" % ("RIGHT" if controller.motion.left_handed else "LEFT"), Vector2(214, hint_y + 56), 18, Color("332016"))
+			_centered_text("TILT %s" % ("LEFT" if controller.motion.left_handed else "RIGHT"), Vector2(214, hint_y + 31), 18, Color("332016")); _centered_text("THEN SNAP %s" % ("RIGHT" if controller.motion.left_handed else "LEFT"), Vector2(214, hint_y + 57), 18, Color("332016"))
 		elif s.state == FishingSession.State.HOOK_WINDOW:
 			_centered_text("BITE", Vector2(214, hint_y + 29), 21, Color("f2e4c2")); _centered_text("PULL %s" % ("LEFT" if controller.motion.left_handed else "RIGHT"), Vector2(214, hint_y + 57), 20, Color("f2e4c2"))
 		elif s.state == FishingSession.State.BITE:
@@ -642,8 +681,30 @@ class FishingView extends Control:
 		elif s.state == FishingSession.State.ESCAPED: _centered_text("FISH GOT AWAY", Vector2(214, hint_y + 52), 20, Color("f2e4c2"))
 		else: _centered_text(copy, Vector2(214, hint_y + 43), 17, Color("f2e4c2"))
 	func _draw_fight_status(s: FishingSession) -> void:
-		if s.state != FishingSession.State.REELING: return
-		draw_style_box(_panel_style(Color(0.03, 0.14, 0.20, 0.74), Color("79b9ad", 0.7)), Rect2(170, 1084, 380, 78)); _text("LANDING", Vector2(190, 1111), 14, Color("d9efe3")); draw_rect(Rect2(275, 1102, 252, 7), Color("153947")); draw_rect(Rect2(275, 1102, 252 * s.fight_progress, 7), Color("70d5ad")); _text("TENSION", Vector2(190, 1144), 14, Color("d9efe3")); draw_rect(Rect2(275, 1135, 252, 7), Color("321b28")); draw_rect(Rect2(275, 1135, 252 * s.tension, 7), Color("ed695e") if s.tension >= 0.65 else Color("e1c46e"))
+		if not should_draw_tension_meter(s): return
+		_refresh_tension_meter_geometry()
+		var tension := tension_meter_value(s.tension)
+		var tier := tension_status(tension)
+		var fill_color := Color("d9a348") if tier == "STEADY" else (Color("d77932") if tier == "EASE" else Color("c94c3d"))
+		var label := "TENSION  %d%%  %s" % [roundi(tension * 100.0), tier]
+		var label_pos := tension_meter_rect.position + Vector2(0, -11)
+		draw_string_outline(font, label_pos, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, 2, Color("2b180e")); _text(label, label_pos, 18, Color("fff1d1"))
+		draw_rect(tension_meter_rect.grow(2), Color("fff0c9"), true); draw_rect(tension_meter_rect.grow(2), Color("2a180f"), false, 2.0)
+		draw_rect(tension_meter_rect, Color("24160d"), true); draw_rect(Rect2(tension_meter_rect.position, Vector2(tension_meter_rect.size.x * tension, tension_meter_rect.size.y)), fill_color)
+		var high_x := tension_meter_rect.position.x + tension_meter_rect.size.x * HapticService.HIGH_TENSION
+		var red_x := tension_meter_rect.position.x + tension_meter_rect.size.x * HapticService.RED_TENSION
+		draw_line(Vector2(high_x, tension_meter_rect.position.y), Vector2(high_x, tension_meter_rect.end.y), Color("fff0c9"), 2.0); draw_rect(Rect2(red_x, tension_meter_rect.position.y, tension_meter_rect.end.x - red_x, tension_meter_rect.size.y), Color("8f302b", 0.60), true); draw_rect(Rect2(red_x, tension_meter_rect.position.y, tension_meter_rect.end.x - red_x, tension_meter_rect.size.y), Color("8a221d"), false, 2.0)
+		var marker_x := tension_meter_rect.position.x + tension_meter_rect.size.x * tension
+		draw_circle(Vector2(marker_x, tension_meter_rect.get_center().y), 7.0, Color("fff0c9")); draw_circle(Vector2(marker_x, tension_meter_rect.get_center().y), 7.0, Color("2a180f"), false, 2.0)
+		_text("LANDING", Vector2(190, 1111), 14, Color("fff1d1")); draw_line(Vector2(275, 1106), Vector2(527, 1106), Color("2a180f"), 6.0); draw_line(Vector2(275, 1106), Vector2(275 + 252 * s.fight_progress, 1106), Color("d7ad6d"), 4.0)
+	func _refresh_tension_meter_geometry() -> void:
+		tension_meter_rect = Rect2(30, _virtual_safe_top() + 112, 540, 18)
+	func tension_status(tension: float) -> String:
+		if tension_meter_value(tension) >= HapticService.RED_TENSION: return "DANGER"
+		if tension_meter_value(tension) >= HapticService.HIGH_TENSION: return "EASE"
+		return "STEADY"
+	func tension_meter_value(tension: float) -> float: return clampf(tension, 0.0, 1.0)
+	func should_draw_tension_meter(s: FishingSession) -> bool: return overlay.is_empty() and s.state == FishingSession.State.REELING
 	func _draw_catch_reveal(s: FishingSession) -> void:
 		var reduced := bool(controller.save.data.settings.get("reduced_motion", false))
 		# A short lift, tail flick, and droplets reward the one moment the player
@@ -660,213 +721,261 @@ class FishingView extends Control:
 		var length := s.catch_length_cm if s.catch_length_cm > 0.0 else lerpf(s.fish.min_length_cm, s.fish.max_length_cm, s.cast_quality)
 		var status: String = controller._catch_status(length)
 		# Measurement is the focal data treatment; this is not a trophy frame.
-		draw_style_box(_control_style("row_selected"), Rect2(74, 672 + body_shift, 572, 108))
+		_draw_wood_control(Rect2(74, 672 + body_shift, 572, 108))
 		for mark in range(11):
 			var x := 106.0 + mark * 50.5
 			draw_line(Vector2(x, 746 + body_shift), Vector2(x, 746 + body_shift - (22 if mark % 2 == 0 else 12)), Color("fff2c4"), 2.0)
 		_centered_text("%.1f cm" % length, Vector2(360, 720 + body_shift), 34, Color("fff4d1"))
-		_text(s.fish.display_name.to_upper(), Vector2(102, 822 + body_shift), 29, Color(0.01, 0.07, 0.08, 0.72)); _text(s.fish.display_name.to_upper(), Vector2(100, 820 + body_shift), 29, Color("fff1c4"))
+		var species := _fit_text(s.fish.display_name.to_upper(), 520.0, 29)
+		_centered_text(species, Vector2(361, 822 + body_shift), 29, Color(0.01, 0.07, 0.08, 0.72)); _centered_text(species, Vector2(360, 820 + body_shift), 29, Color("fff1c4"))
 		_centered_text(status, Vector2(360, 858 + body_shift), 19, Color("f3d979"))
 		_centered_text("%s  •  %.0f m CAST" % [s.location_id.replace("_", " ").to_upper(), s.cast_distance_m], Vector2(360, 892 + body_shift), 16, Color("d7eee4"))
 		catch_continue_rect = Rect2(92, 914 + body_shift, 250, 70); catch_records_rect = Rect2(378, 914 + body_shift, 250, 70)
-		draw_style_box(_control_style("plaque_normal"), catch_continue_rect); draw_style_box(_control_style("plaque_normal"), catch_records_rect)
-		_centered_text("CONTINUE", catch_continue_rect.get_center() + Vector2(0, 6), 18, Color("fff1c4")); _centered_text("RECORDS", catch_records_rect.get_center() + Vector2(0, 6), 18, Color("fff1c4"))
+		_draw_wood_control(catch_continue_rect); _draw_wood_control(catch_records_rect)
+		_centered_text_in_rect("CONTINUE", catch_continue_rect, 18, Color("fff1c4")); _centered_text_in_rect("RECORDS", catch_records_rect, 18, Color("fff1c4"))
 		if s.can_recast_from_motion(): _centered_text("READY — TILT, THEN SNAP TO CAST AGAIN", Vector2(360, 1018 + body_shift), 15, Color("fff4d1"))
 	func _draw_escape_card(s: FishingSession) -> void:
-		draw_style_box(_control_style("plaque_pressed"), Rect2(84, 650, 552, 238)); _text("FISH GOT AWAY", Vector2(203, 722), 31, Color("fff2d5")); _text(s.last_reason, Vector2(132, 770), 18, Color("ffd5c2")); _text("Ease forward when warning pulses speed up.", Vector2(115, 815), 17, Color("ffe4bc")); _text("READY — TILT, THEN SNAP TO CAST AGAIN" if s.can_recast_from_motion() else "SETTLE THE PHONE TO CAST AGAIN", Vector2(126 if s.can_recast_from_motion() else 162, 855), 16 if s.can_recast_from_motion() else 18, Color("fff2d5"))
+		var notice := Rect2(84, _virtual_safe_top() + 118, 552, 118)
+		_draw_wood_control(notice); _centered_text_in_rect("FISH GOT AWAY", Rect2(notice.position, Vector2(notice.size.x, 30)), 22, Color("fff2d5")); _centered_text_in_rect("Ease forward when warning pulses speed up.", Rect2(notice.position + Vector2(0, 30), Vector2(notice.size.x, 27)), 13, Color("fff1c4")); _centered_text_in_rect("READY — TILT, THEN SNAP" if s.can_recast_from_motion() else "SETTLE THE PHONE", Rect2(notice.position + Vector2(0, 59), Vector2(notice.size.x, 30)), 14, Color("fff2d5"))
 	func _draw_calibration() -> void:
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.86))
-		draw_style_box(_panel_style(Color("eff3dc"), Color("fff6c5")), Rect2(54, 300, 612, 530))
-		_text("MOTION CHECK", Vector2(180, 375), 34, Color("173a48"))
+		_refresh_modal_layout(); _draw_rustic_clipboard()
+		_centered_text_in_rect("MOTION CHECK", modal_header_rect, 25, Color("fff4d1"))
 		var step: int = controller.motion.calibration_progress + 1
-		_text("Practice cast %d of 2" % min(step, 2), Vector2(242, 430), 22, Color("2c6876"))
+		_centered_text("Practice cast %d of 2" % min(step, 2), Vector2(360, 460), 22, Color("3b2818"))
 		var phase: String = controller.motion.calibration_phase
 		var copy := "Rest the phone flat and still for a moment."
 		if phase.contains("snap"):
 			copy = "Now snap %s to finish this practice cast." % ("right" if controller.motion.left_handed else "left")
 		elif phase.contains("back"):
 			copy = "Tilt %s, then snap %s when ready." % ["left" if controller.motion.left_handed else "right", "right" if controller.motion.left_handed else "left"]
-		_text(copy, Vector2(90, 510), 21, Color("173a48"))
-		_text("Calibration starts automatically — no buttons.", Vector2(112, 580), 18, Color("416b72"))
+		_centered_text(_fit_text(copy, 520, 20), Vector2(360, 530), 20, Color("3b2818"))
+		_centered_text("Calibration starts automatically — no buttons.", Vector2(360, 590), 16, Color("3b2818"))
 	func _draw_settings() -> void:
 		_refresh_modal_layout()
-		if controller.rustic_settings_texture: draw_texture_rect(controller.rustic_settings_texture, Rect2(0, 0, 720, 1280), false)
-		else: draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.88)); _draw_modal_panel()
+		_draw_rustic_clipboard()
 		_centered_text("SETTINGS", modal_header_rect.get_center() + Vector2(0, 10), 30, Color("fff4d1")); var settings: Dictionary = controller.save.data.settings
 		_draw_setting_row(settings_haptics_rect, "HAPTICS", "ON" if settings.haptics else "OFF")
 		_draw_setting_row(settings_reduced_motion_rect, "REDUCED MOTION", "ON" if settings.reduced_motion else "OFF")
 		_draw_setting_row(settings_handedness_rect, "HANDEDNESS", "LEFT" if settings.left_handed else "RIGHT")
-		_centered_text("Changing handedness resets the active session", Vector2(360, modal_panel_rect.position.y + 442), 16, Color("123942")); _centered_text("and starts motion setup again.", Vector2(360, modal_panel_rect.position.y + 464), 16, Color("123942"))
-		if controller.rustic_settings_texture == null: draw_style_box(_control_style("plaque_normal"), settings_test_haptics_rect)
-		_centered_text("TEST VIBRATION", settings_test_haptics_rect.get_center() + Vector2(0, 6), 20, Color("fff4d1"))
-		if controller.rustic_settings_texture == null: draw_style_box(_control_style("plaque_normal"), settings_motion_setup_rect)
-		_centered_text("MOTION SETUP", settings_motion_setup_rect.get_center() + Vector2(0, 6), 20, Color("fff4d1"))
+		_centered_text("Changing handedness resets the active session", Vector2(360, settings_handedness_rect.end.y + 30), 15, Color("123942")); _centered_text("and starts motion setup again.", Vector2(360, settings_handedness_rect.end.y + 51), 15, Color("123942"))
+		_draw_wood_control(settings_test_haptics_rect); _centered_text_in_rect("TEST VIBRATION", settings_test_haptics_rect, 18, Color("fff4d1"))
+		_draw_wood_control(settings_motion_setup_rect); _centered_text_in_rect("MOTION SETUP", settings_motion_setup_rect, 18, Color("fff4d1"))
 		_centered_text("BACK TO FISHING", settings_footer_close_rect.get_center() + Vector2(0, 6), 17, Color("fff4d1"))
 	func _draw_setting_row(rect: Rect2, title: String, value: String) -> void:
-		if controller.rustic_settings_texture == null: draw_style_box(_control_style("row_selected"), rect)
-		_text(title, rect.position + Vector2(28, 44), 20, Color("3b2818") if controller.rustic_settings_texture else Color("fff5d8")); _text(value, rect.position + Vector2(414, 44), 20, Color("6e411d") if controller.rustic_settings_texture else Color("f3d979"))
+		var half_height := rect.size.y * 0.5
+		_draw_wood_control(rect)
+		_centered_text_in_rect(title, Rect2(rect.position, Vector2(rect.size.x, half_height)), maxi(12, int(rect.size.y * 0.34)), Color("fff4d1"))
+		_centered_text_in_rect(value, Rect2(rect.position + Vector2(0, half_height), Vector2(rect.size.x, half_height)), maxi(13, int(rect.size.y * 0.38)), Color("fff4d1"))
+	func _draw_wood_control(rect: Rect2) -> void:
+		if controller.top_nav_texture: draw_texture_rect_region(controller.top_nav_texture, rect, Rect2(124, 172, 1012, 323))
+		else: draw_style_box(_panel_style(Color("62451f"), Color("24170d")), rect)
 	func _draw_motion_setup() -> void:
 		_refresh_modal_layout()
-		if controller.rustic_settings_texture: draw_texture_rect(controller.rustic_settings_texture, Rect2(0, 0, 720, 1280), false)
-		else: draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.90)); _draw_modal_panel()
+		_draw_rustic_clipboard()
 		_centered_text("MOTION SETUP", modal_header_rect.get_center() + Vector2(0, 8), 22, Color("fff4d1"))
 		_draw_setting_row(motion_sensitivity_rect, "SENSITIVITY", "%.1f" % float(controller.save.data.settings.sensitivity))
-		if controller.rustic_settings_texture == null:
-			for rect in [motion_recalibrate_rect, motion_capture_rect, motion_diagnostics_rect]: draw_style_box(_control_style("plaque_normal"), rect)
-		_centered_text("RECALIBRATE MOTION", motion_recalibrate_rect.get_center() + Vector2(0, 6), 20, Color("fff4d1")); _centered_text("RECORD 10 CASTS", motion_capture_rect.get_center() + Vector2(0, 6), 20, Color("fff4d1")); _centered_text("MOTION DIAGNOSTICS", motion_diagnostics_rect.get_center() + Vector2(0, 6), 20, Color("fff4d1"))
-		_centered_text("Recalibration clears the active cast and starts", Vector2(360, modal_panel_rect.position.y + 534), 16, Color("123942")); _centered_text("two practice casts.", Vector2(360, modal_panel_rect.position.y + 556), 16, Color("123942"))
+		for button in [motion_recalibrate_rect, motion_capture_rect, motion_diagnostics_rect]: _draw_wood_control(button)
+		_centered_text_in_rect("RECALIBRATE MOTION", motion_recalibrate_rect, 17, Color("fff4d1")); _centered_text_in_rect("RECORD 10 CASTS", motion_capture_rect, 18, Color("fff4d1")); _centered_text_in_rect("MOTION DIAGNOSTICS", motion_diagnostics_rect, 17, Color("fff4d1"))
+		_centered_text("Recalibration clears the active cast and starts", Vector2(360, 550), 16, Color("123942")); _centered_text("two practice casts.", Vector2(360, 576), 16, Color("123942"))
 		_centered_text("BACK TO SETTINGS", motion_back_rect.get_center() + Vector2(0, 6), 17, Color("fff4d1"))
 	func _draw_cast_capture() -> void:
 		_refresh_modal_layout()
 		var data: Dictionary = controller.cast_capture.status()
 		var done := int(data.get("cast_index", 0))
 		var phase := str(data.get("phase", "idle"))
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.90)); draw_style_box(_panel_style(Color("eff3dc"), Color("fff6c5")), Rect2(54, 330, 612, 490)); _text("CAST TUNING CAPTURE", Vector2(142, 412), 30, Color("173a48"))
+		_draw_rustic_clipboard(); _centered_text_in_rect("CAST TUNING CAPTURE", modal_header_rect, 23, Color("fff4d1"))
 		if phase == "saved":
-			_text("10 CASTS SAVED", Vector2(210, 505), 29, Color("1e665d")); _text("Raw trace is stored only for this", Vector2(155, 558), 20, Color("416b72")); _text("explicit capture. Return to Motion Setup.", Vector2(132, 592), 20, Color("416b72")); draw_style_box(_control_style("plaque_normal"), motion_back_rect); _centered_text("BACK TO MOTION SETUP", motion_back_rect.get_center() + Vector2(0, 6), _modal_footer_font_size("BACK TO MOTION SETUP"), Color("fff4d1")); return
+			_centered_text("10 CASTS SAVED", Vector2(360, 505), 29, Color("3b2818")); _centered_text("Raw trace is stored only for this explicit capture.", Vector2(360, 558), 16, Color("3b2818")); _centered_text_in_rect("BACK TO MOTION SETUP", motion_back_rect, _modal_footer_font_size("BACK TO MOTION SETUP"), Color("fff4d1")); return
 		var copy := "GET READY — WINDOWS BEGIN SOON"
 		if phase == "active": copy = "CAST NOW — TILT, THEN SNAP"
 		elif phase == "rest": copy = "REST — NEXT WINDOW WILL VIBRATE"
-		_text("CAST %d OF %d" % [min(done + 1, CastCaptureService.CAST_COUNT), CastCaptureService.CAST_COUNT], Vector2(248, 488), 24, Color("2c6876")); _text(copy, Vector2(118, 554), 22, Color("173a48")); _text("No taps needed. Gameplay is paused.", Vector2(170, 624), 19, Color("416b72")); _text("Each active window is haptic-cued.", Vector2(168, 658), 19, Color("416b72"))
+		_centered_text("CAST %d OF %d" % [min(done + 1, CastCaptureService.CAST_COUNT), CastCaptureService.CAST_COUNT], Vector2(360, 488), 22, Color("3b2818")); _centered_text(copy, Vector2(360, 554), 19, Color("3b2818")); _centered_text("No taps needed. Gameplay is paused.", Vector2(360, 624), 16, Color("3b2818")); _centered_text("Each active window is haptic-cued.", Vector2(360, 658), 16, Color("3b2818"))
 	func _draw_locations() -> void:
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.01, 0.06, 0.09, 0.92))
 		var safe_top := _virtual_safe_top()
-		_draw_back_to_fishing(safe_top)
-		_text("CHOOSE WATER", Vector2(46, safe_top + 124), 34, Color("fff4d1"))
 		_refresh_location_card_rects(safe_top)
+		var background: Texture2D = controller.cedar_river_texture if controller.session.location_id == "cedar_river" else controller.pine_lake_texture
+		if background: draw_texture_rect(background, Rect2(0, 0, 720, 1280), false)
 		_draw_location_card("PINE LAKE", "Near reeds • mid coves • far channel", controller.pine_lake_texture, location_pine_rect, controller.session.location_id == "pine_lake")
 		_draw_location_card("CEDAR RIVER", "Near eddies • mid current • far run", controller.cedar_river_texture, location_cedar_rect, controller.session.location_id == "cedar_river")
-		_text("Finish this cast before changing water." if not controller._can_open_records() else "Tap a water to fish it", Vector2(150, minf(1210.0, location_pine_rect.position.y + 924.0)), 18, Color("d9e9d9"))
+		_draw_wood_control(back_to_fishing_rect)
+		_centered_text_in_rect("BACK TO FISHING", back_to_fishing_rect, 15, Color("fff4d1"))
+		if controller.session.location_id == "pine_lake": draw_rect(location_pine_rect.grow(-5), Color("d6b56d", 0.38), false, 4.0)
+		else: draw_rect(location_cedar_rect.grow(-5), Color("d6b56d", 0.38), false, 4.0)
 	func _draw_back_to_fishing(safe_top: float) -> void:
 		_refresh_back_to_fishing_rect(safe_top)
-		draw_style_box(_control_style("plaque_normal"), back_to_fishing_rect)
+		_draw_wood_control(back_to_fishing_rect)
 		_centered_text("BACK TO FISHING", back_to_fishing_rect.get_center() + Vector2(0, 6), 17, Color("fff4d1"))
 	func _refresh_back_to_fishing_rect(safe_top: float) -> void:
 		back_to_fishing_rect = Rect2(420, safe_top + 18, 264, 64)
 	func _draw_records_back_to_fishing(safe_top: float) -> void:
 		_refresh_records_back_to_fishing_rect(safe_top)
 		var visual_rect := Rect2(back_to_fishing_rect.position + Vector2(14, 8), back_to_fishing_rect.size - Vector2(28, 18))
-		draw_style_box(_control_style("plaque_normal"), visual_rect)
+		_draw_wood_control(visual_rect)
 		_centered_text("BACK TO FISHING", visual_rect.get_center() + Vector2(0, 5), 16, Color("fff4d1"))
 	func _refresh_records_back_to_fishing_rect(safe_top: float) -> void:
 		# The bottom journal footer is clear of the authored crest and all six fish; the hit target stays safe-aware.
 		var visual_y := maxf(1168.0, safe_top + 18.0)
 		back_to_fishing_rect = Rect2(416, visual_y - 8.0, 280, 64)
 	func _refresh_location_card_rects(safe_top: float) -> void:
-		var card_top := maxf(240.0, safe_top + 170.0)
-		location_pine_rect = Rect2(42, card_top, 636, 380)
-		location_cedar_rect = Rect2(42, card_top + 440.0, 636, 380)
+		# Each card is an intentional framed crop. It is independent from the scenic
+		# selected-water backdrop, so safe insets never shrink a full unrelated master.
+		var top_y := safe_top + 94.0
+		location_pine_rect = Rect2(50, top_y, 620, 429)
+		location_cedar_rect = Rect2(50, top_y + 459, 620, 460)
+		back_to_fishing_rect = Rect2(32, safe_top + 18, 242, 64)
 	func _draw_location_card(title: String, species: String, texture: Texture2D, rect: Rect2, selected: bool) -> void:
-		if texture: draw_texture_rect_region(texture, rect, Rect2(0, 335, 941, 940))
-		else: draw_rect(rect, Color("1b566a"))
-		draw_rect(rect, Color(0.01, 0.10, 0.13, 0.28))
+		var top := title == "PINE LAKE"
+		var source := Rect2(32, 224, 877, 607) if top else Rect2(32, 868, 877, 650)
+		var source_image := Rect2(60, 258, 823, 417) if top else Rect2(60, 898, 823, 454)
+		var local_image := Rect2(source_image.position - source.position, source_image.size)
+		var scale := rect.size.x / source.size.x
+		var image_rect := Rect2(rect.position + local_image.position * scale, local_image.size * scale)
+		if controller.rustic_waters_texture: draw_texture_rect_region(controller.rustic_waters_texture, rect, source)
+		if texture:
+			var texture_size := texture.get_size()
+			var crop_height := texture_size.x / maxf(image_rect.size.x / image_rect.size.y, 0.01)
+			var crop_y := clampf(texture_size.y * 0.30 - crop_height * 0.5, 0.0, texture_size.y - crop_height)
+			draw_texture_rect_region(texture, image_rect, Rect2(0, crop_y, texture_size.x, crop_height))
 		if selected: draw_style_box(_panel_style(Color(0.0, 0.0, 0.0, 0.0), Color("f0d579")), rect.grow(-4.0))
-		var info_rect := Rect2(rect.position + Vector2(18, rect.size.y - 148), Vector2(rect.size.x - 36, 124))
-		draw_style_box(_control_style("row_selected" if selected else "row_normal"), info_rect)
-		_text(title, info_rect.position + Vector2(22, 44), 27, Color("fff2c9")); _text(species, info_rect.position + Vector2(22, 73), 15, Color("d1eadf")); _text("%d / 3 DISCOVERED" % controller._discovered_species_count("pine_lake" if title == "PINE LAKE" else "cedar_river"), info_rect.position + Vector2(22, 98), 16, Color("f3d979"))
-		if selected:
-			draw_style_box(_panel_style(Color("123942", 0.92), Color("f0d579")), Rect2(rect.position + Vector2(rect.size.x - 146, 18), Vector2(120, 42)))
-			_text("SELECTED", rect.position + Vector2(rect.size.x - 129, 47), 15, Color("fff2c9"))
+		var info_rect := Rect2(rect.position + Vector2(30, rect.size.y - 88), Vector2(rect.size.x - 60, 70))
+		_centered_text_in_rect("SELECTED • " + title if selected else title, Rect2(info_rect.position, Vector2(info_rect.size.x, 30)), 20, Color("3b2818")); _centered_text_in_rect(_fit_text(species + "  •  %d / 3 DISCOVERED" % controller._discovered_species_count("pine_lake" if top else "cedar_river"), info_rect.size.x - 8, 12), Rect2(info_rect.position + Vector2(0, 30), Vector2(info_rect.size.x, 28)), 12, Color("3b2818"))
 	func _draw_diagnostics() -> void:
 		_refresh_modal_layout()
 		var data: Dictionary = controller.motion.get_diagnostics(); var reasons: Dictionary = data.reasons
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.88)); draw_style_box(_panel_style(Color("eaf2dc"), Color("fff6c5")), Rect2(55, 300, 610, 590)); _text("MOTION DIAGNOSTICS", Vector2(150, 390), 30, Color("173a48")); _text("Tilt attempts: %d" % int(data.cock_attempts), Vector2(125, 465), 21, Color("173a48")); _text("Completed casts: %d" % int(data.completed_casts), Vector2(125, 510), 21, Color("173a48")); _text("Fails L/A/P/G/T: %d / %d / %d / %d / %d" % [int(reasons.linear), int(reasons.axis), int(reasons.polarity), int(reasons.gyro), int(reasons.timeout)], Vector2(82, 620), 18, Color("416b72")); _text("Derived counts only. Raw traces exist only after", Vector2(92, 694), 17, Color("416b72")); _text("an explicit RECORD 10 CASTS session.", Vector2(132, 722), 17, Color("416b72")); draw_style_box(_control_style("plaque_normal"), motion_back_rect); _centered_text("BACK TO MOTION SETUP", motion_back_rect.get_center() + Vector2(0, 6), _modal_footer_font_size("BACK TO MOTION SETUP"), Color("fff4d1"))
+		_draw_rustic_clipboard(); _centered_text_in_rect("MOTION DIAGNOSTICS", modal_header_rect, 22, Color("fff4d1")); _centered_text("Tilt attempts: %d" % int(data.cock_attempts), Vector2(360, 465), 20, Color("3b2818")); _centered_text("Completed casts: %d" % int(data.completed_casts), Vector2(360, 510), 20, Color("3b2818")); _centered_text("Fails L/A/P/G/T: %d / %d / %d / %d / %d" % [int(reasons.linear), int(reasons.axis), int(reasons.polarity), int(reasons.gyro), int(reasons.timeout)], Vector2(360, 620), 17, Color("3b2818")); _centered_text("Derived counts only. Raw traces exist only after", Vector2(360, 694), 15, Color("3b2818")); _centered_text("an explicit RECORD 10 CASTS session.", Vector2(360, 722), 15, Color("3b2818")); _centered_text_in_rect("BACK TO MOTION SETUP", motion_back_rect, _modal_footer_font_size("BACK TO MOTION SETUP"), Color("fff4d1"))
 	func _draw_records() -> void:
 		var safe_top := _virtual_safe_top()
+		_refresh_records_geometry(safe_top)
 		var page := _journal_page_rect(safe_top)
-		draw_rect(Rect2(0, 0, 720, 1280), Color("06232c"))
-		if controller.records_texture: draw_texture_rect(controller.records_texture, page, false)
+		if controller.records_texture:
+			var band_height := _journal_map_y(150.0)
+			draw_texture_rect_region(controller.records_texture, Rect2(0, 0, 720, band_height), Rect2(0, 0, 941, 150))
+			draw_texture_rect_region(controller.records_texture, Rect2(0, band_height, 720, 1280 - band_height), Rect2(0, 150, 941, 1522))
 		# One opaque authored page owns the journal/title/slots. Fish, silhouettes,
 		# localized names, and stats are runtime-only because they change with saves.
 		var fish_ids := ["bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike"]
-		var canonical_slots := [Rect2(64, 225, 284, 254), Rect2(372, 225, 284, 254), Rect2(64, 503, 284, 256), Rect2(372, 503, 284, 256), Rect2(64, 786, 284, 250), Rect2(372, 786, 284, 250)]
 		var discovered_total := 0
 		for index in range(fish_ids.size()):
 			var fish := _fish_definition(fish_ids[index])
 			var count := int(controller.save.data.catches.get(fish.id, 0))
 			var best := float(controller.save.data.best_cm.get(fish.id, 0.0))
 			if count > 0: discovered_total += 1
-			journal_slot_rects[index] = _journal_map_rect(canonical_slots[index], page)
-			var slot: Rect2 = journal_slot_rects[index]
-			_draw_fish_atlas_contained(fish.id, Rect2(slot.position + Vector2(14, 18), Vector2(slot.size.x - 28, slot.size.y - 92)), Color.WHITE if count > 0 else Color("172e2b"))
-			_centered_text(fish.display_name.to_upper() if count > 0 else "UNDISCOVERED", slot.position + Vector2(slot.size.x * 0.5, slot.size.y - 52), maxi(11, int(16 * page.size.x / 720.0)), Color("5f4120"))
-			_centered_text("%d caught  •  %s" % [count, ("%.1f cm" % best) if best > 0.0 else "—"], slot.position + Vector2(slot.size.x * 0.5, slot.size.y - 19), maxi(10, int(14 * page.size.x / 720.0)), Color("fff2c8"))
-		_centered_text("%d / %d DISCOVERED" % [discovered_total, fish_ids.size()], Vector2(page.get_center().x, page.position.y + page.size.y - 40), maxi(11, int(15 * page.size.x / 720.0)), Color("fff2c8"))
-		back_to_fishing_rect = _journal_map_rect(Rect2(420, 1164, 246, 58), page)
-		draw_style_box(_control_style("plaque_normal"), back_to_fishing_rect)
-		_centered_text("BACK TO FISHING", back_to_fishing_rect.get_center() + Vector2(0, 5), maxi(10, int(14 * page.size.x / 720.0)), Color("fff4d1"))
-		records_world_rect = Rect2(26, safe_top + 18, 196, 58)
-		draw_style_box(_control_style("plaque_normal"), records_world_rect)
-		_centered_text("WORLD RECORDS", records_world_rect.get_center() + Vector2(0, 5), 15, Color("fff4d1"))
+			var slot: Rect2 = journal_fish_rects[index]
+			_draw_fish_atlas_contained(fish.id, slot.grow(-8.0), Color.WHITE if count > 0 else Color("172e2b"))
+			var name_rect: Rect2 = journal_name_rects[index]
+			var stats_rect: Rect2 = journal_stats_rects[index]
+			# Runtime canvas font sizes scale against the 720px virtual viewport, not
+			# the narrower safe-inset record page. This keeps full-record labels legible.
+			var name_size := maxi(12, int(16 * page.size.x / 720.0))
+			_centered_text_in_rect(_fit_text(fish.display_name.to_upper() if count > 0 else "UNDISCOVERED", name_rect.size.x - 28.0, name_size), name_rect, name_size, Color("fff2c8"))
+			_centered_text_in_rect("%d CAUGHT  •  %s" % [count, ("%.1f cm" % best) if best > 0.0 else "—"], stats_rect, maxi(11, int(14 * page.size.x / 720.0)), Color("5f4120"))
+		_centered_text_in_rect("WORLD RECORDS", records_world_rect, maxi(12, int(16 * page.size.x / 720.0)), Color("fff4d1"))
+		_centered_text_in_rect("BACK TO FISHING", back_to_fishing_rect, maxi(12, int(16 * page.size.x / 720.0)), Color("fff4d1"))
+	func _refresh_records_geometry(safe_top: float) -> void:
+		# All record art / text / hit windows are derived from one journal transform.
+		# The tap window intentionally unites its fish, wood name, and paper stats.
+		journal_safe_top = safe_top
+		var page := _journal_page_rect(safe_top)
+		var fish_sources := [Rect2(104, 289, 338, 188), Rect2(501, 289, 338, 188), Rect2(104, 669, 338, 188), Rect2(501, 669, 338, 188), Rect2(104, 1049, 338, 188), Rect2(501, 1049, 338, 188)]
+		var name_sources := [Rect2(94, 493, 358, 55), Rect2(491, 493, 358, 55), Rect2(94, 873, 358, 55), Rect2(491, 873, 358, 55), Rect2(94, 1253, 358, 55), Rect2(491, 1253, 358, 55)]
+		var stats_sources := [Rect2(94, 565, 358, 45), Rect2(491, 565, 358, 45), Rect2(94, 945, 358, 45), Rect2(491, 945, 358, 45), Rect2(94, 1325, 358, 45), Rect2(491, 1325, 358, 45)]
+		for index in range(fish_sources.size()):
+			journal_fish_rects[index] = _journal_map_rect(fish_sources[index], page)
+			journal_name_rects[index] = _journal_map_rect(name_sources[index], page)
+			journal_stats_rects[index] = _journal_map_rect(stats_sources[index], page)
+			journal_slot_rects[index] = journal_fish_rects[index].merge(journal_name_rects[index]).merge(journal_stats_rects[index])
+		records_world_rect = _journal_map_rect(Rect2(77, 1477, 370, 78), page)
+		back_to_fishing_rect = _journal_map_rect(Rect2(493, 1477, 370, 78), page)
 	func _draw_world_records() -> void:
-		_refresh_modal_layout()
-		draw_rect(Rect2(0, 0, 720, 1280), Color(0.02, 0.08, 0.11, 0.90)); _draw_modal_panel()
-		_centered_text("WORLD RECORDS", modal_header_rect.get_center() + Vector2(0, 10), 22, Color("fff4d1"))
+		_refresh_world_records_geometry()
+		_draw_rustic_clipboard()
+		_centered_text_in_rect("WORLD RECORDS", modal_header_rect, 22, Color("fff4d1"))
 		var status: String = controller.leaderboards.status if controller.leaderboards != null else "UNAVAILABLE"
 		var period: String = controller.leaderboards.period if controller.leaderboards != null else "ALL TIME"
-		_centered_text(period, Vector2(360, modal_panel_rect.position.y + 150), 17, Color("f3d979"))
+		var paper_dark := Color("3b2818")
 		if status == "UNAVAILABLE":
-			_centered_text("ONLINE RECORDS AREN'T CONNECTED YET", Vector2(360, modal_panel_rect.position.y + 218), 17, Color("173a48"))
-			_centered_text("Your local Catch Records always stay on this phone.", Vector2(360, modal_panel_rect.position.y + 250), 14, Color("416b72"))
-			_centered_text("Play Games will appear here when this water opens online.", Vector2(360, modal_panel_rect.position.y + 276), 14, Color("416b72"))
+			_centered_text_in_rect("ONLINE RECORDS AREN'T CONNECTED YET", Rect2(world_status_rect.position, Vector2(world_status_rect.size.x, 32)), 16, paper_dark)
+			_centered_text_in_rect("Your local Catch Records always stay on this phone.", Rect2(world_status_rect.position + Vector2(0, 34), Vector2(world_status_rect.size.x, 26)), 13, paper_dark)
 		elif status == "NO_AUTH":
-			_centered_text("CONNECT PLAY GAMES TO VIEW ONLINE RECORDS", Vector2(360, modal_panel_rect.position.y + 218), 16, Color("173a48"))
-			_centered_text("Your local Catch Records always stay on this phone.", Vector2(360, modal_panel_rect.position.y + 248), 14, Color("416b72"))
+			_centered_text_in_rect("CONNECT PLAY GAMES TO VIEW ONLINE RECORDS", Rect2(world_status_rect.position, Vector2(world_status_rect.size.x, 32)), 15, paper_dark)
+			_centered_text_in_rect("Your local Catch Records always stay on this phone.", Rect2(world_status_rect.position + Vector2(0, 34), Vector2(world_status_rect.size.x, 26)), 13, paper_dark)
 		elif status == "ERROR":
-			_centered_text("ONLINE RECORDS COULDN'T LOAD", Vector2(360, modal_panel_rect.position.y + 218), 17, Color("173a48"))
-			_centered_text("Try again when Play Games is available.", Vector2(360, modal_panel_rect.position.y + 248), 14, Color("416b72"))
+			_centered_text_in_rect("ONLINE RECORDS COULDN'T LOAD", Rect2(world_status_rect.position, Vector2(world_status_rect.size.x, 32)), 16, paper_dark)
+			_centered_text_in_rect("Try again when Play Games is available.", Rect2(world_status_rect.position + Vector2(0, 34), Vector2(world_status_rect.size.x, 26)), 13, paper_dark)
 		else:
-			_centered_text("%s — %s" % ["CONNECTING" if status in ["LOADING", "CONNECTING"] else "ONLINE", period], Vector2(360, modal_panel_rect.position.y + 218), 18, Color("173a48"))
+			_centered_text_in_rect("%s — %s" % ["CONNECTING" if status in ["LOADING", "CONNECTING"] else "ONLINE", period], world_status_rect, 17, paper_dark)
 		for index in range(FishDefinition.all_planned().size()):
 			var fish: FishDefinition = FishDefinition.all_planned()[index]
 			var best := float(controller.save.data.best_cm.get(fish.id, 0.0))
 			var board: Dictionary = controller.leaderboards.board_for(fish.id) if controller.leaderboards != null else {}
 			var top_mm := int(board.get("top_score_mm", 0)); var mine_mm := int(board.get("player_score_mm", 0)); var rank := int(board.get("player_rank", 0))
-			var world_copy := "—" if top_mm <= 0 else "%s %.1f cm" % [str(board.get("top_name", "TOP")), top_mm / 10.0]
+			var world_name := _fit_text(str(board.get("top_name", "TOP")), 142.0, 11)
+			var world_copy := "—" if top_mm <= 0 else "%s %.1f cm" % [world_name, top_mm / 10.0]
 			var player_copy := "—" if mine_mm <= 0 else ("%.1f cm" % (mine_mm / 10.0) if rank <= 0 else "%.1f cm #%d" % [mine_mm / 10.0, rank])
 			if bool(board.get("cached", false)) and player_copy != "—": player_copy += " (CACHED)"
-			_centered_text("%s  •  LOCAL %s  •  YOU %s  •  WORLD %s" % [fish.display_name.to_upper(), "%.1f cm" % best if best > 0.0 else "—", player_copy, world_copy], Vector2(360, modal_panel_rect.position.y + 338 + index * 48), 12, Color("173a48"))
-		world_retry_rect = Rect2(86, modal_panel_rect.position.y + 710, 260, 70)
-		world_period_rect = Rect2(374, modal_panel_rect.position.y + 710, 260, 70)
+			var row: Rect2 = world_row_rects[index]
+			_centered_text_in_rect(_fit_text(fish.display_name.to_upper(), row.size.x - 20.0, 13), Rect2(row.position, Vector2(row.size.x, 24)), 13, paper_dark)
+			_centered_text_in_rect(_fit_text("LOCAL %s  •  YOU %s  •  WORLD %s" % ["%.1f cm" % best if best > 0.0 else "—", player_copy, world_copy], row.size.x - 20.0, 11), Rect2(row.position + Vector2(0, 25), Vector2(row.size.x, 28)), 11, paper_dark)
+		_draw_wood_control(world_retry_rect); _draw_wood_control(world_period_rect)
+		_centered_text_in_rect("CONNECT" if status == "NO_AUTH" else "RETRY", world_retry_rect, 17, Color("fff4d1")); _centered_text_in_rect("WEEKLY" if period == "ALL TIME" else "ALL TIME", world_period_rect, 16, Color("fff4d1")); _centered_text_in_rect("BACK TO RECORDS", world_back_rect, _modal_footer_font_size("BACK TO RECORDS"), Color("fff4d1"))
+	func _refresh_world_records_geometry() -> void:
+		_refresh_modal_layout()
+		# Paper content starts below the clipboard's wood header. These fixed virtual
+		# rows share the full source transform and leave its authored footer untouched.
+		world_status_rect = Rect2(86, 360, 548, 80)
+		for index in range(world_row_rects.size()): world_row_rects[index] = Rect2(86, 470 + index * 60, 548, 56)
+		world_retry_rect = Rect2(86, 900, 260, 68)
+		world_period_rect = Rect2(374, 900, 260, 68)
 		world_back_rect = modal_footer_rect
-		draw_style_box(_control_style("plaque_normal"), world_retry_rect); draw_style_box(_control_style("plaque_normal"), world_period_rect)
-		_centered_text("CONNECT" if status == "NO_AUTH" else "RETRY", world_retry_rect.get_center() + Vector2(0, 6), 17, Color("fff4d1")); _centered_text("WEEKLY" if period == "ALL TIME" else "ALL TIME", world_period_rect.get_center() + Vector2(0, 6), 16, Color("fff4d1")); _centered_text("BACK TO RECORDS", world_back_rect.get_center() + Vector2(0, 6), _modal_footer_font_size("BACK TO RECORDS"), Color("fff4d1"))
 	func _journal_page_rect(safe_top: float) -> Rect2:
-		var scale := clampf((1280.0 - safe_top) / 1280.0, 0.75, 1.0)
-		return Rect2((720.0 - 720.0 * scale) * 0.5, safe_top, 720.0 * scale, 1280.0 * scale)
+		# Records owns the full screen once. Under a tall safe inset its decorative
+		# top band expands just enough to clear the inset; the remaining source maps
+		# continuously into the remaining height, preventing a photo/page rectangle.
+		return Rect2(0, 0, 720, 1280)
 	func _journal_map_rect(canonical: Rect2, page: Rect2) -> Rect2:
-		var scale := page.size.x / 720.0
-		return Rect2(page.position + canonical.position * scale, canonical.size * scale)
+		var scale_x := page.size.x / 941.0
+		var y0 := _journal_map_y(canonical.position.y)
+		var y1 := _journal_map_y(canonical.end.y)
+		return Rect2(page.position.x + canonical.position.x * scale_x, y0, canonical.size.x * scale_x, y1 - y0)
+	func _journal_map_y(source_y: float) -> float:
+		const BAND_END := 150.0
+		var natural_band := BAND_END * 720.0 / 941.0
+		var band_height := maxf(natural_band, journal_safe_top + 8.0)
+		if source_y <= BAND_END: return source_y / BAND_END * band_height
+		return band_height + (source_y - BAND_END) / (1672.0 - BAND_END) * (1280.0 - band_height)
 	func _draw_journal_detail() -> void:
-		var page := _journal_page_rect(_virtual_safe_top())
-		draw_rect(Rect2(0, 0, 720, 1280), Color("06232c"))
-		if controller.journal_detail_texture: draw_texture_rect(controller.journal_detail_texture, page, false)
+		_refresh_field_notes_geometry(); _draw_rustic_clipboard()
 		var fish := _fish_definition(journal_fish_id)
 		var count := int(controller.save.data.catches.get(fish.id, 0))
 		var best := float(controller.save.data.best_cm.get(fish.id, 0.0))
-		var scale := page.size.x / 720.0
-		var fish_rect := _journal_map_rect(Rect2(120, 228, 480, 350), page)
-		_draw_fish_atlas_contained(fish.id, fish_rect, Color.WHITE if count > 0 else Color(0.08, 0.15, 0.14, 0.58))
-		var title_y := page.position.y + 631.0 * scale
-		_centered_text(fish.display_name.to_upper() if count > 0 else "UNDISCOVERED", Vector2(page.get_center().x, title_y), maxi(16, int(28 * scale)), Color("fff2c8"))
-		_centered_text("%d CAUGHT  •  BEST %s" % [count, ("%.1f cm" % best) if best > 0.0 else "—"], Vector2(page.get_center().x, title_y + 32 * scale), maxi(12, int(18 * scale)), Color("fff2c8"))
+		var paper_dark := Color("3b2818")
+		_centered_text_in_rect("FIELD NOTES", modal_header_rect, 22, Color("fff4d1"))
+		_draw_fish_atlas_contained(fish.id, journal_detail_fish_rect, Color.WHITE if count > 0 else Color(0.08, 0.15, 0.14, 0.58))
+		_centered_text_in_rect(_fit_text(fish.display_name.to_upper() if count > 0 else "UNDISCOVERED", journal_detail_title_rect.size.x - 20.0, 24), journal_detail_title_rect, 24, paper_dark)
+		_centered_text_in_rect("%d CAUGHT  •  BEST %s" % [count, ("%.1f cm" % best) if best > 0.0 else "—"], journal_detail_stats_rect, 16, paper_dark)
 		var history: Array[Dictionary] = controller.save.history_for_fish(fish.id)
-		var history_y := page.position.y + 705.0 * scale
-		_centered_text("RECENT CATCHES" if not history.is_empty() else "NO RECENT CATCHES YET", Vector2(page.get_center().x, history_y), maxi(12, int(17 * scale)), Color("5f4120"))
+		_centered_text_in_rect("RECENT CATCHES" if not history.is_empty() else "NO RECENT CATCHES YET", Rect2(journal_detail_history_rect.position, Vector2(journal_detail_history_rect.size.x, 26)), 15, paper_dark)
 		for row in range(mini(4, maxi(0, history.size() - journal_history_offset))):
 			var entry: Dictionary = history[history.size() - 1 - journal_history_offset - row]
 			var date := Time.get_datetime_dict_from_unix_time(int(entry.timestamp_utc))
 			var line := "%.1f cm  •  %s  •  %04d-%02d-%02d  •  %.1fs" % [float(entry.length_cm), str(entry.location_id).replace("_", " ").to_upper(), int(date.year), int(date.month), int(date.day), float(entry.fight_seconds)]
-			_centered_text(line, Vector2(page.get_center().x, history_y + (38 + row * 32) * scale), maxi(11, int(15 * scale)), Color("5f4120"))
+			_centered_text_in_rect(_fit_text(line, journal_detail_history_rect.size.x - 16.0, 12), Rect2(journal_detail_history_rect.position + Vector2(0, 28 + row * 30), Vector2(journal_detail_history_rect.size.x, 28)), 12, paper_dark)
 		var habitat_note := "Near reeds favor lighter strikes; far water can hold heavier runs."
 		if fish.id == "northern_pike": habitat_note = "Pike runs hard. Ease at the urgent pulse, then pull in the lull."
 		elif fish.id == "channel_catfish": habitat_note = "Catfish hold steady pressure. Let the line breathe between pulls."
-		_centered_text(habitat_note, Vector2(page.get_center().x, history_y + 198 * scale), maxi(10, int(13 * scale)), Color("5f4120"))
-		journal_detail_back_rect = _journal_map_rect(Rect2(54, 1120, 280, 72), page)
-		journal_detail_next_rect = _journal_map_rect(Rect2(386, 1120, 280, 72), page)
-		draw_style_box(_control_style("plaque_normal"), journal_detail_back_rect); draw_style_box(_control_style("plaque_normal" if history.size() > journal_history_offset + 4 else "plaque_disabled"), journal_detail_next_rect)
-		_centered_text("BACK TO RECORDS", journal_detail_back_rect.get_center() + Vector2(0, 5), maxi(11, int(16 * scale)), Color("fff4d1"))
-		_centered_text("OLDER" if history.size() > journal_history_offset + 4 else "NO OLDER CATCHES", journal_detail_next_rect.get_center() + Vector2(0, 5), maxi(10, int(14 * scale)), Color("fff4d1"))
+		_centered_text_in_rect(_fit_text(habitat_note, journal_detail_note_rect.size.x - 16.0, 12), journal_detail_note_rect, 12, paper_dark)
+		_draw_wood_control(journal_detail_back_rect); _draw_wood_control(journal_detail_next_rect)
+		_centered_text_in_rect("BACK TO RECORDS", journal_detail_back_rect, 15, Color("fff4d1"))
+		_centered_text_in_rect("OLDER" if history.size() > journal_history_offset + 4 else "NO OLDER CATCHES", journal_detail_next_rect, 13, Color("fff4d1"))
+	func _refresh_field_notes_geometry() -> void:
+		_refresh_modal_layout()
+		journal_detail_fish_rect = Rect2(120, 330, 480, 220)
+		journal_detail_title_rect = Rect2(90, 560, 540, 36)
+		journal_detail_stats_rect = Rect2(90, 598, 540, 30)
+		journal_detail_history_rect = Rect2(86, 650, 548, 158)
+		journal_detail_note_rect = Rect2(94, 818, 532, 54)
+		journal_detail_back_rect = Rect2(92, 900, 250, 68)
+		journal_detail_next_rect = Rect2(378, 900, 250, 68)
 	func _fish_definition(fish_id: String) -> FishDefinition:
 		for fish in FishDefinition.all_planned():
 			if fish.id == fish_id: return fish
@@ -927,41 +1036,31 @@ class FishingView extends Control:
 			if motion_back_rect.has_point(pos): overlay = "motion_setup"
 			return
 		if overlay == "records":
-			var page := _journal_page_rect(_virtual_safe_top())
-			# Draw refresh owns the same transformed slot geometry, but refresh here too
-			# so an immediate tap after resize never drifts from artwork.
-			var canonical_slots := [Rect2(64, 225, 284, 254), Rect2(372, 225, 284, 254), Rect2(64, 503, 284, 256), Rect2(372, 503, 284, 256), Rect2(64, 786, 284, 250), Rect2(372, 786, 284, 250)]
-			back_to_fishing_rect = _journal_map_rect(Rect2(420, 1164, 246, 58), page)
-			records_world_rect = Rect2(26, _virtual_safe_top() + 18, 196, 58)
+			_refresh_records_geometry(_virtual_safe_top())
 			if back_to_fishing_rect.has_point(pos): controller._close_overlay(); return
 			if records_world_rect.has_point(pos):
 				overlay = "world_records"
 				if controller.leaderboards != null and not controller.capture_mode: controller.leaderboards.open_records()
 				return
-			for index in range(canonical_slots.size()):
-				journal_slot_rects[index] = _journal_map_rect(canonical_slots[index], page)
+			for index in range(journal_slot_rects.size()):
 				if journal_slot_rects[index].has_point(pos): journal_fish_id = ["bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike"][index]; journal_history_offset = 0; overlay = "journal_detail"; return
 			return
 		if overlay == "journal_detail":
-			var detail_page := _journal_page_rect(_virtual_safe_top())
-			journal_detail_back_rect = _journal_map_rect(Rect2(54, 1120, 280, 72), detail_page); journal_detail_next_rect = _journal_map_rect(Rect2(386, 1120, 280, 72), detail_page)
+			_refresh_field_notes_geometry()
 			if journal_detail_back_rect.has_point(pos): overlay = "records"
 			elif journal_detail_next_rect.has_point(pos):
 				var history: Array[Dictionary] = controller.save.history_for_fish(journal_fish_id)
 				if history.size() > journal_history_offset + 4: journal_history_offset += 4
 			return
 		if overlay == "world_records":
-			_refresh_modal_layout()
-			world_retry_rect = Rect2(86, modal_panel_rect.position.y + 710, 260, 70)
-			world_back_rect = modal_footer_rect
-			world_period_rect = Rect2(374, modal_panel_rect.position.y + 710, 260, 70)
+			_refresh_world_records_geometry()
 			if world_back_rect.has_point(pos): overlay = "records"
 			elif world_period_rect.has_point(pos):
 				if controller.leaderboards != null: controller.leaderboards.set_period("WEEKLY" if controller.leaderboards.period == "ALL TIME" else "ALL TIME")
 			elif world_retry_rect.has_point(pos):
 				if controller.leaderboards != null:
 					if controller.leaderboards.status == "NO_AUTH": controller.leaderboards.begin_sign_in()
-				else: controller.leaderboards.open_records()
+					else: controller.leaderboards.open_records()
 			return
 		if overlay in ["locations", "diagnostics"]:
 			if overlay == "locations":
@@ -1001,20 +1100,31 @@ class FishingView extends Control:
 		if controller.session.state == FishingSession.State.ESCAPED: controller._reset_session()
 	func _control_style(name: String) -> StyleBoxTexture:
 		var skin := StyleBoxTexture.new()
-		var region: Rect2 = CONTROL_REGIONS.get(name, CONTROL_REGIONS["plaque_disabled"])
-		if controller.control_kit_texture:
-			var atlas := AtlasTexture.new(); atlas.atlas = controller.control_kit_texture; atlas.region = region; atlas.filter_clip = true
-			skin.texture = atlas
-			skin.texture_margin_left = 22.0; skin.texture_margin_top = 22.0; skin.texture_margin_right = 22.0; skin.texture_margin_bottom = 22.0
-			skin.draw_center = true
 		return skin
 	func _draw_control_region(name: String, destination: Rect2) -> void:
-		if controller.control_kit_texture == null: return
-		var region: Rect2 = CONTROL_REGIONS.get(name, CONTROL_REGIONS["plaque_disabled"])
-		draw_texture_rect_region(controller.control_kit_texture, destination, region)
+		_draw_wood_control(destination)
 	func _panel_style(background: Color, border: Color) -> StyleBoxFlat:
 		var box := StyleBoxFlat.new(); box.bg_color = background; box.border_color = border; box.set_border_width_all(3); box.set_corner_radius_all(20); return box
 	func _text(value: String, pos: Vector2, font_size: int, color: Color) -> void: draw_string(font, pos, value, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
 	func _centered_text(value: String, center: Vector2, font_size: int, color: Color) -> void:
 		var width := font.get_string_size(value, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
 		_text(value, Vector2(center.x - width * 0.5, center.y), font_size, color)
+	func _centered_text_in_rect(value: String, rect: Rect2, font_size: int, color: Color) -> void:
+		var width := font.get_string_size(value, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+		var ascent := font.get_ascent(font_size)
+		var descent := font.get_descent(font_size)
+		_text(value, Vector2(rect.get_center().x - width * 0.5, rect.get_center().y + (ascent - descent) * 0.5), font_size, color)
+	func _fit_text(value: String, width: float, preferred_size: int) -> String:
+		if font.get_string_size(value, HORIZONTAL_ALIGNMENT_LEFT, -1, preferred_size).x <= width: return value
+		var words := value.split(" ")
+		var line := ""
+		for word in words:
+			var candidate := word if line.is_empty() else line + " " + word
+			if font.get_string_size(candidate, HORIZONTAL_ALIGNMENT_LEFT, -1, preferred_size).x > width and not line.is_empty(): return line + "…"
+			line = candidate
+		# A leaderboard name can be one unbroken online handle. Do not return that
+		# overlong token unchanged: trim by characters until the ellipsis itself fits.
+		var compact := line
+		while not compact.is_empty() and font.get_string_size(compact + "…", HORIZONTAL_ALIGNMENT_LEFT, -1, preferred_size).x > width:
+			compact = compact.substr(0, compact.length() - 1)
+		return compact + "…" if not compact.is_empty() else "…"

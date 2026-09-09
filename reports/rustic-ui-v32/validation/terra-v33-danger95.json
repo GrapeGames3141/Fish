@@ -1,0 +1,31 @@
+{
+  "label": "terra-v33-danger95",
+  "started": "2026-09-08T22:22:18.2819636-05:00",
+  "finished": "2026-09-08T22:22:22.2617055-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\gallery\\terra-v33-tension-danger95.png",
+    "--capture-scenario=reeling_danger"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-rustic-v33",
+  "rootPid": 111824,
+  "observedPids": [
+    111824
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\terra-v33-danger95.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\terra-v33-danger95.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

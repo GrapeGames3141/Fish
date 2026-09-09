@@ -1,0 +1,31 @@
+{
+  "label": "primary-v32-pinefight-review",
+  "started": "2026-09-08T21:27:16.7960782-05:00",
+  "finished": "2026-09-08T21:27:20.6497756-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\gallery\\primary-pinefight-review.png",
+    "--capture-scenario=reeling_high"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-rustic-v32-primary",
+  "rootPid": 95964,
+  "observedPids": [
+    95964
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\primary-v32-pinefight-review.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\primary-v32-pinefight-review.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

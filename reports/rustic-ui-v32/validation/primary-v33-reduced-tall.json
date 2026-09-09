@@ -1,0 +1,31 @@
+{
+  "label": "primary-v33-reduced-tall",
+  "started": "2026-09-08T22:23:50.5276102-05:00",
+  "finished": "2026-09-08T22:23:55.9505237-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "960x2142",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\gallery\\primary-v33-reduced-tall.png",
+    "--capture-scenario=reduced_reeling_high"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-primary-v33-reduced-tall",
+  "rootPid": 107496,
+  "observedPids": [
+    107496
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\primary-v33-reduced-tall.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\primary-v33-reduced-tall.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

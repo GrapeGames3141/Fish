@@ -1,0 +1,31 @@
+{
+  "label": "terra-v33-tension-high",
+  "started": "2026-09-08T22:19:58.0015655-05:00",
+  "finished": "2026-09-08T22:20:02.1133335-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\gallery\\terra-v33-tension-high.png",
+    "--capture-scenario=reeling_high"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-rustic-v33",
+  "rootPid": 97812,
+  "observedPids": [
+    97812
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\terra-v33-tension-high.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\terra-v33-tension-high.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

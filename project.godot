@@ -15,7 +15,7 @@ general/ios/enabled=false
 [android]
 
 package/unique_name="com.tak.castandcrank"
-package/name="CastAndCrank"
+package/name="Hooked"
 package/signed=true
 gesture/swipe_to_dismiss=false
 
@@ -25,7 +25,7 @@ config/name="Cast & Crank"
 run/main_scene="res://src/main.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 boot_splash/bg_color=Color(0.035, 0.11, 0.15, 1)
-boot_splash/image="res://art/ui_v1/runtime_source/loading-splash-v01.png"
+boot_splash/image="res://art/ui_v1/runtime_source/cedar-river-photo-v03.png"
 config/icon="res://art/ui_v1/runtime_source/app-icon-runtime-512.png"
 boot_splash/show_image_scale=true
 

@@ -1,5 +1,50 @@
 # Godot Process Log
 
+## Rustic UI v32 — journal integration
+
+### Verified export and Pixel smoke receipt
+
+The following is historical v32 delivery evidence. V33 `0.6.2-tension1` is
+delivered; see [release-v33.md](rustic-ui-v32/release-v33.md).
+
+### V33 tension-meter validation
+
+Independent `primary-v33-domain.json`: root `114328`, exit `0`, marker `null`,
+no remaining PIDs/windows. Primary capture reviews `primary-v33-low32.json`
+(root `120052`) and `primary-v33-reduced-tall.json` (root `107496`) also exited
+cleanly. These are desktop validation records.
+
+### V33 verified export and Pixel smoke receipt
+
+[primary-v33-export.json](rustic-ui-v32/validation/primary-v33-export.json):
+Godot root `91448`, started 22:24:51 and finished 22:25:50, exit `0`, empty
+stderr, no remaining PID/window. Task-created Gradle `99296` (parent `109368`,
+created 22:25:06) was verified from the E: daemon log running project builds
+22:25:07–22:25:46 for `E:\CodexCache\haptic-fish-project`, then stopped exactly
+after export. Final CIM found no Godot/Java/WerFault. Pixel v33 replacement
+install succeeded; PID `29807` stayed stable for 20 seconds with zero
+fatal/script/parse/SIGSEGV markers.
+
+`primary-v32-export.json`: root `124396`, exit `0`, stderr marker `null`, no
+remaining PIDs/windows. The task-owned Gradle daemon `121164` was verified using
+the E: cache for the two project builds and stopped after export; final CIM had
+no Godot/Java/WerFault. APK `build/android/Hooked-0.6.1-rustic1-arm64-debug.apk`
+is 58,138,120 bytes, SHA-256 `A7A9673FD395DA94A8D98C0187D8F1D3407EB42D000E8166BCA4630DB3113EE3`,
+arm64-only and signed by the existing certificate. Pixel 9 Pro replacement
+install succeeded with VIBRATE granted; pre/post save hashes matched before
+launch. Cold launcher smoke start (377 ms) remained stable after 20 seconds
+with zero current-process fatal/script/parse/SIGSEGV markers. The verified
+DriveFS local copy hash matches; cloud sync and physical feature validation are
+not claimed.
+
+| Gate | Root PID | Exit | Result |
+| --- | ---: | ---: | --- |
+| Journal parser | `101576` | 0 | `terra-v32-journal-parser.json`; isolated E: cache, no remaining tracked task PIDs or windows. |
+| Journal domain | `113180` | 0 | `terra-v32-journal-domain3.json`; `PASS: Cast & Crank Gate 1 domain tests`, no tracked task PIDs or windows. Stderr retains only known 12 ObjectDB / 5 resource teardown diagnostics. |
+| Records safe-180 capture | see [receipt](rustic-ui-v32/validation/terra-v32-recordsfull180-final.json) | 0 | Selected desktop review render, no install/export claim. |
+| World offline capture | see [receipt](rustic-ui-v32/validation/terra-v32-worldoffline-final.json) | 0 | Selected desktop review render, no install/export claim. |
+| Field Notes capture | see [receipt](rustic-ui-v32/validation/terra-v32-fieldnotes-final.json) | 0 | Selected desktop review render, no install/export claim. |
+
 Gate 1 invocations and their PIDs/results are appended after validation. The engine command is `E:\CodexCache\godot-android-4.7.1\godot\Godot_v4.7.1-stable_win64_console.exe`. This Godot build may not support a user-data override; commands use project-local retained logs and no source-mutating formatter.
 
 | Gate | Console PID | Exit | Result |
@@ -185,3 +230,13 @@ Retained stdout, stderr, and engine logs are in `reports/runtime/`. No physical 
 | V31 Play Games native/service validation | Godot parser `67376` and final parser `82852`, plus final deterministic-domain root `56996`, all used `E:\CodexCache\haptic-fish-river-records-v31`; final receipts report exit `0`, no remaining task PIDs/windows, and no parser marker. Native bridge Gradle roots `75136` (unconfigured), `86644` (synthetic configured-resource validation), and `82476` (unconfigured reset) used the E: SDK, JDK `jdk-17.0.20+8`, Gradle cache, and local Godot template AAR; all exited `0` with `--no-daemon`. The initial roots `74500` (invalid obsolete Java path) and `47040` (obsolete duplicate resource) are retained as superseded diagnostics. No Godot/Java/Gradle/WerFault task process remained after the final inventory. | Native source now exposes the optional v2 JSON bridge and compiles with PGS v2 `22.0.0`; it is not injected in ordinary exports because owner configuration is empty. The final GDScript suite printed `PASS: Cast & Crank Gate 1 domain tests`; stderr has only the established 12 ObjectDB / 5 resource teardown diagnostics. Synthetic validation used only `987654321`, verified a generated AAR resource/hash, then removed its ignored AAR/receipt and rebuilt unconfigured. No APK export, device install, Drive delivery, fake online rank, or live Play Games claim occurred. |
 | Rustic v32 Tilt/icon-only chrome checkpoint | Two targeted source-contract runs (`97040`, `79752`) exposed stale pre-rustic asset/chrome assertions and each left no process/window; their receipts remain under `reports/rustic-ui-v32/validation/`. After those assertion-only corrections, E:-isolated full deterministic domain root `68072` (`v32-tilt-iconnav-domain-final2.json`) exited `0`, printed `PASS: Cast & Crank Gate 1 domain tests`, marker `null`, remaining `[]`, windows `[]`; stderr has only the established 12 ObjectDB / 5 resource teardown diagnostics. Fresh 720×1280 Dummy-audio desktop captures used roots `98136` (ready 0), `99856` (line out 0), `67460` (ready 180), and `99048` (line out 180); each exited `0`, marker `null`, remaining `[]`, windows `[]`. | The checkpoint removes native `RECORDS`/`WATERS`/`SETTINGS` captions from the rustic ledger/map/gear plaques, keeps one shared drawn/hit geometry, and replaces only player-facing Cock copy with Tilt. Selected captures and receipts are indexed in `reports/rustic-ui-v32/gallery/README.md`. No export, install, Drive transfer, phone screenshot, device interaction, or physical motion/haptic claim occurred. |
 | Primary v32 Tilt/icon-only independent rerun | E:-isolated deterministic domain root `94092` (`reports/rustic-ui-v32/validation/primary-tilt-iconnav-domain.json`) exited `0`, printed `PASS: Cast & Crank Gate 1 domain tests`, marker `null`, remaining `[]`, windows `[]`. Independent elevated CIM after the run found no Godot or WerFault process. | Stderr has only the established 12 ObjectDB / 5 resource teardown diagnostics. This is the authoritative independent regression receipt for the narrow Tilt/icon-only checkpoint; it does not add export, install, Drive, phone screenshot, or device acceptance evidence. |
+# Rustic UI v32 — Terra validation additions (2026-09-08)
+
+All invocations used `tools/run_godot_check.ps1`, isolated cache
+`E:\CodexCache\haptic-fish-rustic-v32`, and the E: Godot 4.7.1 engine. Each
+linked JSON records root/worker PIDs, exit status, cleanup, remaining-process
+check, window list, and stdout/stderr.
+
+- Superseded rejection evidence: [settings clipboard](rustic-ui-v32/validation/terra-v32-settings-clipboard2.json) exposed the legacy scene behind the panel; [settings coherent](rustic-ui-v32/validation/terra-v32-settings-coherent.json) had a duplicated footer. These are intentionally not final gallery selections.
+- Selected visual reviews: [single-master Settings](rustic-ui-v32/validation/terra-v32-settings-single-master.json), [Records](rustic-ui-v32/validation/terra-v32-records-final2.json), and [960×2142 ready](rustic-ui-v32/validation/terra-v32-ready-960.json). They are desktop render evidence only.
+- Passing deterministic suite: [domain final2](rustic-ui-v32/validation/terra-v32-domain-final2.json), exit 0. It contains only the previously accepted teardown notices (12 ObjectDB instances and 5 resources); no parser/script ERROR marker was accepted by the wrapper.

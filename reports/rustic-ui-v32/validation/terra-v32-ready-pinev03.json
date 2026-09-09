@@ -1,0 +1,31 @@
+{
+  "label": "terra-v32-ready-pinev03",
+  "started": "2026-09-08T21:22:31.1421535-05:00",
+  "finished": "2026-09-08T21:22:35.1650597-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\gallery\\terra-ready-pinev03.png",
+    "--capture-scenario=ready"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-rustic-v32",
+  "rootPid": 95980,
+  "observedPids": [
+    95980
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\terra-v32-ready-pinev03.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\terra-v32-ready-pinev03.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

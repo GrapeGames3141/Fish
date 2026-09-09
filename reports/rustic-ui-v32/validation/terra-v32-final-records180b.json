@@ -1,0 +1,31 @@
+{
+  "label": "terra-v32-final-records180b",
+  "started": "2026-09-08T21:56:13.0354552-05:00",
+  "finished": "2026-09-08T21:56:17.0591880-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\gallery\\terra-final-records180.png",
+    "--capture-scenario=records_safe_top_180"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-rustic-v32",
+  "rootPid": 118816,
+  "observedPids": [
+    118816
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\terra-v32-final-records180b.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\terra-v32-final-records180b.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

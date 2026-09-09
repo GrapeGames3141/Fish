@@ -207,9 +207,111 @@ layers before a package is considered.
 
 ## Current integration boundary
 
-Only the photoreal Cedar gameplay presentation, rustic top chrome, and the
-Tilt/icon-only navigation checkpoint have current desktop evidence. The shared
-blank clipboard/modal kit, Settings/Motion/World screen skin, Waters, Records
-and Field Notes/detail remapping, scenic Catch, and Hooked loading screen are
-still pending integration and capture review. No Android package, phone install,
-or device interaction acceptance has been completed for rustic UI v32.
+The approved rustic runtime family is integrated for desktop review: fixed
+top chrome, continuous photoreal tackle, Pine v03/Cedar scenery, clipboard
+ordinary screens, Waters cards, Records/World Records/Field Notes, Catch, and
+Hooked loading. Primary review cleared the Pine v03 correction and the final
+Records/Waters layouts for build review. This is **not** a claim that the user
+has accepted the final aesthetics. Export, Android installation, Drive delivery,
+and device acceptance remain pending verified primary receipts.
+
+Independent v32 gate evidence recorded no markers, windows, or remaining task
+PIDs: domain roots `111688`, `119980`, and `118224` all exited `0`; domain
+stderr retains only the known 12 ObjectDB / 5 resource teardown diagnostics.
+
+## Verified delivery receipt — September 8, 2026
+
+This is the historical `0.6.1-rustic1` delivery receipt, not a claim that the
+current `0.6.2-tension1` follow-up has been exported or installed.
+
+## V33 tension-visibility follow-up
+
+Version `0.6.2-tension1` / code `33` adds only the safe-aware native REELING
+tension meter. It has static outlined text, clamped fill/marker, visible .65
+high and .90 danger thresholds, and no enclosing panel or gameplay tuning
+change. Primary visual review cleared low 32%, high 88%, danger 95%, Cedar
+safe-180, and reduced-motion tall evidence. Independent domain receipt
+`primary-v33-domain.json` (root `114328`) exited `0`, marker `null`, with no
+remaining PID/window; capture wrappers `120052` and `107496` were equally
+clean. V33 export, Pixel replacement installation, and local DriveFS delivery are verified in the [final release receipt](../reports/rustic-ui-v32/release-v33.md). Human aesthetic and physical-feature acceptance remain separate.
+
+Primary export `primary-v32-export.json` completed at 22:11:09 local time:
+root PID `124396`, exit `0`, empty stderr, no marker, no remaining task PID or
+window. The tracked Gradle daemon `121164` used the E: JDK/Gradle cache for both
+project builds and was stopped after the successful export; the final process
+inspection found no Godot, Java, or WerFault process.
+
+The signed deliverable is `build/android/Hooked-0.6.1-rustic1-arm64-debug.apk`
+(58,138,120 bytes / 55.44 MiB, SHA-256
+`A7A9673FD395DA94A8D98C0187D8F1D3407EB42D000E8166BCA4630DB3113EE3`).
+`aapt` verified package `com.tak.castandcrank`, version code `32`, version name
+`0.6.1-rustic1`, label `Hooked`, min SDK `24`, target SDK `36`, VIBRATE, and
+arm64-only output. `apksigner` verified the existing certificate
+`c26373b2320fa530be93f5b6d255a4c8e10e6aa4476e430dedb6106a4de865dc`.
+
+Pixel 9 Pro (`caiman`, 192.168.1.234:38467) replacement install succeeded;
+code `32` and VIBRATE grant were confirmed. The existing save file hash matched
+before and after install, before launch. Launcher cold start completed in 377 ms
+(wait 381 ms), PID `25162` stayed stable after 20 seconds, top-resumed matched,
+and current-process fatal/script/parse/SIGSEGV markers were zero. No phone
+screenshots or raw-trace retrieval was performed.
+
+The verified local DriveFS copy is
+`H:\My Drive\AI Projects\Haptic Fish\Hooked-0.6.1-rustic1-arm64-debug.apk`;
+bytes and SHA-256 match the local APK. Cloud-sync completion is not claimed.
+Physical UI/motion/haptics/native-ad validation and final human aesthetic
+acceptance remain separate. The old launcher icon remains pending approval and
+the PGS owner configuration remains unconfigured.
+
+## V32 promoted runtime derivatives — September 8, 2026
+
+The user initially rejected the first desktop Settings/reeling composite because
+it exposed legacy gameplay behind the board and had invisible actions. The
+replacement integration uses one opaque clipboard board over only the selected
+natural scenery, visible wood action planks, and native centered text. This is
+agent visual-review evidence, not human approval.
+
+| Asset | Dimensions / bytes / SHA-256 | Alpha / role / approval |
+| --- | --- | --- |
+| [rustic-clipboard-blank-v01.png](../art/ui_v1/runtime_source/rustic-clipboard-blank-v01.png) | 941×1672; 2,433,477 bytes; `4E07A5AB71E95BA08A8F0AE330BBA4A879B52FBA4B4B933D090E184C0ACECB0F` | Opaque, reusable single full-master map for Settings/Motion/diagnostics/capture/field notes. Primary visually approved its blank paper/header/footer for integration. |
+| [pine-lake-photoreal-v02.png](../art/ui_v1/runtime_source/pine-lake-photoreal-v02.png) | 941×1672; 2,587,241 bytes; `7D1DFEC78DA2053FC95011642721D7DFF72C9411A322073CFD96727A929E76D0` | Superseded Pine provenance only; excluded from runtime/export in favor of v03. |
+
+Both files were generated using the built-in image tool, copied to their durable
+E: paths, SHA-256 matched to their tool-managed originals, then only those
+verified disposable originals were removed. The built-in tool did not expose a
+model identifier.
+
+### Exact blank clipboard prompt
+
+```text
+Use case: precise-object-edit
+Asset type: reusable runtime blank rustic clipboard background for a mobile fishing game
+Input image: the immediately preceding settings-rustic-v01.png is the edit target.
+Primary request: Preserve the photoreal weathered cedar/oak clipboard, black iron fittings, warm worn-paper interior, and subdued natural river background. Remove ALL interior baked UI marks: the three horizontal setting rows, dark value plates, action plaques, divider dashes, fish-divider, and every placeholder mark. Leave a single continuous blank warm-paper interior that is clean enough for readable native runtime text and controls. Preserve ONE blank wooden header plaque and ONE blank wooden footer plaque only. Keep the frame proportions and portrait composition unchanged.
+Constraints: all header and footer wood must be completely blank; continuous blank paper interior; no text, symbols, fish, progress bars, row lines, cards, labels, logos, watermarks, gold filigree, teal tint, translucent overlay, or white matte. Keep the background opaque and naturally photographic.
+```
+
+### Exact Pine Lake prompt
+
+```text
+Use case: photorealistic-natural
+Asset type: runtime portrait background plate for Pine Lake gameplay in a mobile fishing game
+Input images: Image 1 is the old Pine Lake geography/layout reference; Image 2 is the approved Cedar River photographic lighting and realism reference.
+Primary request: Create a photoreal, natural-light, quiet Pine Lake forest cove at true portrait 9:16. Preserve the old Pine Lake composition: open still water dominates the lower foreground and center for gameplay, reeds and lily pads are confined near the lower left/right banks, tall evergreen forest and low rocky banks frame a distant calm lake opening. Match the real outdoor photographic material and restrained lighting of the Cedar River reference, not its exact river geography.
+Composition/framing: reserve clean open water from mid-frame through the lower center for a runtime rod, line, bobber and subtle ripples. Keep the top 180px visually simple enough for a separate wood header. No UI, signs, rod, hand, reel, line, bobber, fish, people, text, logo, watermark, illustration, cartoon treatment, high-HDR, fog band, teal plastic, or white matte.
+Style/medium: believable high-end outdoor nature photography, realistic pine needles, reed detail, gently reflective lake water, muted late-afternoon natural light.
+```
+
+### Pine Lake v03 correction
+
+After user feedback that the v02 pond used repetitive etched microtexture, the
+primary reviewer approved the following targeted v03 derivative for current
+implementation review: [pine-lake-photoreal-v03.png](../art/ui_v1/runtime_source/pine-lake-photoreal-v03.png), 941×1672, 2,499,723 bytes, SHA-256 `F933A9C5499986A36C60D42F76CFB9A8AA47B006479CBDD1E039DCAFF8F6EDEC`, opaque. It is the only Pine Lake gameplay asset referenced by runtime; v02 is excluded from export.
+
+```text
+Use case: precise-object-edit
+Asset type: runtime Pine Lake portrait gameplay background
+Input image: the immediately preceding pine-lake-photoreal-v02.png is the edit target.
+Primary request: Preserve the portrait bank/open-water composition and clean center/lower water space for a runtime rod, line and bobber. Change only rendering/detail quality: make it read as a true natural camera photograph with softer lower-contrast distant tree detail, asymmetrical varied rock and vegetation forms, broad calm water patches interspersed with irregular reflections and ripples.
+Constraints: remove the uniform etched or oversharpened high-frequency microtexture and any tiled/repeated pattern across water, rocks, trees, or shore. Do not blur everything; retain believable natural detail with varied scales. No UI, wood signs, rod, hand, reel, line, bobber, fish, people, text, logos, watermarks, illustration, cartoon treatment, HDR glow, teal tint, fog band, white matte, or extra subjects.
+```
