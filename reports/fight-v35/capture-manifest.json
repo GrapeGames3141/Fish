@@ -1,0 +1,92 @@
+[
+  {
+    "file": "gallery/fight_center_expert.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1703552,
+    "sha256": "E737597BF7DDC3447060959F5E951F8D4887687F4823590D7B17DB844273DCA0",
+    "receipt": "validation/v35-capture-profile-fight_center_expert.json",
+    "rootPid": 46456
+  },
+  {
+    "file": "gallery/fight_center_relaxed.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1703554,
+    "sha256": "B1E03861DDAB54BFB3D56B23C2374ACB91EE1A1CF9AB699B357F87C95375503E",
+    "receipt": "validation/v35-capture-profile-fight_center_relaxed.json",
+    "rootPid": 118416
+  },
+  {
+    "file": "gallery/fight_center.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1703570,
+    "sha256": "AC271919A6FFE8FE1FBDD0AA2371B047049691063977CD37829BCF4C24F89B12",
+    "receipt": "validation/v35-capture3-fight_center.json",
+    "rootPid": 127564
+  },
+  {
+    "file": "gallery/fight_slack.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1705687,
+    "sha256": "4C3004E7CB4E8A79B82871093E94801464A0F5AD4C88A603BA3AFB3D9D0B9CBB",
+    "receipt": "validation/v35-capture3-fight_slack.json",
+    "rootPid": 89528
+  },
+  {
+    "file": "gallery/reduced_reeling_high.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1702673,
+    "sha256": "7994104F8E0D83C04D877CC78F3C20710FA9C3AAF8A5AD50BE12A717A2A85BA7",
+    "receipt": "validation/primary-v35-reduced-final.json",
+    "rootPid": 127960
+  },
+  {
+    "file": "gallery/reeling_high.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1700181,
+    "sha256": "D0B8E7C8C56F5FDBFED560E5AF1B308F60C85959DDD01EDB57D7C45AFFEA9F02",
+    "receipt": "validation/v35-capture3-reeling_high.json",
+    "rootPid": 127884
+  },
+  {
+    "file": "gallery/settings_expert.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1854390,
+    "sha256": "FCC0CA014EE2A7EE226E97CD05522095964224BF8FADA620C98D1F5B069D848B",
+    "receipt": "validation/v35-capture2-settings_expert.json",
+    "rootPid": 121972
+  },
+  {
+    "file": "gallery/settings_safe_top_180.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1854638,
+    "sha256": "C0274DE4E62297795E1D281AFF994DE29A2CDB78D0BB3846924EDDEAA7215E6A",
+    "receipt": "validation/v35-capture2-settings_safe_top_180.json",
+    "rootPid": 70452
+  },
+  {
+    "file": "gallery/shadow_pass.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1873704,
+    "sha256": "FB70C18077E2512392CC7CBAA362FCBA3E1E68E1F656B1268657B5EE8B84F75B",
+    "receipt": "validation/v35-capture3-shadow_pass.json",
+    "rootPid": 78228
+  },
+  {
+    "file": "gallery/wait_after_shadow.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1874017,
+    "sha256": "B9D338AC62A5596724C3B10E497CBF091F84A3B7EA859424793019D7E7644A1E",
+    "receipt": "validation/v35-capture2-wait_after_shadow.json",
+    "rootPid": 122944
+  }
+]

@@ -1,6 +1,7 @@
 extends SceneTree
 
 const FishingSession = preload("res://src/domain/fishing_session.gd")
+const FightChallenge = preload("res://src/domain/fight_challenge.gd")
 const SaveService = preload("res://src/services/save_service.gd")
 const AdMobService = preload("res://src/services/admob_service.gd")
 const MotionService = preload("res://src/services/motion_service.gd")
@@ -28,6 +29,7 @@ var failures: Array[String] = []
 func _init() -> void:
 	_test_state_transitions_and_timing()
 	_test_pump_and_recover_fight()
+	_test_fight_challenge_contract()
 	_test_save_round_trip()
 	_test_waters_catalog_and_unlocks()
 	_test_catch_record_progression()
@@ -232,7 +234,7 @@ func _test_state_transitions_and_timing() -> void:
 	expect(game.arm_cast(), "READY arms")
 	expect(game.release_cast(0.85), "armed cast releases")
 	expect(game.cast_distance_m > FishingSession.MIN_CAST_DISTANCE_M and game.cast_distance_m <= FishingSession.MAX_CAST_DISTANCE_M, "cast quality maps to a bounded distance")
-	game.tick(game.fish.bite_delay_seconds)
+	game.tick(game.bite_wait_seconds)
 	expect(game.state == FishingSession.State.BITE, "line reaches bite")
 	game.tick(FishingSession.BITE_CUE_HOLD_SECONDS - 0.01)
 	expect(game.state == FishingSession.State.BITE, "bite holds hook detection until the two-pulse cue has completed")
@@ -240,10 +242,10 @@ func _test_state_transitions_and_timing() -> void:
 	expect(game.state == FishingSession.State.HOOK_WINDOW and is_zero_approx(game.bite_elapsed), "bite advances only after the .42 second cue hold and resets the full hook timer")
 	expect(game.set_hook(), "hook succeeds in 1.8s window")
 	expect(game.state == FishingSession.State.REELING, "hook enters reeling")
-	game.reset(); game.arm_cast(); game.release_cast(0.4); game.tick(game.fish.bite_delay_seconds + 0.01); game.tick(FishingSession.BITE_CUE_HOLD_SECONDS); game.tick(FishingSession.HOOK_WINDOW_SECONDS + 0.1)
+	game.reset(); game.arm_cast(); game.release_cast(0.4); game.tick(game.bite_wait_seconds + 0.01); game.tick(FishingSession.BITE_CUE_HOLD_SECONDS); game.tick(FishingSession.HOOK_WINDOW_SECONDS + 0.1)
 	expect(game.state == FishingSession.State.ESCAPED, "hook timeout escapes")
-	var boundary = FishingSession.new(); boundary.arm_cast(); boundary.release_cast(0.5); boundary.tick(boundary.fish.bite_delay_seconds + 0.01); boundary.tick(FishingSession.BITE_CUE_HOLD_SECONDS); boundary.tick(1.79); expect(boundary.state == FishingSession.State.HOOK_WINDOW, "hook remains available for the full 1.8 seconds after the bite cue hold"); boundary.tick(0.02); expect(boundary.state == FishingSession.State.ESCAPED, "hook closes at 1.8 seconds after the cue hold")
-	var guarded_bite = FishingSession.new(); guarded_bite.arm_cast(); guarded_bite.release_cast(0.8); guarded_bite.tick(guarded_bite.fish.bite_delay_seconds)
+	var boundary = FishingSession.new(); boundary.arm_cast(); boundary.release_cast(0.5); boundary.tick(boundary.bite_wait_seconds + 0.01); boundary.tick(FishingSession.BITE_CUE_HOLD_SECONDS); boundary.tick(1.79); expect(boundary.state == FishingSession.State.HOOK_WINDOW, "hook remains available for the full 1.8 seconds after the bite cue hold"); boundary.tick(0.02); expect(boundary.state == FishingSession.State.ESCAPED, "hook closes at 1.8 seconds after the cue hold")
+	var guarded_bite = FishingSession.new(); guarded_bite.arm_cast(); guarded_bite.release_cast(0.8); guarded_bite.tick(guarded_bite.bite_wait_seconds)
 	var bite_guard_motion := _calibrated_motion(); bite_guard_motion.queue_sample(_motion_sample(Vector3(1.35, 0, 0), Vector3(0, 0, 0.5)))
 	expect(not bite_guard_motion.update(0.05, false, guarded_bite.state == FishingSession.State.HOOK_WINDOW).hook and guarded_bite.state == FishingSession.State.BITE, "BITE does not activate hook detection while the bite haptic chain is still protected")
 	guarded_bite.tick(FishingSession.BITE_CUE_HOLD_SECONDS)
@@ -276,41 +278,55 @@ func _test_state_transitions_and_timing() -> void:
 	terminal_recast.credit_terminal_still(0.01, false)
 	expect(not terminal_recast.can_recast_from_motion(), "terminal movement resets recast readiness until a fresh quiet settle")
 
-func _fight_session(fish: FishDefinition, behavior_roll := 0.0) -> FishingSession:
+func _fight_session(fish: FishDefinition, behavior_roll := 0.0, challenge := FightChallenge.DEFAULT_ID) -> FishingSession:
 	var game := FishingSession.new()
-	game.set_location(fish.location_id, 0.0); game.fish = fish; game.behavior_roll = behavior_roll; game.catch_length_cm = snappedf(lerpf(fish.min_length_cm, fish.max_length_cm, 0.50), 0.1); game.fight_phase_offset = behavior_roll * (fish.run_seconds + fish.lull_seconds); game.state = FishingSession.State.REELING; game.tension = 0.30
+	game.set_location(fish.location_id, 0.0); game.set_next_cast_challenge(challenge); game.set_encounter_rolls(0.0, 0.50, behavior_roll, 0.50, 0.50); game.arm_cast(); game.release_cast(0.50)
+	game.fish = fish; game.behavior_roll = behavior_roll; game.catch_length_cm = snappedf(lerpf(fish.min_length_cm, fish.max_length_cm, 0.50), 0.1); game.fight_phase_offset = behavior_roll * (fish.run_seconds + fish.lull_seconds); game.state = FishingSession.State.HOOK_WINDOW; game.set_hook()
 	return game
-func _simulate_fight_policy(fish: FishDefinition, fps: int, policy: String, behavior_roll := 0.0, size_fraction := 0.50) -> FishingSession:
-	var game := _fight_session(fish, behavior_roll)
+func _simulate_fight_policy(fish: FishDefinition, fps: int, policy: String, behavior_roll := 0.0, size_fraction := 0.50, challenge := FightChallenge.DEFAULT_ID) -> FishingSession:
+	var game := _fight_session(fish, behavior_roll, challenge)
 	game.catch_length_cm = snappedf(lerpf(fish.min_length_cm, fish.max_length_cm, size_fraction), 0.1)
 	var delta := 1.0 / float(fps)
-	var target := 0.80 if policy == "reactive" else (1.0 if policy == "hard" else 0.70)
+	var target := 0.82 if policy == "strong_reactive" else (0.62 if policy == "reactive" else (1.0 if policy == "hard" else 0.70))
 	var delayed_tension := game.tension
 	var next_decision := 0.10
 	var tension_history: Array[Dictionary] = []
 	for frame in range(50 * fps):
 		if game.state != FishingSession.State.REELING: break
 		tension_history.append({"at": game.fight_elapsed, "tension": game.tension})
-		if policy == "reactive" and game.fight_elapsed >= next_decision:
+		if policy in ["reactive", "strong_reactive"] and game.fight_elapsed >= next_decision:
 			# A 300ms-old warning sample plus a 100ms load ramp models a human response.
 			for sample in tension_history:
 				if float(sample.at) <= game.fight_elapsed - 0.30: delayed_tension = float(sample.tension)
-			target = 0.14 if delayed_tension >= 0.65 else (0.80 if delayed_tension <= 0.35 else target)
+			var ease_target := 0.10 if policy == "strong_reactive" else 0.10
+			var pull_target := 0.82 if policy == "strong_reactive" else 0.68
+			target = ease_target if delayed_tension >= float(game.challenge_profile.high_warning) else (pull_target if delayed_tension <= float(game.challenge_profile.low_warning) else target)
 			next_decision += 0.10
 		var current := game.rod_load
 		game.set_rod_load(move_toward(current, target, delta / 0.10))
 		game.tick(delta)
 	return game
 func _test_pump_and_recover_fight() -> void:
+	var timings: Dictionary = {}
 	for fish in FishDefinition.all_planned():
-		for fps in [30, 60, 120]:
-			for behavior_roll in [0.0, 0.37, 0.83]:
-				var reactive := _simulate_fight_policy(fish, fps, "reactive", behavior_roll)
-				var hard := _simulate_fight_policy(fish, fps, "hard", behavior_roll)
-				var moderate := _simulate_fight_policy(fish, fps, "moderate", behavior_roll)
-				expect(reactive.state == FishingSession.State.CAUGHT and reactive.fight_elapsed >= 10.0 and reactive.fight_elapsed <= 20.0, "300ms-delayed pull/ease lands %s in 10–20 seconds at %dHz / roll %.2f" % [fish.id, fps, behavior_roll])
-				expect(hard.state == FishingSession.State.ESCAPED or hard.fight_elapsed > reactive.fight_elapsed + 2.0, "constant hard pull underperforms responsive %s at %dHz" % [fish.id, fps])
-				expect(moderate.state == FishingSession.State.ESCAPED or moderate.fight_elapsed > reactive.fight_elapsed + 1.0, "constant moderate pull underperforms responsive %s at %dHz" % [fish.id, fps])
+		for challenge in FightChallenge.IDS:
+			for fps in [30, 60, 120]:
+				for behavior_roll in [0.0, 0.37, 0.83]:
+					var reactive := _simulate_fight_policy(fish, fps, "reactive", behavior_roll, 0.50, challenge)
+					var strong_reactive := _simulate_fight_policy(fish, fps, "strong_reactive", behavior_roll, 0.50, challenge)
+					var hard := _simulate_fight_policy(fish, fps, "hard", behavior_roll, 0.50, challenge)
+					var moderate := _simulate_fight_policy(fish, fps, "moderate", behavior_roll, 0.50, challenge)
+					var ceiling := 20.0 if challenge == "standard" else 24.0
+					expect(reactive.state == FishingSession.State.CAUGHT and reactive.fight_elapsed >= 10.0 and reactive.fight_elapsed <= ceiling, "300ms-delayed pull/ease lands %s for %s at %dHz / roll %.2f (state=%d elapsed=%.2f)" % [fish.id, challenge, fps, behavior_roll, reactive.state, reactive.fight_elapsed])
+					expect(strong_reactive.state == FishingSession.State.CAUGHT and strong_reactive.fight_elapsed >= 10.0 and strong_reactive.fight_elapsed <= 24.0, "a stronger .82/.10 delayed pull/ease remains catch-capable for %s %s at %dHz / roll %.2f" % [challenge, fish.id, fps, behavior_roll])
+					if challenge == "standard":
+						expect(hard.state == FishingSession.State.ESCAPED or hard.fight_elapsed > reactive.fight_elapsed + 2.0, "constant hard pull underperforms responsive %s at %dHz" % [fish.id, fps])
+						expect(moderate.state == FishingSession.State.ESCAPED or moderate.fight_elapsed > reactive.fight_elapsed + 1.0, "constant moderate pull underperforms responsive %s at %dHz" % [fish.id, fps])
+					for policy_pair in [["reactive", reactive], ["strong", strong_reactive]]:
+						var key := "%s_%s" % [challenge, policy_pair[0]]
+						var value: float = float(policy_pair[1].fight_elapsed)
+						if not timings.has(key): timings[key] = {"min": value, "max": value}
+						else: timings[key].min = minf(float(timings[key].min), value); timings[key].max = maxf(float(timings[key].max), value)
 		var upper_tail := _fight_session(fish, 0.37)
 		upper_tail.catch_length_cm = snappedf(lerpf(fish.min_length_cm, fish.max_length_cm, 0.96), 0.1)
 		var responsive_large := _simulate_fight_policy(fish, 60, "reactive", 0.37, 0.96)
@@ -330,6 +346,41 @@ func _test_pump_and_recover_fight() -> void:
 	expect(is_zero_approx(no_load.fight_progress), "no-load fight time never gains landing progress")
 	var paused := _fight_session(FishDefinition.bluegill()); var before := paused.tension; paused.tick(0.0)
 	expect(is_equal_approx(before, paused.tension) and is_zero_approx(paused.fight_elapsed), "zero-delta menu pause leaves fight state untouched")
+	print("V35_FIGHT_TIMINGS %s" % JSON.stringify(timings))
+
+func _test_fight_challenge_contract() -> void:
+	var relaxed := FightChallenge.profile("relaxed")
+	var standard := FightChallenge.profile("standard")
+	var expert := FightChallenge.profile("expert")
+	expect(float(relaxed.low_critical) < float(standard.low_critical) and float(standard.low_critical) < float(expert.low_critical) and float(relaxed.high_critical) > float(standard.high_critical) and float(standard.high_critical) > float(expert.high_critical), "challenge profiles narrow both red ends from Relaxed through Expert")
+	expect(FightChallenge.tier(0.50, standard) == "steady" and FightChallenge.tier(0.05, standard) == "slack" and FightChallenge.tier(0.95, standard) == "snap", "shared profile provides middle, slack, and overload tiers")
+	var snap := _fight_session(FishDefinition.bluegill()); snap.tension = 0.99; snap.set_rod_load(1.0)
+	for frame in range(180):
+		if snap.state == FishingSession.State.REELING: snap.tick(1.0 / 60.0)
+	expect(snap.state == FishingSession.State.ESCAPED, "sustained high red exposure loses a fish after startup grace")
+	var slack := _fight_session(FishDefinition.bluegill()); slack.tension = 0.0; slack.set_rod_load(0.0)
+	for frame in range(240):
+		if slack.state == FishingSession.State.REELING: slack.tick(1.0 / 60.0)
+	expect(slack.state == FishingSession.State.ESCAPED, "sustained zero tension eventually loses a fish instead of being a free rest")
+	var protected := _fight_session(FishDefinition.bluegill()); protected.fight_progress = 1.0; protected.fight_elapsed = FishingSession.MIN_LANDING_SECONDS; protected.tension = 0.0; protected.tick(0.01)
+	expect(protected.state != FishingSession.State.CAUGHT, "landing is blocked at a red slack edge even before its escape dwell completes")
+	var tight_landing := _fight_session(FishDefinition.bluegill()); tight_landing.fight_progress = 1.0; tight_landing.fight_elapsed = FishingSession.MIN_LANDING_SECONDS; tight_landing.tension = 0.99; tight_landing.tick(0.01)
+	expect(tight_landing.state != FishingSession.State.CAUGHT, "landing is blocked at the high red edge before its escape dwell completes")
+	var brief_ease := _fight_session(FishDefinition.bluegill()); brief_ease.set_rod_load(0.0); brief_ease.tension = 0.0
+	for frame in range(75): brief_ease.tick(1.0 / 60.0)
+	var slack_before_recovery := brief_ease.slack_elapsed; brief_ease.set_rod_load(0.72)
+	for frame in range(75):
+		if brief_ease.state == FishingSession.State.REELING: brief_ease.tick(1.0 / 60.0)
+	expect(brief_ease.state == FishingSession.State.REELING and slack_before_recovery > 0.0 and brief_ease.tension > float(brief_ease.challenge_profile.low_critical), "a brief actual zero-load ease can physically pull tension back above the slack edge before the longer escape dwell")
+	var opening_grace := _fight_session(FishDefinition.bluegill()); opening_grace.tension = 0.99; opening_grace.set_rod_load(1.0); opening_grace.tick(0.70)
+	expect(opening_grace.state == FishingSession.State.REELING and is_zero_approx(opening_grace.red_elapsed) and is_zero_approx(opening_grace.slack_elapsed), "opening grace prevents immediate high or low exposure debt at hook entry")
+	var cast := FishingSession.new(); cast.set_next_cast_challenge("expert"); cast.arm_cast(); cast.release_cast(0.6); var snapshotted := cast.challenge_id; cast.set_next_cast_challenge("relaxed")
+	expect(snapshotted == "expert" and cast.challenge_id == "expert", "challenge selection snapshots on release and cannot change an active cast")
+	var wait_a := FishingSession.new(); wait_a.set_encounter_rolls(0.2, 0.2, 0.2, 0.0, 0.10); wait_a.arm_cast(); wait_a.release_cast(0.5)
+	var wait_b := FishingSession.new(); wait_b.set_encounter_rolls(0.2, 0.2, 0.2, 0.999, 0.70); wait_b.arm_cast(); wait_b.release_cast(0.5)
+	expect(wait_a.bite_wait_seconds >= 5.0 and wait_b.bite_wait_seconds <= 14.0 and wait_b.bite_wait_seconds > wait_a.bite_wait_seconds and wait_a.shadow_visit_start >= 1.0 and wait_a.shadow_visit_start + wait_a.shadow_visit_duration < wait_a.bite_wait_seconds, "independent per-cast bite and wildlife rolls produce bounded waits and pass-bys before a later bite")
+	var challenge_save := SaveService.new(); var invalid_challenge := challenge_save._migrate({"version": SaveService.VERSION, "settings": {"fight_challenge": "impossible"}}); var expert_challenge := challenge_save._migrate({"version": SaveService.VERSION, "settings": {"fight_challenge": "expert"}})
+	expect(str(invalid_challenge.settings.fight_challenge) == "standard" and str(expert_challenge.settings.fight_challenge) == "expert", "save migration sanitizes challenge values while retaining valid profile selections")
 
 func _test_save_round_trip() -> void:
 	var path := "user://gate1-test-%d.json" % Time.get_ticks_usec()
@@ -483,7 +534,10 @@ func _test_ui_controller_interactions() -> void:
 	controller.save.record_catch("pumpkinseed", 20.0); controller.save.record_catch("black_crappie", 29.0)
 	controller.session.fish = _fish_by_id("brown_bullhead"); controller.session.catch_length_cm = 34.0; controller.session.state = FishingSession.State.CAUGHT; controller.caught_recorded = false; controller.ui_notice = ""; controller._record_catch_once(); controller._record_catch_once()
 	expect(int(controller.save.data.catches.brown_bullhead) == 1 and "pine lake unlocked" in controller.ui_notice.to_lower(), "terminal final pond catch records once and announces the newly earned Pine unlock")
-	expect(is_equal_approx(view.tension_meter_value(-0.2), 0.0) and is_equal_approx(view.tension_meter_value(1.4), 1.0) and view.tension_status(0.64) == "STEADY" and view.tension_status(0.65) == "EASE" and view.tension_status(0.90) == "DANGER", "tension meter clamps its fill/marker and exposes .65/.90 readable status boundaries")
+	controller.session.state = FishingSession.State.READY; view.overlay = "settings"; view._refresh_modal_layout(); var challenge_before := str(controller.save.data.settings.fight_challenge); view._handle_press(view.settings_challenge_rect.get_center())
+	var reloaded_challenge_save := SaveService.new(controller.save.path); reloaded_challenge_save.load_data()
+	expect(str(controller.save.data.settings.fight_challenge) != challenge_before and controller.ui_notice.contains("NEXT CAST") and str(reloaded_challenge_save.data.settings.fight_challenge) == str(controller.save.data.settings.fight_challenge), "Settings fight-challenge row persists the selected next-cast profile across a reload")
+	expect(is_equal_approx(view.tension_meter_value(-0.2), 0.0) and is_equal_approx(view.tension_meter_value(1.4), 1.0) and view.tension_status(0.12) == "SLACK" and view.tension_status(0.50) == "STEADY" and view.tension_status(0.75) == "EASE" and view.tension_status(0.90) == "TOO TIGHT", "tension meter clamps its fill/marker and exposes standard slack, middle, ease, and tight bands")
 	for tension_safe_top in [0.0, 91.0, 180.0]:
 		view.safe_top_override = tension_safe_top; view._refresh_tension_meter_geometry()
 		expect(view.tension_meter_rect.position.y == tension_safe_top + 112.0 and view.tension_meter_rect.end.x <= 720.0 and view.tension_meter_rect.end.y <= 1280.0, "tension meter uses the fixed safe-area anchor at %.0f" % tension_safe_top)
@@ -503,7 +557,7 @@ func _test_ui_controller_interactions() -> void:
 		view.overlay = ""; view._handle_press(engraved_points[2])
 		expect(view.overlay == "settings", "Settings press routes through its current shared safe-top target at %.0f" % safe_top)
 		view._refresh_modal_layout()
-		var controls := [view.settings_haptics_rect, view.settings_reduced_motion_rect, view.settings_handedness_rect, view.settings_test_haptics_rect, view.settings_motion_setup_rect, view.settings_footer_close_rect]
+		var controls := [view.settings_haptics_rect, view.settings_reduced_motion_rect, view.settings_handedness_rect, view.settings_challenge_rect, view.settings_test_haptics_rect, view.settings_motion_setup_rect, view.settings_footer_close_rect]
 		var all_inside: bool = view.modal_panel_rect.end.y <= 1280.0 and view.settings_footer_close_rect.position.y >= view.modal_panel_rect.position.y and view.settings_footer_close_rect.end.y <= view.modal_panel_rect.end.y and view.settings_footer_close_rect.size.y >= 64.0 and view.settings_footer_close_rect == view.modal_footer_rect
 		for control_index in range(controls.size()):
 			all_inside = all_inside and controls[control_index].position.x >= view.modal_panel_rect.position.x and controls[control_index].end.x <= view.modal_panel_rect.end.x and controls[control_index].position.y >= safe_top and controls[control_index].end.y <= view.modal_panel_rect.end.y
@@ -1068,18 +1122,50 @@ func _test_haptic_signatures() -> void:
 	haptics.start_fight(bluegill)
 	var max_pending := 0
 	for frame in range(300):
-		haptics.update_fight(0.01, bluegill, 0.2)
+		haptics.update_fight(0.01, bluegill, 0.5)
 		max_pending = maxi(max_pending, haptics.pending.size())
 	expect(max_pending <= HapticService.MAX_PENDING_PULSES, "fight queue remains bounded")
 	expect(fired.size() >= 4 and fired.size() <= 6, "fight cadence avoids per-frame vibration spam")
+	# Each profile uses its own shared thresholds; low phrases remain physically
+	# distinguishable from the paired high-tension warning.
+	for profile_id in FightChallenge.IDS:
+		var profile := FightChallenge.profile(profile_id)
+		var low_warning_tension := lerpf(float(profile.low_critical), float(profile.low_warning), 0.5)
+		var high_tension := lerpf(float(profile.high_warning), float(profile.high_critical), 0.5)
+		var steady_pulses: Array[Dictionary] = []
+		var steady_haptics := HapticService.new(func(duration, amplitude): steady_pulses.append({"duration": duration, "amplitude": amplitude}))
+		steady_haptics.start_fight(bluegill, profile); steady_haptics.update_fight(0.23, bluegill, 0.50, 1.0, 1.0, profile)
+		expect(steady_haptics.warning_tier == "steady" and not steady_pulses.is_empty() and int(steady_pulses[0].duration) == 38, "%s profile retains recognizable steady fish feedback" % profile_id)
+		var pull_pulses: Array[Dictionary] = []
+		var pull_haptics := HapticService.new(func(duration, amplitude): pull_pulses.append({"duration": duration, "amplitude": amplitude}))
+		pull_haptics.start_fight(bluegill, profile); pull_haptics.update_fight(0.23, bluegill, low_warning_tension, 0.20, 1.0, profile)
+		expect(pull_haptics.warning_tier == "pull" and pull_pulses.size() == 1 and int(pull_pulses[0].duration) == 90 and pull_haptics.pending.size() <= HapticService.MAX_PENDING_PULSES, "%s low warning overrides a quiet lull with a bounded pull cue" % profile_id)
+		var slack_pulses: Array[Dictionary] = []
+		var slack_haptics := HapticService.new(func(duration, amplitude): slack_pulses.append({"duration": duration, "amplitude": amplitude}))
+		slack_haptics.start_fight(bluegill, profile); slack_haptics.update_fight(0.23, bluegill, float(profile.low_critical) * 0.5, 0.20, 1.0, profile); slack_haptics.update_fight(0.45, bluegill, float(profile.low_critical) * 0.5, 0.20, 1.0, profile)
+		expect(slack_haptics.warning_tier == "slack" and slack_pulses.size() >= 2 and int(slack_pulses[0].duration) == 145 and int(slack_pulses[1].duration) == 30, "%s critical slack is a distinct long-plus-tap phrase" % profile_id)
+		var high_pulses: Array[Dictionary] = []
+		var profile_high := HapticService.new(func(duration, amplitude): high_pulses.append({"duration": duration, "amplitude": amplitude}))
+		profile_high.start_fight(bluegill, profile); profile_high.update_fight(0.23, bluegill, high_tension, 0.20, 1.0, profile); profile_high.update_fight(0.30, bluegill, high_tension, 0.20, 1.0, profile)
+		expect(profile_high.warning_tier == "ease" and high_pulses.size() >= 2 and int(high_pulses[0].duration) == 58 and int(high_pulses[1].duration) == 58, "%s high warning stays the distinguishable fast paired ease cue" % profile_id)
+		var cancellation := HapticService.new()
+		cancellation.start_fight(_fish_by_id("northern_pike"), profile); cancellation.update_fight(0.23, _fish_by_id("northern_pike"), 0.50, 1.0, 1.0, profile)
+		cancellation.update_fight(0.01, _fish_by_id("northern_pike"), float(profile.low_critical) * 0.5, 0.20, 1.0, profile)
+		expect(cancellation.warning_tier == "slack" and cancellation.pending.size() <= HapticService.MAX_PENDING_PULSES, "%s low transition cancels stale queued fish feedback before scheduling its warning" % profile_id)
+		cancellation.update_fight(0.01, _fish_by_id("northern_pike"), 0.50, 1.0, 1.0, profile)
+		expect(cancellation.warning_tier == "steady" and cancellation.pending.size() <= HapticService.MAX_PENDING_PULSES, "%s slack-to-steady immediately discards the stale long-plus-tap warning" % profile_id)
+		cancellation.update_fight(0.01, _fish_by_id("northern_pike"), high_tension, 0.20, 1.0, profile)
+		expect(cancellation.warning_tier == "ease" and cancellation.pending.size() <= HapticService.MAX_PENDING_PULSES, "%s low warning transition immediately replaces stale pulses with the high paired cue" % profile_id)
+		cancellation.stop(); cancellation.set_enabled(false)
+		expect(cancellation.pending.is_empty() and not cancellation.fighting, "%s stop/disable clears warning queue and fight scheduler" % profile_id)
 
 	var high_fired: Array[Dictionary] = []
 	var high_haptics := HapticService.new(func(duration, amplitude): high_fired.append({"duration": duration, "amplitude": amplitude}))
 	var bass := _fish_by_id("largemouth_bass")
 	high_haptics.start_fight(bass)
 	for frame in range(60):
-		high_haptics.update_fight(0.05, bass, 0.70)
-	expect(high_haptics.warning_tier == "high" and high_fired.size() >= 6 and int(high_fired[0].duration) == 58, "high warning repeats on its universal cadence")
+		high_haptics.update_fight(0.05, bass, 0.76)
+	expect(high_haptics.warning_tier == "ease" and high_fired.size() >= 6 and int(high_fired[0].duration) == 58, "high warning repeats on its universal cadence")
 
 	var red_fired: Array[Dictionary] = []
 	var red_haptics := HapticService.new(func(duration, amplitude): red_fired.append({"duration": duration, "amplitude": amplitude}))
@@ -1087,43 +1173,43 @@ func _test_haptic_signatures() -> void:
 	red_haptics.start_fight(channel)
 	for frame in range(60):
 		red_haptics.update_fight(0.05, channel, 0.95)
-	expect(red_haptics.warning_tier == "red" and red_fired.size() >= 10 and int(red_fired[0].duration) == 90, "red warning repeats on its universal cadence")
+	expect(red_haptics.warning_tier == "snap" and red_fired.size() >= 10 and int(red_fired[0].duration) == 90, "red warning repeats on its universal cadence")
 	expect(red_fired.size() > high_fired.size(), "red warning cadence is faster than high across fish")
 	var normal_max := _max_emitted_amplitude(fired)
 	var high_max := _max_emitted_amplitude(high_fired)
 	var red_max := _max_emitted_amplitude(red_fired)
-	expect(normal_max < high_max and high_max < red_max and bluegill.fight_cycle_seconds > HapticService.HIGH_WARNING_CYCLE_SECONDS and HapticService.HIGH_WARNING_CYCLE_SECONDS > HapticService.RED_WARNING_CYCLE_SECONDS, "emitted haptic amplitude rises and warning interval shortens from normal to high to red")
+	expect(normal_max < high_max and high_max < red_max and bluegill.fight_cycle_seconds > HapticService.HIGH_WARNING_CYCLE_SECONDS and HapticService.HIGH_WARNING_CYCLE_SECONDS > HapticService.RED_WARNING_CYCLE_SECONDS and is_equal_approx(HapticService.standard_high_tension(), float(FightChallenge.profile("standard").high_warning)), "emitted haptic amplitude rises and warning interval shortens from normal to high to red")
 
 	var reset_fired: Array[Dictionary] = []
 	var reset_haptics := HapticService.new(func(duration, amplitude): reset_fired.append({"duration": duration, "amplitude": amplitude}))
 	reset_haptics.start_fight(bluegill)
-	reset_haptics.update_fight(0.23, bluegill, 0.70)
-	reset_haptics.update_fight(0.30, bluegill, 0.70)
-	expect(reset_haptics.warning_tier == "high" and reset_fired.size() == 2 and int(reset_fired[0].duration) == 58, "high tension overrides species rhythm")
+	reset_haptics.update_fight(0.23, bluegill, 0.76)
+	reset_haptics.update_fight(0.30, bluegill, 0.76)
+	expect(reset_haptics.warning_tier == "ease" and reset_fired.size() == 2 and int(reset_fired[0].duration) == 58, "high tension overrides species rhythm")
 	reset_fired.clear()
 	reset_haptics.update_fight(0.01, bluegill, 0.95)
 	reset_haptics.update_fight(0.30, bluegill, 0.95)
-	expect(reset_haptics.warning_tier == "red" and reset_fired.size() == 2 and int(reset_fired[0].duration) == 90, "red tension emits urgent override")
+	expect(reset_haptics.warning_tier == "snap" and reset_fired.size() == 2 and int(reset_fired[0].duration) == 90, "red tension emits urgent override")
 	reset_fired.clear()
-	reset_haptics.update_fight(0.01, bluegill, 0.2)
-	expect(reset_haptics.warning_tier == "normal" and not reset_fired.is_empty() and int(reset_fired[0].duration) == 38, "falling tension restores species rhythm")
+	reset_haptics.update_fight(0.01, bluegill, 0.5)
+	expect(reset_haptics.warning_tier == "steady" and not reset_fired.is_empty() and int(reset_fired[0].duration) == 38, "falling tension restores species rhythm")
 
 	var hook_fired: Array[Dictionary] = []
 	var hook_haptics := HapticService.new(func(duration, amplitude): hook_fired.append({"duration": duration, "amplitude": amplitude}))
 	hook_haptics.cue("hook")
 	hook_haptics.start_fight(bluegill)
-	hook_haptics.update_fight(0.01, bluegill, 0.2)
+	hook_haptics.update_fight(0.01, bluegill, 0.5)
 	expect(hook_fired.size() == 1 and int(hook_fired[0].duration) == 55, "hook cue does not overlap first fish phrase")
-	hook_haptics.update_fight(0.22, bluegill, 0.2)
+	hook_haptics.update_fight(0.22, bluegill, 0.5)
 	expect(hook_fired.size() == 2 and int(hook_fired[1].duration) == 38, "species phrase begins after hook delay")
 	var lull_fired: Array[Dictionary] = []
 	var lull_haptics := HapticService.new(func(duration, amplitude): lull_fired.append({"duration": duration, "amplitude": amplitude}))
 	var pike := _fish_by_id("northern_pike")
 	lull_haptics.start_fight(pike)
-	lull_haptics.update_fight(0.22, pike, 0.20, 1.0) # Starts a two-pulse normal phrase.
-	lull_haptics.update_fight(0.05, pike, 0.20, 0.20) # Enters a lull before its second pulse is due.
+	lull_haptics.update_fight(0.22, pike, 0.50, 1.0) # Starts a two-pulse normal phrase.
+	lull_haptics.update_fight(0.05, pike, 0.50, 0.20) # Enters a lull before its second pulse is due.
 	expect(lull_fired.size() == 1 and lull_haptics.pending.is_empty(), "entering a normal-effort lull drops every unfinished fish pulse immediately")
-	lull_haptics.update_fight(0.68, pike, 0.20, 1.0)
+	lull_haptics.update_fight(0.68, pike, 0.50, 1.0)
 	expect(lull_fired.size() == 2 and int(lull_fired[1].duration) == 150 and lull_haptics.pending.size() == 1, "the resumed normal phrase starts fresh instead of replaying its stale second pulse")
 
 	var before_disable := reset_fired.size()
@@ -1146,7 +1232,7 @@ func _test_haptic_signatures() -> void:
 	bite_guard.tick(0.002)
 	expect(not bite_guard.is_motion_guarded(), "the motion guard expires deterministically after the final bite pulse settle interval")
 	bite_guard.start_fight(bluegill)
-	bite_guard.update_fight(0.23, bluegill, 0.20)
+	bite_guard.update_fight(0.23, bluegill, 0.50)
 	expect(bite_guard.fighting and bite_guard.is_motion_guarded(), "fight phrase scheduling remains active while the sensor guard is only used for ready/hook motion")
 	bite_guard.stop()
 	bite_guard.cue("bite"); bite_guard.tick(0.0); bite_guard.set_enabled(false)
@@ -1162,7 +1248,7 @@ func _test_haptic_signatures() -> void:
 	var terminal: Array[Dictionary] = []
 	var terminal_haptics := HapticService.new(func(duration, amplitude): terminal.append({"duration": duration, "amplitude": amplitude}))
 	terminal_haptics.start_fight(bluegill)
-	terminal_haptics.update_fight(0.01, bluegill, 0.2)
+	terminal_haptics.update_fight(0.01, bluegill, 0.5)
 	terminal.clear()
 	terminal_haptics.cue("caught")
 	terminal_haptics.tick(1.0)
@@ -1198,7 +1284,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 34 and export_config.get_value("preset.0.options", "version/name") == "0.7.0-waters1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Waters package version and visible Android label retain the package identifier")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 35 and export_config.get_value("preset.0.options", "version/name") == "0.7.1-balance1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Balance package version and visible Android label retain the package identifier")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
@@ -1284,7 +1370,7 @@ func _test_project_source_settings() -> void:
 		for y in range(0, 1024, 16):
 			if rod_repacked_image.get_pixel(x, y).a != 0.0: rod_boundaries_clear = false
 	expect(not rod_repacked_image.is_empty() and rod_repacked_image.get_size() == Vector2i(1536, 1024) and rod_boundaries_clear, "repacked rod atlas has strict transparent frame boundaries")
-	expect("rod-photoreal-alpha-v01.png" in main_source and "_draw_photoreal_rod" in main_source and "draw_polygon(points" in main_source and "tip_strength" in main_source and not "draw_texture_rect(rod_frames[rod_region]" in main_source, "fight uses one continuous photoreal textured rod mesh and shares its deformed terminal-guide mapping with mono")
+	expect("rod-photoreal-alpha-v01.png" in main_source and "_draw_photoreal_rod" in main_source and "_photoreal_rod_point" in main_source and "draw_polygon(points" in main_source and not "draw_texture_rect(rod_frames[rod_region]" in main_source, "fight uses one continuous photoreal textured rod mesh and shares its deformed terminal-guide mapping with mono")
 	expect(not "control-kit-alpha-v01.png" in main_source and "_draw_wood_control" in main_source and "TEST VIBRATION" in main_source and "MOTION SETUP" in main_source and "BACK TO FISHING" in main_source and "SETTINGS" in main_source and "SELECTED • " in main_source and not "_text(\"⚙\"" in main_source, "rustic wood controls replace obsolete control-kit skins across Settings and exits")
 	var top_chrome_source := main_source.get_slice("func _draw_top_chrome(s: FishingSession) -> void:", 1).get_slice("func _draw_glance_hint", 0)
 	expect("top-nav-rustic-v01.png" in main_source and "_refresh_top_nav_geometry()" in main_source and "_handle_press(pos: Vector2)" in main_source and "records_rect" in main_source and "locations_rect" in main_source and "settings_rect" in main_source and not "_draw_top_nav_label" in top_chrome_source and not "\"RECORDS\"" in top_chrome_source and not "\"WATERS\"" in top_chrome_source and not "\"SETTINGS\"" in top_chrome_source and "FINISH THIS CAST" in main_source and "controller._open_settings()" in main_source and "controller._can_open_records()" in main_source and not "_can_open_journal" in main_source and not "menu_medallion" in main_source, "icon-only rustic top navigation shares current safe-area geometry for drawing and hits; Settings remains available while Records and Waters explain active-fishing gates")

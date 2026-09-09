@@ -1,0 +1,28 @@
+{
+  "label": "primary-v35-import",
+  "started": "2026-09-09T09:15:36.2559226-05:00",
+  "finished": "2026-09-09T09:15:48.8729607-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--editor",
+    "--import",
+    "--quit"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+  "rootPid": 120996,
+  "observedPids": [
+    120996
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-import.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-import.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

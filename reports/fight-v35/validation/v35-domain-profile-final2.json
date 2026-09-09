@@ -1,0 +1,27 @@
+{
+  "label": "v35-domain-profile-final2",
+  "started": "2026-09-09T09:13:23.2504230-05:00",
+  "finished": "2026-09-09T09:13:47.2203381-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+  "rootPid": 116532,
+  "observedPids": [
+    116532
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-profile-final2.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-profile-final2.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

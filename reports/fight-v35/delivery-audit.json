@@ -1,0 +1,102 @@
+{
+  "version_code": 35,
+  "version_name": "0.7.1-balance1",
+  "path": "E:/AI Projects/games/haptic fish/build/android/Hooked-0.7.1-balance1-arm64-debug.apk",
+  "bytes": 65409731,
+  "previous_build_bytes": 65404104,
+  "delta_bytes": 5627,
+  "sha256": "932F7D92399D6FDEE66EBB847C80F3C52C740AEB6BD588CC3EF9FBED65955079",
+  "package": "com.tak.castandcrank",
+  "label": "Hooked",
+  "min_sdk": 24,
+  "target_sdk": 36,
+  "abi": [
+    "arm64-v8a"
+  ],
+  "vibrate_permission": true,
+  "signer_sha256": "c26373b2320fa530be93f5b6d255a4c8e10e6aa4476e430dedb6106a4de865dc",
+  "entry_count": 830,
+  "challenge_compiled": true,
+  "forbidden_entries": [],
+  "native": [
+    {
+      "path": "lib/arm64-v8a/libgodot_android.so",
+      "bytes": 76177376,
+      "compressed_bytes": 27833653
+    },
+    {
+      "path": "lib/arm64-v8a/libc++_shared.so",
+      "bytes": 1374336,
+      "compressed_bytes": 501772
+    }
+  ],
+  "validation": {
+    "import": {
+      "pid": 120996,
+      "exit_code": 0
+    },
+    "domain": {
+      "pid": 99656,
+      "exit_code": 0
+    },
+    "export": {
+      "pid": 74516,
+      "exit_code": 0
+    },
+    "known_domain_teardown_only": "12 ObjectDB instances / 5 resources; unchanged baseline shutdown notices",
+    "visuals": "10 reviewed desktop renders; no phone screenshots",
+    "runtime_hashes_unchanged_after_export": true,
+    "runtime_hashes": [
+      {
+        "Path": "export_presets.cfg",
+        "SHA256": "098EDA8BB1B29EBF645BA54637673FB839ADB82F49FC89C737B95B4A09F2C02D"
+      },
+      {
+        "Path": "project.godot",
+        "SHA256": "9F3414F60360174561A598901B6276DD94DE46B3AC859AFE1E72E494378E0D73"
+      },
+      {
+        "Path": "src/domain/fight_challenge.gd",
+        "SHA256": "9C57084D9AC5CDC09D4C697A5AF6BC90E9F15333B795E9EDD978935D6C2A54AE"
+      },
+      {
+        "Path": "src/domain/fishing_session.gd",
+        "SHA256": "1E753D3BA82606380C6289C1DB42E5C7CE0530F640238D8ABFB6AC0741F1B31C"
+      },
+      {
+        "Path": "src/services/haptic_service.gd",
+        "SHA256": "348AC236AD2F35870199CBB1309D951AEF3D8E463063DFD344D4A6AB10C0408B"
+      },
+      {
+        "Path": "src/services/save_service.gd",
+        "SHA256": "7D255634E33E0E5D5D00B4CA8863BE283D98F838D9450E7028203D67B3D883A1"
+      },
+      {
+        "Path": "src/ui/main.gd",
+        "SHA256": "6E375E12D376DDF754F020CC4E521D98B748F50856D4C4FCCC1BBD910F010836"
+      }
+    ]
+  },
+  "drive": {
+    "path": "H:/My Drive/AI Projects/Haptic Fish/Hooked-0.7.1-balance1-arm64-debug.apk",
+    "bytes": 65409731,
+    "sha256": "932F7D92399D6FDEE66EBB847C80F3C52C740AEB6BD588CC3EF9FBED65955079",
+    "local_copy_verified": true,
+    "cloud_sync_verified": false
+  },
+  "pixel": {
+    "installed": false,
+    "reason": "No ADB devices or mDNS endpoints available; device installation and physical feel remain pending."
+  },
+  "cleanup": {
+    "godot_remaining": [],
+    "java_remaining": [],
+    "werfault_remaining": [],
+    "gradle_daemon": 126932,
+    "gradle_verified_created": "2026-09-09T09:17:14-05:00",
+    "gradle_verified_project": "E:/CodexCache/haptic-fish-project",
+    "gradle_stopped": true,
+    "existing_generated_android_files": 44,
+    "existing_generated_android_hashes_preserved": true
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "label": "v35-capture2-settings_expert",
+  "started": "2026-09-09T09:01:08.4396368-05:00",
+  "finished": "2026-09-09T09:01:11.6678717-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\settings_expert.png",
+    "--capture-scenario=settings_expert"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+  "rootPid": 121972,
+  "observedPids": [
+    121972
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-settings_expert.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-settings_expert.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

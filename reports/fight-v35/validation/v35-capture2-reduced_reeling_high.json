@@ -1,0 +1,31 @@
+{
+  "label": "v35-capture2-reduced_reeling_high",
+  "started": "2026-09-09T09:01:21.3735361-05:00",
+  "finished": "2026-09-09T09:01:24.5871662-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\reduced_reeling_high.png",
+    "--capture-scenario=reduced_reeling_high"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+  "rootPid": 96368,
+  "observedPids": [
+    96368
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-reduced_reeling_high.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-reduced_reeling_high.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

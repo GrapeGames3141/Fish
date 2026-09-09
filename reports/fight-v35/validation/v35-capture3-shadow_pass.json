@@ -1,0 +1,31 @@
+{
+  "label": "v35-capture3-shadow_pass",
+  "started": "2026-09-09T09:03:28.3308758-05:00",
+  "finished": "2026-09-09T09:03:31.5139372-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\shadow_pass.png",
+    "--capture-scenario=shadow_pass"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+  "rootPid": 78228,
+  "observedPids": [
+    78228
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-shadow_pass.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-shadow_pass.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

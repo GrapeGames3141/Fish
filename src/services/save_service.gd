@@ -2,6 +2,7 @@ class_name SaveService
 extends RefCounted
 
 const LocationDefinition = preload("res://src/domain/location_definition.gd")
+const FightChallenge = preload("res://src/domain/fight_challenge.gd")
 
 const VERSION := 6
 const MAX_CATCH_HISTORY := 256
@@ -16,7 +17,7 @@ func _init(custom_path: String = PATH, custom_timestamp_provider: Callable = Cal
 static func default_data() -> Dictionary:
 	var catches := {}; var best_cm := {}
 	for fish_id in PLANNED_FISH_IDS: catches[fish_id] = 0; best_cm[fish_id] = 0.0
-	return {"version": VERSION, "calibrated": false, "motion_profile": {}, "selected_location_id": "willow_pond", "unlocked_location_ids": ["willow_pond"], "settings": {"sensitivity": 1.0, "haptics": true, "audio": true, "reduced_motion": false, "left_handed": false}, "catches": catches, "best_cm": best_cm, "catch_history": []}
+	return {"version": VERSION, "calibrated": false, "motion_profile": {}, "selected_location_id": "willow_pond", "unlocked_location_ids": ["willow_pond"], "settings": {"sensitivity": 1.0, "haptics": true, "audio": true, "reduced_motion": false, "left_handed": false, "fight_challenge": FightChallenge.DEFAULT_ID}, "catches": catches, "best_cm": best_cm, "catch_history": []}
 func load_data() -> Dictionary:
 	if not FileAccess.file_exists(path): data = default_data(); return data
 	var file := FileAccess.open(path, FileAccess.READ)
@@ -31,6 +32,7 @@ func _migrate(parsed: Dictionary) -> Dictionary:
 		if _finite_number(parsed_settings.get("sensitivity", null)): migrated.settings.sensitivity = clampf(float(parsed_settings.sensitivity), 0.5, 2.0)
 		for nested_key in ["haptics", "audio", "reduced_motion", "left_handed"]:
 			if typeof(parsed_settings.get(nested_key, null)) == TYPE_BOOL: migrated.settings[nested_key] = bool(parsed_settings[nested_key])
+		migrated.settings.fight_challenge = FightChallenge.sanitize(parsed_settings.get("fight_challenge", FightChallenge.DEFAULT_ID))
 	for key in ["catches", "best_cm"]:
 		if parsed.get(key, null) is Dictionary:
 			for fish_id in PLANNED_FISH_IDS:

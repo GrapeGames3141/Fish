@@ -1,15 +1,18 @@
 class_name HapticService
 extends RefCounted
 
+const FightChallenge = preload("res://src/domain/fight_challenge.gd")
+
 ## Deterministic, injectable haptic scheduler. A fight phrase is scheduled only
 ## once per fish cadence, leaving a deliberate quiet gap between phrases.
-const HIGH_TENSION := 0.65
-const RED_TENSION := 0.90
 const MAX_PENDING_PULSES := 3
 const INITIAL_FIGHT_DELAY_SECONDS := 0.22
 const HIGH_WARNING_CYCLE_SECONDS := 0.8
 const RED_WARNING_CYCLE_SECONDS := 0.5
 const MOTION_SETTLE_SECONDS := 0.30
+
+static func standard_high_tension() -> float: return float(FightChallenge.profile(FightChallenge.DEFAULT_ID).high_warning)
+static func standard_red_tension() -> float: return float(FightChallenge.profile(FightChallenge.DEFAULT_ID).high_critical)
 
 var enabled := true
 var emitter: Callable
@@ -18,7 +21,8 @@ var elapsed := 0.0
 var fighting := false
 var active_fish: FishDefinition
 var next_phrase_at := 0.0
-var warning_tier := "normal"
+var warning_tier := "steady"
+var active_profile: Dictionary = FightChallenge.profile(FightChallenge.DEFAULT_ID)
 var phrase_started := false
 var _motion_guard_remaining := 0.0
 var _android_vibrator = null
@@ -62,16 +66,17 @@ func cue(name: String) -> void:
 		pattern = [{"duration": 170, "amplitude": 0.3}]
 	_schedule_phrase(pattern)
 
-func start_fight(fish: FishDefinition) -> void:
+func start_fight(fish: FishDefinition, profile_data: Dictionary = {}) -> void:
 	if not enabled or fish == null:
 		return
 	fighting = true
 	active_fish = fish
-	warning_tier = "normal"
+	active_profile = profile_data.duplicate(true) if not profile_data.is_empty() else FightChallenge.profile(FightChallenge.DEFAULT_ID)
+	warning_tier = "steady"
 	phrase_started = false
 	next_phrase_at = elapsed + INITIAL_FIGHT_DELAY_SECONDS
 
-func update_fight(delta: float, fish: FishDefinition, tension: float, effort := 1.0, size_factor := 1.0) -> void:
+func update_fight(delta: float, fish: FishDefinition, tension: float, effort := 1.0, size_factor := 1.0, profile_data: Dictionary = {}) -> void:
 	# Decide lull/warning priority before dispatching any overdue normal pulse.
 	elapsed += maxf(delta, 0.0)
 	_motion_guard_remaining = maxf(0.0, _motion_guard_remaining - maxf(delta, 0.0))
@@ -79,6 +84,7 @@ func update_fight(delta: float, fish: FishDefinition, tension: float, effort := 
 		if not enabled: pending.clear()
 		return
 	active_fish = fish
+	if not profile_data.is_empty(): active_profile = profile_data
 	var next_tier := _tier_for_tension(tension)
 	if next_tier != warning_tier:
 		warning_tier = next_tier
@@ -87,7 +93,7 @@ func update_fight(delta: float, fish: FishDefinition, tension: float, effort := 
 			next_phrase_at = elapsed
 	# Fish lulls are intentionally quiet. The universal high/red warnings remain
 	# immediate so a player can learn one relief cue by feel across all species.
-	if warning_tier == "normal" and effort < 0.42:
+	if warning_tier == "steady" and effort < 0.42:
 		# A run can end between pulses. Those normal-effort fish pulses describe
 		# the run, so never replay an overdue phrase when it resumes. High/red
 		# warnings are deliberately outside this branch and remain immediate.
@@ -120,22 +126,25 @@ func stop() -> void:
 	_motion_guard_remaining = 0.0
 	fighting = false
 	active_fish = null
-	warning_tier = "normal"
+	warning_tier = "steady"
 	phrase_started = false
 	next_phrase_at = elapsed
 
 func _tier_for_tension(tension: float) -> String:
-	if tension >= RED_TENSION:
-		return "red"
-	if tension >= HIGH_TENSION:
-		return "high"
-	return "normal"
+	return FightChallenge.tier(tension, active_profile)
 
 func _phrase_for_tier(tier: String, effort := 1.0, size_factor := 1.0) -> Array[Dictionary]:
-	if tier == "red":
+	# Slack is deliberately a slow long pulse + tiny tap; overload remains the
+	# fast paired warning. With eyes on the water a player can tell which way to
+	# move without looking at the meter.
+	if tier == "snap":
 		return [{"duration": 90, "amplitude": 1.0}, {"duration": 90, "amplitude": 1.0, "gap": 0.16}]
-	if tier == "high":
+	if tier == "ease":
 		return [{"duration": 58, "amplitude": 0.85}, {"duration": 58, "amplitude": 0.85, "gap": 0.22}]
+	if tier == "slack":
+		return [{"duration": 145, "amplitude": 0.66}, {"duration": 30, "amplitude": 0.35, "gap": 0.28}]
+	if tier == "pull":
+		return [{"duration": 90, "amplitude": 0.52}, {"duration": 24, "amplitude": 0.30, "gap": 0.34}]
 	if active_fish == null: return []
 	# Species phrases stay recognizable (flutter / punch / heavy pull / triplet /
 	# double headshake / abrupt run), while larger or active-stage fish add only a
@@ -147,10 +156,14 @@ func _phrase_for_tier(tier: String, effort := 1.0, size_factor := 1.0) -> Array[
 	return weighted
 
 func _cycle_for_tier(tier: String) -> float:
-	if tier == "red":
+	if tier == "snap":
 		return RED_WARNING_CYCLE_SECONDS
-	if tier == "high":
+	if tier == "ease":
 		return HIGH_WARNING_CYCLE_SECONDS
+	if tier == "slack":
+		return 0.76
+	if tier == "pull":
+		return 1.05
 	return active_fish.fight_cycle_seconds if active_fish != null else HIGH_WARNING_CYCLE_SECONDS
 
 func _schedule_phrase(pattern: Array[Dictionary]) -> void:

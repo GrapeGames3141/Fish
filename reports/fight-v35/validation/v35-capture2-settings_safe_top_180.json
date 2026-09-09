@@ -1,0 +1,31 @@
+{
+  "label": "v35-capture2-settings_safe_top_180",
+  "started": "2026-09-09T09:01:11.6753843-05:00",
+  "finished": "2026-09-09T09:01:14.8515816-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\settings_safe_top_180.png",
+    "--capture-scenario=settings_safe_top_180"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+  "rootPid": 70452,
+  "observedPids": [
+    70452
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-settings_safe_top_180.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-settings_safe_top_180.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

@@ -1,0 +1,1046 @@
+[
+  {
+    "label": "v35-parser-1",
+    "started": "2026-09-09T08:46:54.8042048-05:00",
+    "finished": "2026-09-09T08:47:04.2992829-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--editor",
+      "--quit"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 113468,
+    "observedPids": [
+      113468
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-parser-1.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-parser-1.stderr.log",
+    "stderrMarker": "SCRIPT ERROR: Parse Error: Cannot infer the type of \"boundary_x\" variable because the value doesn't have a set type.",
+    "error": null
+  },
+  {
+    "label": "v35-parser-2",
+    "started": "2026-09-09T08:47:33.3841415-05:00",
+    "finished": "2026-09-09T08:47:43.5065887-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--editor",
+      "--quit"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 60560,
+    "observedPids": [
+      60560
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-parser-2.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-parser-2.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-domain-1",
+    "started": "2026-09-09T08:47:56.1775079-05:00",
+    "finished": "2026-09-09T08:48:25.9743033-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 79804,
+    "observedPids": [
+      79804
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-1.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-1.stderr.log",
+    "stderrMarker": "ERROR: line reaches bite",
+    "error": null
+  },
+  {
+    "label": "v35-domain-2",
+    "started": "2026-09-09T08:49:52.1949027-05:00",
+    "finished": "2026-09-09T08:50:33.4944143-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 107084,
+    "observedPids": [
+      107084
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-2.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-2.stderr.log",
+    "stderrMarker": "ERROR: 300ms-delayed pull/ease lands pumpkinseed in 10–20 seconds at 30Hz / roll 0.00",
+    "error": null
+  },
+  {
+    "label": "v35-domain-3",
+    "started": "2026-09-09T08:51:15.6801758-05:00",
+    "finished": "2026-09-09T08:51:35.6878771-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 84128,
+    "observedPids": [
+      84128
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-3.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-3.stderr.log",
+    "stderrMarker": "ERROR: 300ms-delayed pull/ease lands largemouth_bass in 10–20 seconds at 30Hz / roll 0.00",
+    "error": null
+  },
+  {
+    "label": "v35-domain-4",
+    "started": "2026-09-09T08:53:26.7344598-05:00",
+    "finished": "2026-09-09T08:53:37.5956623-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 113552,
+    "observedPids": [
+      113552
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-4.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-4.stderr.log",
+    "stderrMarker": "ERROR: 300ms-delayed pull/ease lands bluegill in 10–20 seconds at 30Hz / roll 0.37 (state=7 elapsed=13.53)",
+    "error": null
+  },
+  {
+    "label": "v35-domain-5",
+    "started": "2026-09-09T08:54:19.9045513-05:00",
+    "finished": "2026-09-09T08:54:38.8804381-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 17252,
+    "observedPids": [
+      17252
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-5.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-5.stderr.log",
+    "stderrMarker": "ERROR: 300ms-delayed pull/ease lands largemouth_bass in 10–20 seconds at 30Hz / roll 0.00 (state=6 elapsed=21.07)",
+    "error": null
+  },
+  {
+    "label": "v35-domain-6",
+    "started": "2026-09-09T08:55:25.2201536-05:00",
+    "finished": "2026-09-09T08:55:33.7529725-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 108284,
+    "observedPids": [
+      108284
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-6.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-6.stderr.log",
+    "stderrMarker": "ERROR: falling tension restores species rhythm",
+    "error": null
+  },
+  {
+    "label": "v35-domain-7",
+    "started": "2026-09-09T08:57:32.152796-05:00",
+    "finished": "2026-09-09T08:57:42.9932388-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 97592,
+    "observedPids": [
+      97592
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-7.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-7.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture-fight_slack",
+    "started": "2026-09-09T08:59:02.7783727-05:00",
+    "finished": "2026-09-09T08:59:58.1981962-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=",
+      "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\fight_slack.png",
+      "--capture-scenario=",
+      "fight_slack"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 91592,
+    "observedPids": [
+      91592
+    ],
+    "completed": false,
+    "exitCode": null,
+    "cleanupPids": [
+      91592
+    ],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture-fight_slack.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture-fight_slack.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture2-fight_slack",
+    "started": "2026-09-09T09:00:58.5097893-05:00",
+    "finished": "2026-09-09T09:01:01.9195121-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\fight_slack.png",
+      "--capture-scenario=fight_slack"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 93540,
+    "observedPids": [
+      93540
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-fight_slack.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-fight_slack.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture2-fight_center",
+    "started": "2026-09-09T09:01:01.9429138-05:00",
+    "finished": "2026-09-09T09:01:05.2180255-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\fight_center.png",
+      "--capture-scenario=fight_center"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 70228,
+    "observedPids": [
+      70228
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-fight_center.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-fight_center.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture2-reeling_high",
+    "started": "2026-09-09T09:01:05.2270847-05:00",
+    "finished": "2026-09-09T09:01:08.4293674-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\reeling_high.png",
+      "--capture-scenario=reeling_high"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 99440,
+    "observedPids": [
+      99440
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-reeling_high.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-reeling_high.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture2-settings_expert",
+    "started": "2026-09-09T09:01:08.4396368-05:00",
+    "finished": "2026-09-09T09:01:11.6678717-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\settings_expert.png",
+      "--capture-scenario=settings_expert"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 121972,
+    "observedPids": [
+      121972
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-settings_expert.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-settings_expert.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture2-settings_safe_top_180",
+    "started": "2026-09-09T09:01:11.6753843-05:00",
+    "finished": "2026-09-09T09:01:14.8515816-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\settings_safe_top_180.png",
+      "--capture-scenario=settings_safe_top_180"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 70452,
+    "observedPids": [
+      70452
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-settings_safe_top_180.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-settings_safe_top_180.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture2-shadow_pass",
+    "started": "2026-09-09T09:01:14.8583725-05:00",
+    "finished": "2026-09-09T09:01:18.1498191-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\shadow_pass.png",
+      "--capture-scenario=shadow_pass"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 123756,
+    "observedPids": [
+      123756
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-shadow_pass.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-shadow_pass.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture2-wait_after_shadow",
+    "started": "2026-09-09T09:01:18.1567264-05:00",
+    "finished": "2026-09-09T09:01:21.3672049-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\wait_after_shadow.png",
+      "--capture-scenario=wait_after_shadow"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 122944,
+    "observedPids": [
+      122944
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-wait_after_shadow.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-wait_after_shadow.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture2-reduced_reeling_high",
+    "started": "2026-09-09T09:01:21.3735361-05:00",
+    "finished": "2026-09-09T09:01:24.5871662-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\reduced_reeling_high.png",
+      "--capture-scenario=reduced_reeling_high"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 96368,
+    "observedPids": [
+      96368
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-reduced_reeling_high.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture2-reduced_reeling_high.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture3-fight_slack",
+    "started": "2026-09-09T09:03:18.3919639-05:00",
+    "finished": "2026-09-09T09:03:21.7719287-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\fight_slack.png",
+      "--capture-scenario=fight_slack"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 89528,
+    "observedPids": [
+      89528
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-fight_slack.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-fight_slack.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture3-fight_center",
+    "started": "2026-09-09T09:03:21.7925576-05:00",
+    "finished": "2026-09-09T09:03:25.0540234-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\fight_center.png",
+      "--capture-scenario=fight_center"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 127564,
+    "observedPids": [
+      127564
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-fight_center.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-fight_center.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture3-reeling_high",
+    "started": "2026-09-09T09:03:25.0621911-05:00",
+    "finished": "2026-09-09T09:03:28.3206137-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\reeling_high.png",
+      "--capture-scenario=reeling_high"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 127884,
+    "observedPids": [
+      127884
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-reeling_high.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-reeling_high.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture3-shadow_pass",
+    "started": "2026-09-09T09:03:28.3308758-05:00",
+    "finished": "2026-09-09T09:03:31.5139372-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\shadow_pass.png",
+      "--capture-scenario=shadow_pass"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 78228,
+    "observedPids": [
+      78228
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-shadow_pass.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-shadow_pass.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-parser-final",
+    "started": "2026-09-09T09:04:02.4645952-05:00",
+    "finished": "2026-09-09T09:04:15.5400548-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--editor",
+      "--quit"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 96124,
+    "observedPids": [
+      96124
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-parser-final.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-parser-final.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-domain-final",
+    "started": "2026-09-09T09:04:15.5545266-05:00",
+    "finished": "2026-09-09T09:04:26.0182086-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 110956,
+    "observedPids": [
+      110956
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-final.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-final.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-domain-final2",
+    "started": "2026-09-09T09:05:23.3622448-05:00",
+    "finished": "2026-09-09T09:05:33.9557917-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 114192,
+    "observedPids": [
+      114192
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-final2.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-final2.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-domain-profile-matrix",
+    "started": "2026-09-09T09:08:54.6992153-05:00",
+    "finished": "2026-09-09T09:09:18.1706087-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 93668,
+    "observedPids": [
+      93668
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-profile-matrix.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-profile-matrix.stderr.log",
+    "stderrMarker": "ERROR: a brief actual zero-load ease warns and recovers before the longer slack escape dwell",
+    "error": null
+  },
+  {
+    "label": "v35-capture-profile-fight_center_relaxed",
+    "started": "2026-09-09T09:10:27.7944656-05:00",
+    "finished": "2026-09-09T09:10:31.1975659-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\fight_center_relaxed.png",
+      "--capture-scenario=fight_center_relaxed"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 118416,
+    "observedPids": [
+      118416
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture-profile-fight_center_relaxed.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture-profile-fight_center_relaxed.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-capture-profile-fight_center_expert",
+    "started": "2026-09-09T09:10:31.222047-05:00",
+    "finished": "2026-09-09T09:10:34.5799862-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\fight_center_expert.png",
+      "--capture-scenario=fight_center_expert"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 46456,
+    "observedPids": [
+      46456
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture-profile-fight_center_expert.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture-profile-fight_center_expert.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-domain-profile-final",
+    "started": "2026-09-09T09:10:50.8125628-05:00",
+    "finished": "2026-09-09T09:11:14.4753995-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 89440,
+    "observedPids": [
+      89440
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-profile-final.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-profile-final.stderr.log",
+    "stderrMarker": "ERROR: a brief actual zero-load ease warns and recovers before the longer slack escape dwell",
+    "error": null
+  },
+  {
+    "label": "v35-domain-recovery-probe",
+    "started": "2026-09-09T09:12:06.6233384-05:00",
+    "finished": "2026-09-09T09:12:30.0051264-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 108052,
+    "observedPids": [
+      108052
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-recovery-probe.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-recovery-probe.stderr.log",
+    "stderrMarker": "ERROR: a brief actual zero-load ease warns and recovers before the longer slack escape dwell (state=5 tension=0.14 slack=0.93 before=0.27)",
+    "error": null
+  },
+  {
+    "label": "v35-domain-profile-final2",
+    "started": "2026-09-09T09:13:23.250423-05:00",
+    "finished": "2026-09-09T09:13:47.2203381-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 116532,
+    "observedPids": [
+      116532
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-profile-final2.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-profile-final2.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "primary-v35-import",
+    "started": "2026-09-09T09:15:36.2559226-05:00",
+    "finished": "2026-09-09T09:15:48.8729607-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--editor",
+      "--import",
+      "--quit"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 120996,
+    "observedPids": [
+      120996
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-import.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-import.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "primary-v35-export",
+    "started": "2026-09-09T09:17:02.1203235-05:00",
+    "finished": "2026-09-09T09:17:55.9855422-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--audio-driver",
+      "Dummy",
+      "--export-debug",
+      "Android Gate 1 Debug",
+      "E:\\AI Projects\\games\\haptic fish\\build\\android\\Hooked-0.7.1-balance1-arm64-debug.apk"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 74516,
+    "observedPids": [
+      74516
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-export.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-export.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "v35-domain-haptic-final",
+    "started": "2026-09-09T09:21:35.1904299-05:00",
+    "finished": "2026-09-09T09:21:58.3549721-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 127132,
+    "observedPids": [
+      127132
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-haptic-final.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-domain-haptic-final.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "primary-v35-domain",
+    "started": "2026-09-09T09:22:43.2243266-05:00",
+    "finished": "2026-09-09T09:23:06.6838416-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 99656,
+    "observedPids": [
+      99656
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-domain.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-domain.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "label": "primary-v35-reduced-final",
+    "started": "2026-09-09T09:28:29.8979548-05:00",
+    "finished": "2026-09-09T09:28:33.7948668-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\CodexCache\\haptic-fish-project",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\reduced_reeling_high.png",
+      "--capture-scenario=reduced_reeling_high"
+    ],
+    "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+    "rootPid": 127960,
+    "observedPids": [
+      127960
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "cleanupPids": [],
+    "remainingTaskPids": [],
+    "windows": [],
+    "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-reduced-final.stdout.log",
+    "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-reduced-final.stderr.log",
+    "stderrMarker": null,
+    "error": null
+  }
+]

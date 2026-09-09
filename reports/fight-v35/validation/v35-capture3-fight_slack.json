@@ -1,0 +1,31 @@
+{
+  "label": "v35-capture3-fight_slack",
+  "started": "2026-09-09T09:03:18.3919639-05:00",
+  "finished": "2026-09-09T09:03:21.7719287-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\gallery\\fight_slack.png",
+    "--capture-scenario=fight_slack"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+  "rootPid": 89528,
+  "observedPids": [
+    89528
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-fight_slack.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\v35-capture3-fight_slack.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

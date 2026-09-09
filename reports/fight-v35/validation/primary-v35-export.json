@@ -1,0 +1,30 @@
+{
+  "label": "primary-v35-export",
+  "started": "2026-09-09T09:17:02.1203235-05:00",
+  "finished": "2026-09-09T09:17:55.9855422-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--audio-driver",
+    "Dummy",
+    "--export-debug",
+    "Android Gate 1 Debug",
+    "E:\\AI Projects\\games\\haptic fish\\build\\android\\Hooked-0.7.1-balance1-arm64-debug.apk"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-fight-v35",
+  "rootPid": 74516,
+  "observedPids": [
+    74516
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-export.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\fight-v35\\validation\\primary-v35-export.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

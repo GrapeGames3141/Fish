@@ -1,6 +1,7 @@
 extends Node
 
 const FishingSession = preload("res://src/domain/fishing_session.gd")
+const FightChallenge = preload("res://src/domain/fight_challenge.gd")
 const MotionService = preload("res://src/services/motion_service.gd")
 const SaveService = preload("res://src/services/save_service.gd")
 const AdMobService = preload("res://src/services/admob_service.gd")
@@ -60,7 +61,7 @@ var rustic_waters_texture: Texture2D = load("res://art/ui_v1/runtime_source/wate
 
 func _ready() -> void:
 	session = FishingSession.new(); motion = MotionService.new(); save = SaveService.new(); ads = AdMobService.new(); haptics = HapticService.new(); preview_haptics = HapticService.new(); cast_capture = CastCaptureService.new(CastCaptureService.PATH, Callable(motion, "sample"))
-	save.load_data(); motion.sensitivity = float(save.data.settings.get("sensitivity", 1.0)); motion.left_handed = bool(save.data.settings.get("left_handed", false)); session.set_location(str(save.data.get("selected_location_id", "willow_pond")), 0.0)
+	save.load_data(); motion.sensitivity = float(save.data.settings.get("sensitivity", 1.0)); motion.left_handed = bool(save.data.settings.get("left_handed", false)); session.set_next_cast_challenge(save.data.settings.get("fight_challenge", FightChallenge.DEFAULT_ID)); session.set_location(str(save.data.get("selected_location_id", "willow_pond")), 0.0)
 	if not motion.set_profile(save.data.get("motion_profile", {})): motion.begin_calibration()
 	ads.initialize(); haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
 	view = FishingView.new(); view.controller = self; add_child(view)
@@ -150,10 +151,10 @@ func _process(delta: float) -> void:
 		if session.state in [FishingSession.State.CAUGHT, FishingSession.State.ESCAPED]: motion.reset_fight()
 		prior_state = session.state
 	if session.state == FishingSession.State.REELING:
-		if not haptics.fighting: haptics.start_fight(session.fish)
+		if not haptics.fighting: haptics.start_fight(session.fish, session.challenge_profile)
 		var fight_size_factor := 1.0 + (inverse_lerp(session.fish.min_length_cm, session.fish.max_length_cm, session.catch_length_cm) * 0.10 if session.catch_length_cm > 0.0 else 0.0)
 		var felt_effort := session.fight_effort + (0.16 if session.fight_stage == FishingSession.FightStage.LAST_SURGE else (0.08 if session.fight_stage == FishingSession.FightStage.OPENING_RUN else 0.0))
-		haptics.update_fight(delta, session.fish, session.tension, felt_effort, fight_size_factor)
+		haptics.update_fight(delta, session.fish, session.tension, felt_effort, fight_size_factor, session.challenge_profile)
 	else: haptics.tick(delta)
 	view.queue_redraw()
 
@@ -169,7 +170,8 @@ func _arm_cast() -> void:
 	if session.state != FishingSession.State.READY: return
 	# All three rolls are injected by tests. Gameplay chooses them only after the
 	# player begins a real cast; distance-aware fish selection happens at release.
-	session.set_encounter_rolls(randf(), randf(), randf())
+	session.set_next_cast_challenge(save.data.settings.get("fight_challenge", FightChallenge.DEFAULT_ID))
+	session.set_encounter_rolls(randf(), randf(), randf(), randf(), randf())
 	session.arm_cast()
 func _cast(quality: float = 0.78, motion_event: Dictionary = {}) -> void:
 	if session.release_cast(quality):
@@ -181,7 +183,7 @@ func _cast(quality: float = 0.78, motion_event: Dictionary = {}) -> void:
 func _hook(motion_event: Dictionary = {}) -> void:
 	if session.set_hook():
 		leaderboard_motion_hook = OS.has_feature("android") and not motion_event.is_empty()
-		motion.begin_fight(); haptics.cue("hook"); haptics.start_fight(session.fish); print("MOTION_HOOK state=REELING projection=%.2f alignment=%.2f gyro=%.2f sweep_samples=%d" % [float(motion_event.get("hook_projection", 0.0)), float(motion_event.get("hook_alignment", 0.0)), float(motion_event.get("hook_gyro", 0.0)), int(motion_event.get("hook_sweep_samples", 0))])
+		motion.begin_fight(); haptics.cue("hook"); haptics.start_fight(session.fish, session.challenge_profile); print("MOTION_HOOK state=REELING projection=%.2f alignment=%.2f gyro=%.2f sweep_samples=%d" % [float(motion_event.get("hook_projection", 0.0)), float(motion_event.get("hook_alignment", 0.0)), float(motion_event.get("hook_gyro", 0.0)), int(motion_event.get("hook_sweep_samples", 0))])
 func _record_catch_once() -> void:
 	if caught_recorded or capture_mode or session.state != FishingSession.State.CAUGHT: return
 	var formerly_unlocked: Array = save.data.get("unlocked_location_ids", []).duplicate()
@@ -246,6 +248,11 @@ func _toggle_setting(key: String) -> void:
 	if key == "sensitivity":
 		var next := float(save.data.settings.sensitivity) + 0.2
 		save.data.settings.sensitivity = 0.6 if next > 1.6 else next; motion.sensitivity = float(save.data.settings.sensitivity)
+	elif key == "fight_challenge":
+		var current := FightChallenge.sanitize(save.data.settings.get("fight_challenge", FightChallenge.DEFAULT_ID))
+		var next_index := (FightChallenge.IDS.find(current) + 1) % FightChallenge.IDS.size()
+		save.data.settings.fight_challenge = FightChallenge.IDS[next_index]
+		ui_notice = "FIGHT %s — NEXT CAST" % FightChallenge.display_name(save.data.settings.fight_challenge); ui_notice_remaining = 2.5
 	else:
 		save.data.settings[key] = not bool(save.data.settings[key])
 		if key == "haptics": haptics.set_enabled(bool(save.data.settings[key])); preview_haptics.set_enabled(bool(save.data.settings[key]))
@@ -304,7 +311,9 @@ func _apply_capture_scenario() -> void:
 	match capture_scenario:
 		"loading": pass
 		"willow_ready": session.set_location("willow_pond", 0.0)
-		"willow_line_out": session.set_location("willow_pond", 0.0); session.arm_cast(); session.release_cast(0.8); session.elapsed = maxf(0.0, session.fish.bite_delay_seconds - 0.35)
+		"willow_line_out": session.set_location("willow_pond", 0.0); session.arm_cast(); session.release_cast(0.8); session.elapsed = maxf(0.0, session.bite_wait_seconds - 0.35)
+		"shadow_pass": session.set_location("willow_pond", 0.0); session.set_encounter_rolls(0.2, 0.4, 0.4, 0.80, 0.30); session.arm_cast(); session.release_cast(0.8); session.elapsed = session.shadow_visit_start + session.shadow_visit_duration * 0.50
+		"wait_after_shadow": session.set_location("willow_pond", 0.0); session.set_encounter_rolls(0.2, 0.4, 0.4, 0.80, 0.30); session.arm_cast(); session.release_cast(0.8); session.elapsed = minf(session.bite_wait_seconds - 0.40, session.shadow_visit_start + session.shadow_visit_duration + 0.35)
 		"willow_reeling_danger": session.set_location("willow_pond", 0.0); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.95; session.rod_load = 0.95; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"hatteras_ready": session.set_location("hatteras_inlet", 0.0)
 		"hatteras_bite": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.BITE; session.bite_elapsed = 0.20
@@ -320,6 +329,10 @@ func _apply_capture_scenario() -> void:
 		"bite": session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.BITE; session.bite_elapsed = 0.20
 		"hook_window": session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.HOOK_WINDOW; session.bite_elapsed = 0.20
 		"reeling", "reeling_low": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.32; session.rod_load = 0.38; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+		"fight_slack": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.06; session.rod_load = 0.04; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+		"fight_center": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.50; session.rod_load = 0.52; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+		"fight_center_relaxed": session.set_next_cast_challenge("relaxed"); session.challenge_id = "relaxed"; session.challenge_profile = FightChallenge.profile("relaxed"); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.50; session.rod_load = 0.52; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+		"fight_center_expert": session.set_next_cast_challenge("expert"); session.challenge_id = "expert"; session.challenge_profile = FightChallenge.profile("expert"); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.50; session.rod_load = 0.52; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"reeling_high": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.88; session.rod_load = 0.88; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"reeling_danger": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.95; session.rod_load = 0.95; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"cedar_reeling_high_safe180": session.set_location("cedar_river", 0.0); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.88; session.rod_load = 0.88; session.cast_quality = 0.86; session.cast_distance_m = 35.5; view.safe_top_override = 180.0
@@ -356,6 +369,7 @@ func _apply_capture_scenario() -> void:
 		"catch_recast_ready": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; session.terminal_elapsed = FishingSession.TERMINAL_RECAST_DWELL_SECONDS; session.terminal_still_elapsed = FishingSession.TERMINAL_STILL_SECONDS; caught_recorded = true
 		"catch_tail_mid": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; session.terminal_elapsed = 0.32; ui_time = 0.16; caught_recorded = true
 		"settings": view.overlay = "settings"
+		"settings_expert": save.data.settings.fight_challenge = "expert"; view.overlay = "settings"
 		"settings_safe_top_91": view.safe_top_override = 91.0; view.overlay = "settings"
 		"settings_safe_top_180": view.safe_top_override = 180.0; view.overlay = "settings"
 		"motion_setup": view.overlay = "motion_setup"
@@ -469,6 +483,7 @@ class FishingView extends Control:
 	var settings_haptics_rect := Rect2(98, 304, 524, 72)
 	var settings_reduced_motion_rect := Rect2(98, 394, 524, 72)
 	var settings_handedness_rect := Rect2(98, 484, 524, 72)
+	var settings_challenge_rect := Rect2(98, 608, 524, 54)
 	var settings_test_haptics_rect := Rect2(98, 640, 524, 72)
 	var settings_motion_setup_rect := Rect2(98, 740, 524, 72)
 	var settings_footer_close_rect := Rect2(222, 992, 278, 104)
@@ -549,8 +564,9 @@ class FishingView extends Control:
 		settings_haptics_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 44 * scale, interior.size.x - 40 * scale, 68 * scale)
 		settings_reduced_motion_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 166 * scale, interior.size.x - 40 * scale, 68 * scale)
 		settings_handedness_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 288 * scale, interior.size.x - 40 * scale, 68 * scale)
-		settings_test_haptics_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 474 * scale, interior.size.x - 40 * scale, 68 * scale)
-		settings_motion_setup_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 596 * scale, interior.size.x - 40 * scale, 68 * scale)
+		settings_challenge_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 454 * scale, interior.size.x - 40 * scale, 68 * scale)
+		settings_test_haptics_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 536 * scale, interior.size.x - 40 * scale, 68 * scale)
+		settings_motion_setup_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 620 * scale, interior.size.x - 40 * scale, 68 * scale)
 		settings_footer_close_rect = modal_footer_rect
 		motion_sensitivity_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 44 * scale, interior.size.x - 40 * scale, 68 * scale)
 		motion_recalibrate_rect = Rect2(interior.position.x + 20 * scale, interior.position.y + 166 * scale, interior.size.x - 40 * scale, 68 * scale)
@@ -625,7 +641,8 @@ class FishingView extends Control:
 		# float itself vanishes beneath that contact during bite/fight; it does not
 		# drag the visible line endpoint downward.
 		var rod_bend := 0.0 if s.state != FishingSession.State.REELING else clampf(maxf(s.tension, s.rod_load), 0.0, 1.0)
-		var rod_tip := _photoreal_rod_tip(rod_bend)
+		var rod_pose := 0.0 if s.state != FishingSession.State.REELING else clampf(s.rod_load * 0.75 + s.tension * 0.25, 0.0, 1.0)
+		var rod_tip := _photoreal_rod_tip(rod_bend, rod_pose)
 		# Draw the external line behind the rod; the rod atlas owns handle-to-terminal-guide pixels.
 		var mono := Color("e5eee8", 0.60)
 		if submerged: draw_line(rod_tip, bobber_pos, mono, 1.1, true)
@@ -636,7 +653,7 @@ class FishingView extends Control:
 				var t := float(sample) / 8.0
 				curve.append(rod_tip.lerp(bobber_pos, t) + Vector2(0, sag_depth * 4.0 * t * (1.0 - t)))
 			draw_polyline(curve, mono, 1.0, true)
-		_draw_photoreal_rod(rod_bend)
+		_draw_photoreal_rod(rod_bend, rod_pose)
 		if not submerged and controller.bobber_texture:
 			# The source canvas has generous transparent padding; map the known visible
 			# body region so distance scaling measures the float rather than its canvas.
@@ -665,18 +682,21 @@ class FishingView extends Control:
 				# never moves photographic banks, rocks, or adds duplicate foliage.
 				draw_line(Vector2(flow_x - 24, flow_y), Vector2(flow_x + 24, flow_y + 3), tint, 1.2)
 		if s.state != FishingSession.State.LINE_OUT: return
-		var bite_delay := maxf(0.01, s.fish.bite_delay_seconds)
-		var approach := clampf(inverse_lerp(maxf(0.0, bite_delay - 1.05), bite_delay, s.elapsed), 0.0, 1.0)
-		if approach <= 0.0: return
-		# Shadow reaches the real contact at the actual bite without revealing species.
-		var start := bobber_pos + Vector2(-128.0, 72.0)
-		var shadow := start.lerp(bobber_pos + Vector2(-6, 14), approach)
-		var body_w := lerpf(30.0, 52.0, approach)
+		if s.shadow_visit_start < 0.0: return
+		var visit := clampf(inverse_lerp(s.shadow_visit_start, s.shadow_visit_start + s.shadow_visit_duration, s.elapsed), 0.0, 1.0)
+		if visit <= 0.0 or visit >= 1.0: return
+		# Wildlife approaches then leaves. Its timing is independent of the real bite,
+		# so a fish shadow is atmosphere rather than a guaranteed strike warning.
+		var travel := sin(visit * PI)
+		var start := bobber_pos + Vector2(-138.0, 74.0)
+		var end := bobber_pos + Vector2(116.0, 46.0)
+		var shadow := start.lerp(end, visit) + Vector2(0, -travel * 18.0)
+		var body_w := lerpf(30.0, 52.0, travel)
 		var body_h := body_w * 0.32
 		# Tapered body and tail are drawn in canonical screen coordinates, preserving
 		# the parent viewport scale at non-720 captures without a transform reset.
 		var silhouette := PackedVector2Array([shadow + Vector2(-body_w * 0.5, 0), shadow + Vector2(-body_w * 0.18, -body_h), shadow + Vector2(body_w * 0.34, -body_h * 0.62), shadow + Vector2(body_w * 0.50, 0), shadow + Vector2(body_w * 0.34, body_h * 0.62), shadow + Vector2(-body_w * 0.18, body_h), shadow + Vector2(-body_w * 0.58, body_h * 0.52), shadow + Vector2(-body_w * 0.76, 0), shadow + Vector2(-body_w * 0.58, -body_h * 0.52)])
-		draw_colored_polygon(silhouette, Color(0.015, 0.10, 0.11, 0.22 + approach * 0.18))
+		draw_colored_polygon(silhouette, Color(0.015, 0.10, 0.11, travel * 0.48))
 	func _draw_water_ripple(center: Vector2, radius: float, alpha: float) -> void:
 		var points := PackedVector2Array()
 		for point in range(25):
@@ -689,16 +709,19 @@ class FishingView extends Control:
 			source_tip.x / ROD_FRAME_SIZE.x * ROD_DESTINATION.size.x,
 			source_tip.y / ROD_FRAME_SIZE.y * ROD_DESTINATION.size.y
 		)
-	func _photoreal_rod_tip(bend := 0.0) -> Vector2:
-		var point := PHOTOREAL_ROD_DESTINATION.position + Vector2(
-			PHOTOREAL_ROD_TIP_SOURCE.x / PHOTOREAL_ROD_SOURCE_SIZE.x * PHOTOREAL_ROD_DESTINATION.size.x,
-			PHOTOREAL_ROD_TIP_SOURCE.y / PHOTOREAL_ROD_SOURCE_SIZE.y * PHOTOREAL_ROD_DESTINATION.size.y
-		)
-		var tip_strength := pow(1.0 - PHOTOREAL_ROD_TIP_SOURCE.y / PHOTOREAL_ROD_SOURCE_SIZE.y, 2.2) * bend
-		return point + Vector2(-42.0 * tip_strength, 25.0 * tip_strength)
+	func _photoreal_rod_point(source_point: Vector2, bend := 0.0, pose := 0.0) -> Vector2:
+		var normalized := Vector2(source_point.x / PHOTOREAL_ROD_SOURCE_SIZE.x, source_point.y / PHOTOREAL_ROD_SOURCE_SIZE.y)
+		var point := PHOTOREAL_ROD_DESTINATION.position + normalized * PHOTOREAL_ROD_DESTINATION.size
+		# The grip at the bottom stays planted. Pulling back lifts/sets the entire
+		# upper shaft before its terminal guide visibly bends under load.
+		var upper := pow(1.0 - normalized.y, 1.45)
+		var bend_strength := pow(1.0 - normalized.y, 2.2) * bend
+		return point + Vector2(-68.0 * upper * pose - 42.0 * bend_strength, -54.0 * upper * pose + 25.0 * bend_strength)
+	func _photoreal_rod_tip(bend := 0.0, pose := 0.0) -> Vector2:
+		return _photoreal_rod_point(PHOTOREAL_ROD_TIP_SOURCE, bend, pose)
 	func _draw_ready_photoreal_rod() -> void:
 		_draw_photoreal_rod(0.0)
-	func _draw_photoreal_rod(bend: float) -> void:
+	func _draw_photoreal_rod(bend: float, pose := 0.0) -> void:
 		if controller.photoreal_rod_texture == null: return
 		# A single textured mesh preserves the hand/reel and gradually bends only the
 		# upper shaft. The same deformation supplies the runtime mono's terminal tip.
@@ -706,15 +729,9 @@ class FishingView extends Control:
 		for index in range(bands.size() - 1):
 			var v0: float = bands[index]
 			var v1: float = bands[index + 1]
-			var strength0 := pow(1.0 - v0, 2.2) * bend
-			var strength1 := pow(1.0 - v1, 2.2) * bend
-			var offset0 := Vector2(-42.0 * strength0, 25.0 * strength0)
-			var offset1 := Vector2(-42.0 * strength1, 25.0 * strength1)
-			var y0 := PHOTOREAL_ROD_DESTINATION.position.y + PHOTOREAL_ROD_DESTINATION.size.y * v0
-			var y1 := PHOTOREAL_ROD_DESTINATION.position.y + PHOTOREAL_ROD_DESTINATION.size.y * v1
-			var x0 := PHOTOREAL_ROD_DESTINATION.position.x
-			var x1 := PHOTOREAL_ROD_DESTINATION.end.x
-			var points := PackedVector2Array([Vector2(x0, y0) + offset0, Vector2(x1, y0) + offset0, Vector2(x1, y1) + offset1, Vector2(x0, y1) + offset1])
+			var source_y0 := PHOTOREAL_ROD_SOURCE_SIZE.y * v0
+			var source_y1 := PHOTOREAL_ROD_SOURCE_SIZE.y * v1
+			var points := PackedVector2Array([_photoreal_rod_point(Vector2(0, source_y0), bend, pose), _photoreal_rod_point(Vector2(PHOTOREAL_ROD_SOURCE_SIZE.x, source_y0), bend, pose), _photoreal_rod_point(Vector2(PHOTOREAL_ROD_SOURCE_SIZE.x, source_y1), bend, pose), _photoreal_rod_point(Vector2(0, source_y1), bend, pose)])
 			var uvs := PackedVector2Array([Vector2(0, v0), Vector2(1, v0), Vector2(1, v1), Vector2(0, v1)])
 			draw_polygon(points, PackedColorArray([Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE]), uvs, controller.photoreal_rod_texture)
 	func _draw_top_chrome(s: FishingSession) -> void:
@@ -742,7 +759,11 @@ class FishingView extends Control:
 			FishingSession.State.LINE_OUT: copy = "%s  •  %.0f m" % [s.fish.habitat_name(s.cast_distance_m), s.cast_distance_m]
 			FishingSession.State.BITE: copy = "FISH ON — WAIT FOR THE PULSES"
 			FishingSession.State.HOOK_WINDOW: copy = "BITE — PULL LEFT" if controller.motion.left_handed else "BITE — PULL RIGHT"
-			FishingSession.State.REELING: copy = ("TILT RIGHT TO EASE" if controller.motion.left_handed else "TILT LEFT TO EASE") if s.tension >= 0.65 else ("TILT LEFT TO PULL" if controller.motion.left_handed else "TILT RIGHT TO PULL")
+			FishingSession.State.REELING:
+				var fight_tier := FightChallenge.tier(s.tension, s.challenge_profile)
+				if fight_tier in ["ease", "snap"]: copy = "TILT RIGHT TO EASE" if controller.motion.left_handed else "TILT LEFT TO EASE"
+				elif fight_tier in ["slack", "pull"]: copy = "TILT LEFT TO PULL" if controller.motion.left_handed else "TILT RIGHT TO PULL"
+				else: copy = "HOLD THE MIDDLE"
 			FishingSession.State.CAUGHT: copy = "%s LANDED" % s.fish.display_name.to_upper()
 			FishingSession.State.ESCAPED: copy = s.last_reason.to_upper()
 		var compact := s.state in [FishingSession.State.CAST_ARMED, FishingSession.State.LINE_OUT, FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
@@ -763,24 +784,35 @@ class FishingView extends Control:
 		if not should_draw_tension_meter(s): return
 		_refresh_tension_meter_geometry()
 		var tension := tension_meter_value(s.tension)
-		var tier := tension_status(tension)
-		var fill_color := Color("d9a348") if tier == "STEADY" else (Color("d77932") if tier == "EASE" else Color("c94c3d"))
+		var profile: Dictionary = s.challenge_profile
+		var tier := tension_status(tension, profile)
 		var label := "TENSION  %d%%  %s" % [roundi(tension * 100.0), tier]
 		var label_pos := tension_meter_rect.position + Vector2(0, -11)
 		draw_string_outline(font, label_pos, label, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, 2, Color("2b180e")); _text(label, label_pos, 18, Color("fff1d1"))
 		draw_rect(tension_meter_rect.grow(2), Color("fff0c9"), true); draw_rect(tension_meter_rect.grow(2), Color("2a180f"), false, 2.0)
-		draw_rect(tension_meter_rect, Color("24160d"), true); draw_rect(Rect2(tension_meter_rect.position, Vector2(tension_meter_rect.size.x * tension, tension_meter_rect.size.y)), fill_color)
-		var high_x := tension_meter_rect.position.x + tension_meter_rect.size.x * HapticService.HIGH_TENSION
-		var red_x := tension_meter_rect.position.x + tension_meter_rect.size.x * HapticService.RED_TENSION
-		draw_line(Vector2(high_x, tension_meter_rect.position.y), Vector2(high_x, tension_meter_rect.end.y), Color("fff0c9"), 2.0); draw_rect(Rect2(red_x, tension_meter_rect.position.y, tension_meter_rect.end.x - red_x, tension_meter_rect.size.y), Color("8f302b", 0.60), true); draw_rect(Rect2(red_x, tension_meter_rect.position.y, tension_meter_rect.end.x - red_x, tension_meter_rect.size.y), Color("8a221d"), false, 2.0)
+		draw_rect(tension_meter_rect, Color("24160d"), true)
+		var low_critical := float(profile.low_critical); var low_warning := float(profile.low_warning); var high_warning := float(profile.high_warning); var high_critical := float(profile.high_critical)
+		# Both ends are painted before the fill so the safe middle is legible even
+		# when the marker is near a red edge.
+		var segments := [[0.0, low_critical, Color("8f302b")], [low_critical, low_warning, Color("cf8639")], [low_warning, high_warning, Color("307d69")], [high_warning, high_critical, Color("cf8639")], [high_critical, 1.0, Color("8f302b")]]
+		for segment in segments:
+			var x := tension_meter_rect.position.x + tension_meter_rect.size.x * float(segment[0])
+			draw_rect(Rect2(x, tension_meter_rect.position.y, tension_meter_rect.size.x * (float(segment[1]) - float(segment[0])), tension_meter_rect.size.y), segment[2], true)
+		for boundary in [low_critical, low_warning, high_warning, high_critical]:
+			var boundary_x: float = tension_meter_rect.position.x + tension_meter_rect.size.x * float(boundary)
+			draw_line(Vector2(boundary_x, tension_meter_rect.position.y), Vector2(boundary_x, tension_meter_rect.end.y), Color("fff0c9", 0.70), 1.0)
 		var marker_x := tension_meter_rect.position.x + tension_meter_rect.size.x * tension
 		draw_circle(Vector2(marker_x, tension_meter_rect.get_center().y), 7.0, Color("fff0c9")); draw_circle(Vector2(marker_x, tension_meter_rect.get_center().y), 7.0, Color("2a180f"), false, 2.0)
 		_text("LANDING", Vector2(190, 1111), 14, Color("fff1d1")); draw_line(Vector2(275, 1106), Vector2(527, 1106), Color("2a180f"), 6.0); draw_line(Vector2(275, 1106), Vector2(275 + 252 * s.fight_progress, 1106), Color("d7ad6d"), 4.0)
 	func _refresh_tension_meter_geometry() -> void:
 		tension_meter_rect = Rect2(30, _virtual_safe_top() + 112, 540, 18)
-	func tension_status(tension: float) -> String:
-		if tension_meter_value(tension) >= HapticService.RED_TENSION: return "DANGER"
-		if tension_meter_value(tension) >= HapticService.HIGH_TENSION: return "EASE"
+	func tension_status(tension: float, profile: Dictionary = {}) -> String:
+		var active_profile := profile if not profile.is_empty() else FightChallenge.profile(FightChallenge.DEFAULT_ID)
+		match FightChallenge.tier(tension_meter_value(tension), active_profile):
+			"slack": return "SLACK"
+			"pull": return "PULL"
+			"ease": return "EASE"
+			"snap": return "TOO TIGHT"
 		return "STEADY"
 	func tension_meter_value(tension: float) -> float: return clampf(tension, 0.0, 1.0)
 	func should_draw_tension_meter(s: FishingSession) -> bool: return overlay.is_empty() and s.state == FishingSession.State.REELING
@@ -837,6 +869,7 @@ class FishingView extends Control:
 		_draw_setting_row(settings_reduced_motion_rect, "REDUCED MOTION", "ON" if settings.reduced_motion else "OFF")
 		_draw_setting_row(settings_handedness_rect, "HANDEDNESS", "LEFT" if settings.left_handed else "RIGHT")
 		_centered_text("Changing handedness resets the active session", Vector2(360, settings_handedness_rect.end.y + 30), 15, Color("123942")); _centered_text("and starts motion setup again.", Vector2(360, settings_handedness_rect.end.y + 51), 15, Color("123942"))
+		_draw_setting_row(settings_challenge_rect, "FIGHT CHALLENGE", "%s • NEXT CAST" % FightChallenge.display_name(settings.get("fight_challenge", FightChallenge.DEFAULT_ID)))
 		_draw_wood_control(settings_test_haptics_rect); _centered_text_in_rect("TEST VIBRATION", settings_test_haptics_rect, 18, Color("fff4d1"))
 		_draw_wood_control(settings_motion_setup_rect); _centered_text_in_rect("MOTION SETUP", settings_motion_setup_rect, 18, Color("fff4d1"))
 		_centered_text("BACK TO FISHING", settings_footer_close_rect.get_center() + Vector2(0, 6), 17, Color("fff4d1"))
@@ -1282,6 +1315,7 @@ class FishingView extends Control:
 			elif settings_haptics_rect.has_point(pos): controller._toggle_setting("haptics")
 			elif settings_reduced_motion_rect.has_point(pos): controller._toggle_setting("reduced_motion")
 			elif settings_handedness_rect.has_point(pos): controller._toggle_setting("left_handed")
+			elif settings_challenge_rect.has_point(pos): controller._toggle_setting("fight_challenge")
 			elif settings_test_haptics_rect.has_point(pos): controller._test_haptics()
 			elif settings_motion_setup_rect.has_point(pos): controller.preview_haptics.stop(); overlay = "motion_setup"
 			return
