@@ -2,6 +2,7 @@ class_name FishingSession
 extends RefCounted
 
 enum State { READY, CAST_ARMED, LINE_OUT, BITE, HOOK_WINDOW, REELING, CAUGHT, ESCAPED }
+enum FightStage { OPENING_RUN, WORKING, LAST_SURGE, LANDING }
 const HOOK_WINDOW_SECONDS := 1.8
 const BITE_CUE_HOLD_SECONDS := 0.42
 const RED_ESCAPE_SECONDS := 0.90
@@ -31,6 +32,10 @@ var catch_length_cm := 0.0
 var fight_running := false
 var fight_effort := 0.0
 var fight_phase_offset := 0.0
+var fight_stage := FightStage.OPENING_RUN
+var land_opportunity := false
+var last_surge_started := false
+var last_surge_remaining := 0.0
 var terminal_elapsed := 0.0
 var terminal_still_elapsed := 0.0
 var last_reason := ""
@@ -60,7 +65,7 @@ func _rolled_length(roll: float) -> float:
 	# Common ordinary fish, rare upper-tail fish; distance is only a slight nudge.
 	var habitat_bonus := 0.035 if cast_distance_m >= 30.0 else (-0.018 if cast_distance_m < 18.0 else 0.0)
 	var distribution := pow(clampf(roll, 0.0, 0.999999), 1.85)
-	return lerpf(fish.min_length_cm, fish.max_length_cm, clampf(0.07 + distribution * 0.88 + habitat_bonus, 0.03, 0.98))
+	return snappedf(lerpf(fish.min_length_cm, fish.max_length_cm, clampf(0.07 + distribution * 0.88 + habitat_bonus, 0.03, 0.98)), 0.1)
 func tick(delta: float) -> void:
 	# Preserve elapsed time for deterministic replays; callers supply ordinary frame
 	# deltas and the fight math itself is rate-based.
@@ -82,17 +87,42 @@ func tick(delta: float) -> void:
 
 func _tick_fight(delta: float) -> void:
 	fight_elapsed += delta
+	# A readable, deterministic arc: an opening run, working runs/lulls, and only
+	# some behavior rolls get one modest final surge before landing. It is a cue to
+	# ease, never a hidden timed loss gate.
+	if fight_progress >= 0.92:
+		fight_stage = FightStage.LANDING; land_opportunity = true; last_surge_remaining = 0.0
+	elif last_surge_remaining > 0.0:
+		last_surge_remaining = maxf(0.0, last_surge_remaining - delta)
+		fight_stage = FightStage.LAST_SURGE if last_surge_remaining > 0.0 else FightStage.WORKING; land_opportunity = false
+	elif not last_surge_started and behavior_roll >= 0.72 and fight_progress >= 0.70 and fight_elapsed >= 7.0:
+		last_surge_started = true; last_surge_remaining = 0.35
+		fight_stage = FightStage.LAST_SURGE; land_opportunity = false
+	elif fight_elapsed < 1.15:
+		fight_stage = FightStage.OPENING_RUN; land_opportunity = false
+	else:
+		fight_stage = FightStage.WORKING; land_opportunity = false
 	var cycle := maxf(0.20, fish.run_seconds + fish.lull_seconds)
 	var phase := fmod(fight_elapsed + fight_phase_offset, cycle)
 	fight_running = phase < fish.run_seconds
 	var headshake := fight_running and phase < minf(0.18, fish.run_seconds * 0.32)
 	fight_effort = 1.0 if fight_running else 0.22
 	if headshake: fight_effort = 1.18
+	if fight_stage == FightStage.OPENING_RUN and tension < 0.65:
+		fight_running = true; fight_effort = maxf(fight_effort, 0.94)
+	elif fight_stage == FightStage.LAST_SURGE:
+		# One short forced run makes the optional surge physically legible, then the
+		# explicit landing stage quiets rather than trapping the player at the end.
+		fight_running = true
+	elif fight_stage == FightStage.LANDING:
+		fight_running = false; fight_effort = 0.18
 	var pull := clampf(rod_load, 0.0, 1.0)
 	var sustained_pull := maxf(0.0, pull - 0.34) / 0.66
 	# A held-back rod accumulates strain; a genuine forward/ease pose clears it fast.
 	strain = clampf(strain + sustained_pull * fish.strain_rate * (0.72 + fight_effort * 0.55) * delta - maxf(0.0, 0.48 - pull) / 0.48 * fish.recovery_rate * delta, 0.0, 1.0)
 	var fish_pressure := fish.run_pressure * (0.22 + fight_effort * 0.78)
+	if fight_stage == FightStage.LAST_SURGE and fight_running: fish_pressure *= 1.06
+	if fight_stage == FightStage.LANDING: fish_pressure *= 0.52
 	var rod_pressure := sustained_pull * (0.052 + fish.fight_strength * 0.035) + strain * 0.105
 	# Even the pike's strongest run must visibly ease within a second or two when
 	# the player lowers the rod; this is stronger than any single run pressure.
@@ -106,14 +136,20 @@ func _tick_fight(delta: float) -> void:
 	else:
 		red_elapsed = maxf(0.0, red_elapsed - delta * 2.8)
 	var pull_window := 0.32 if fight_running else 1.0
-	var efficiency := fish.pull_efficiency * pull_window * (1.0 - strain * 0.72) * (1.0 - maxf(0.0, tension - 0.76) * 0.9)
+	var size_factor := 1.0
+	if catch_length_cm > 0.0:
+		# Ordinary fish keep the proven 10–20s rhythm; only the bounded upper tail
+		# carries a small additional pull requirement.
+		size_factor += maxf(0.0, inverse_lerp(fish.min_length_cm, fish.max_length_cm, catch_length_cm) - 0.85) * 0.25
+	var efficiency := fish.pull_efficiency / size_factor * pull_window * (1.0 - strain * 0.72) * (1.0 - maxf(0.0, tension - 0.76) * 0.9)
+	if fight_stage == FightStage.LANDING: efficiency *= 1.24
 	fight_progress = clampf(fight_progress + sustained_pull * efficiency * delta, 0.0, CATCH_PROGRESS)
 	# The red-line check happens before landing: a simultaneous snap never becomes a catch.
 	if fight_progress >= CATCH_PROGRESS and fight_elapsed >= MIN_LANDING_SECONDS and tension < 0.90:
 		state = State.CAUGHT; last_reason = "%s landed!" % fish.display_name
 func set_hook() -> bool:
 	if state != State.HOOK_WINDOW: return false
-	state = State.REELING; elapsed = 0.0; fight_elapsed = 0.0; fight_progress = 0.0; rod_load = 1.0; tension = maxf(tension, 0.3); strain = 0.0; return true
+	state = State.REELING; elapsed = 0.0; fight_elapsed = 0.0; fight_progress = 0.0; fight_stage = FightStage.OPENING_RUN; land_opportunity = false; last_surge_started = false; last_surge_remaining = 0.0; rod_load = 1.0; tension = maxf(tension, 0.3); strain = 0.0; return true
 func set_rod_load(value: float) -> void: if state == State.REELING: rod_load = clampf(value, 0.0, 1.0)
 func credit_terminal_still(delta: float, quiet: bool) -> void:
 	if state not in [State.CAUGHT, State.ESCAPED]: return
@@ -122,4 +158,4 @@ func credit_terminal_still(delta: float, quiet: bool) -> void:
 func can_recast_from_motion() -> bool:
 	return state in [State.CAUGHT, State.ESCAPED] and terminal_elapsed >= TERMINAL_RECAST_DWELL_SECONDS and terminal_still_elapsed >= TERMINAL_STILL_SECONDS
 func escape(reason: String) -> void: state = State.ESCAPED; last_reason = reason
-func reset() -> void: state = State.READY; elapsed = 0.0; bite_elapsed = 0.0; tension = 0.12; strain = 0.0; red_elapsed = 0.0; fight_progress = 0.0; fight_elapsed = 0.0; rod_load = 0.0; cast_quality = 0.0; cast_distance_m = 0.0; catch_length_cm = 0.0; fight_running = false; fight_effort = 0.0; terminal_elapsed = 0.0; terminal_still_elapsed = 0.0; last_reason = ""
+func reset() -> void: state = State.READY; elapsed = 0.0; bite_elapsed = 0.0; tension = 0.12; strain = 0.0; red_elapsed = 0.0; fight_progress = 0.0; fight_elapsed = 0.0; fight_stage = FightStage.OPENING_RUN; land_opportunity = false; last_surge_started = false; last_surge_remaining = 0.0; rod_load = 0.0; cast_quality = 0.0; cast_distance_m = 0.0; catch_length_cm = 0.0; fight_running = false; fight_effort = 0.0; terminal_elapsed = 0.0; terminal_still_elapsed = 0.0; last_reason = ""

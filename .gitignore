@@ -20,3 +20,10 @@ reports/runtime/*.txt
 !art/ui_v1/runtime/*.png.import
 addons/admob/downloads/
 addons/admob/ios/
+platform/play_games_native/.gradle/
+platform/play_games_native/build/
+platform/play_games_native/local.properties
+addons/play_games/bin/
+addons/play_games/export_resources/
+addons/play_games/local_play_games_config.json
+addons/play_games/runtime_play_games_config.json

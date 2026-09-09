@@ -44,3 +44,11 @@ If accepted, only user-facing display resources should become `Hooked`. Keep
 the Android application ID, existing save/profile migration paths and internal
 source identifiers stable until explicit migration validation covers both
 Android and desktop user-data locations.
+
+## Review delivery receipt
+
+Primary also made a verified review fallback copy at
+`H:\My Drive\AI Projects\Haptic Fish\Hooked-fish-icon-preview-v01.png`.
+It matched the E: master at 2,678,805 bytes and the SHA-256 above. DriveFS
+cloud-sync completion is not claimed. The icon remains preview-only pending
+user artwork acceptance.

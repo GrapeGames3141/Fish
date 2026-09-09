@@ -1,0 +1,20 @@
+{
+  "label": "v32-tilt-active-safe180",
+  "rootPid": 99048,
+  "observedPids": [
+    99048
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\gallery\\tilt-active-safe180.png",
+    "--capture-scenario=cedar_line_out_safe_top_180"
+  ],
+  "started": "2026-09-08T20:33:30.5402724-05:00"
+}

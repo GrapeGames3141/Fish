@@ -1,0 +1,26 @@
+plugins { id 'com.android.library' version '8.6.1' }
+
+android { namespace 'com.tak.castandcrank.playgames'; compileSdk 36
+    defaultConfig { minSdk 24 }
+    sourceSets { main.res.srcDirs += layout.buildDirectory.dir("generated/playGamesRes").get().asFile }
+}
+
+tasks.register("preparePlayGamesAppId") {
+    def output = layout.buildDirectory.file("generated/playGamesRes/values/play_games_app_id.xml")
+    def resolvedGameId = providers.gradleProperty("playGamesAppId").orElse("")
+    inputs.property("playGamesAppId", resolvedGameId)
+    outputs.file(output)
+    doLast {
+        def value = resolvedGameId.get().replace("&", "&amp;").replace("<", "&lt;")
+        def file = output.get().asFile
+        file.parentFile.mkdirs()
+        file.text = "<resources><string name=\"play_games_app_id\">${value}</string></resources>"
+    }
+}
+tasks.named("preBuild").configure { dependsOn(tasks.named("preparePlayGamesAppId")) }
+
+dependencies {
+    // E: supplies the local Godot 4.7 template AAR; do not package another engine.
+    compileOnly files(System.getenv('GODOT_TEMPLATE_AAR'))
+    implementation 'com.google.android.gms:play-services-games-v2:22.0.0'
+}

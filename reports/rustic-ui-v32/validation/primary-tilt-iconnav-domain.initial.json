@@ -1,0 +1,16 @@
+{
+  "label": "primary-tilt-iconnav-domain",
+  "rootPid": 94092,
+  "observedPids": [
+    94092
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/test_runner.gd"
+  ],
+  "started": "2026-09-08T20:39:55.8428384-05:00"
+}

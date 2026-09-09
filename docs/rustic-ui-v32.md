@@ -35,6 +35,25 @@ the separate fish-icon concept remains user-review-only.
 - Gameplay stays motion-only. This art pass adds no touch casting, hook or
   fight affordance and does not alter AdMob's native-bottom zero reserve.
 
+## Tilt / icon-only chrome checkpoint
+
+The user directed the player-facing term **Tilt** in place of Cock and chose
+icon-only top navigation on September 8, 2026. The underlying motion fields,
+telemetry, thresholds, save keys, and recognition sequence deliberately retain
+their existing `cock` identifiers: this is a copy-only change, not a motion
+retune. The weathered-wood ready beam now exposes only its closed ledger, map,
+and gear engravings; native labels no longer overlap those icon plaques.
+
+The same safe-aware geometry owns draw and press routing. At safe tops 0, 91,
+and 180, deterministic interaction tests press rendered ledger/map/gear
+interior points, verify Records/Waters/Settings routing, and keep the active
+gear reachable while the other two targets are locked. The full suite passed
+in [v32-tilt-iconnav-domain-final2.json](../reports/rustic-ui-v32/validation/v32-tilt-iconnav-domain-final2.json).
+Fresh desktop-only 720×1280 review captures are indexed in
+[the Tilt gallery](../reports/rustic-ui-v32/gallery/README.md). This validates
+rendered geometry and copy only; device interaction, motion feel, and human
+aesthetic acceptance remain pending.
+
 ## Master ledger
 
 Each output was made with one separate built-in ImageGen request, copied to
@@ -51,6 +70,26 @@ All masters are 941 x 1672 px.
 | [rustic-records-master-v01.png](../art/ui_v1/mockups/rustic-records-master-v01.png) | Blank six-slot records page | 2,726,845 | `36244E62A5DE4EA36B75C042D029609870E04E84429D196019813FE6EE90EB8D` |
 | [rustic-records-master-v02.png](../art/ui_v1/mockups/rustic-records-master-v02.png) | Corrected records page: baked title and blank footer plaques | 2,560,835 | `FCD98807341832894A1D7110AF43252AA51259401B1108F6BA1D911A497F1C42` |
 | [rustic-field-notes-loading-master-v01.png](../art/ui_v1/mockups/rustic-field-notes-loading-master-v01.png) | Field notes/loading family | 2,594,134 | `25A6D28069EBF47B9EB3F532788F9D7FC179DC442A86B00800B18EB1298C875B` |
+
+## Selected runtime-art ledger
+
+These selected runtime assets were generated with the built-in ImageGen tool,
+copied to their durable `E:` paths, and retained as source assets for the
+current checkpoint. The exact tool-call prompts for these three derived assets
+are not recoverable verbatim from the retained local generation history; the
+roles below are descriptive provenance, not reconstructed prompts. Built-in
+ImageGen does not expose a model ID.
+
+| Asset | Dimensions / bytes / SHA-256 | Alpha and runtime role | Current status |
+| --- | --- | --- | --- |
+| [top-nav-rustic-v01.png](../art/ui_v1/runtime_source/top-nav-rustic-v01.png) | 2172×724; 1,984,139 bytes; `427923720311F8573D1AABD0D86CC731D7B1B8DAC46E41862A4B450CE08744FF` | Opaque weathered wood/iron source. Runtime maps beam `Rect2(0,172,2172,323)` once for ready chrome; compact hint uses its blank wood region and active gear maps `Rect2(1793,223,249,257)`. No alpha keying. | Selected for the user-approved rustic direction; current desktop top-chrome integration reviewed. Human/device acceptance pending. |
+| [rod-photoreal-alpha-v01.png](../art/ui_v1/runtime_source/rod-photoreal-alpha-v01.png) | 941×1672; 544,829 bytes; `55976AD81DE829D81E6FDF89CE7959FDB30CAAEF345A06F90B885382E7B2BEB4` | Genuine alpha first-person graphite/cork/reel tackle master; its baked guide line ends at terminal guide `(785,42)` and runtime mono begins there. | Selected after desktop composite edge review; runtime bending/device acceptance pending. |
+| [bobber-photoreal-alpha-v01.png](../art/ui_v1/runtime_source/bobber-photoreal-alpha-v01.png) | 1374×1145; 305,198 bytes; `FD813E6C2EC6B381C4F45EAFADBDD89A8119C68A38CCBE34BE2B76A39CBE22C5` | Genuine alpha compact red/white float. Runtime uses padded visible-body source crop `Rect2(496,369,383,488)` so its 18–30px presentation scale measures the float, not transparent canvas. | Selected for first-pass runtime presentation; surface occlusion/fight and human/device acceptance pending. |
+
+The source-art prompts emphasized photoreal weathered cedar/oak and iron for
+top navigation, a graphite/cork spinning rod with its line only through the
+terminal guide, and a compact realistic red/white float. They did not authorize
+any change to motion controls or gameplay thresholds.
 
 ## Exact generation prompts
 
@@ -140,9 +179,10 @@ Constraints: preserve portrait 9:16 size and the single coherent opaque page. Do
 ## Review findings to carry into derivation
 
 - Gameplay's wide hint board must be blank and usable for native location and
-  glance text; its generated fishing pictogram is concept-only. Records must
-  use a closed-ledger/book icon—not a trophy goblet—beside the later native nav
-  label; map and gear may remain engraved symbols.
+  glance text; its generated fishing pictogram is concept-only. The user
+  selected **icon-only** top navigation: Records uses a closed-ledger/book
+  engraving—not a trophy goblet—and map/gear remain engraved symbols with no
+  runtime captions over their plaques.
 - Settings' generated row dashes/underlines are placeholders, not a surface for
   native labels. Production rows need genuinely blank wood/paper text regions.
 - Waters' arrow is composition-only. Runtime must expose the explicit native
@@ -164,3 +204,12 @@ Primary visual review has cleared the selected masters for bounded runtime
 derivation. Runtime/device/human-aesthetic acceptance remains pending; final
 captures must still prove safe-area geometry, dynamic ownership and no duplicate
 layers before a package is considered.
+
+## Current integration boundary
+
+Only the photoreal Cedar gameplay presentation, rustic top chrome, and the
+Tilt/icon-only navigation checkpoint have current desktop evidence. The shared
+blank clipboard/modal kit, Settings/Motion/World screen skin, Waters, Records
+and Field Notes/detail remapping, scenic Catch, and Hooked loading screen are
+still pending integration and capture review. No Android package, phone install,
+or device interaction acceptance has been completed for rustic UI v32.

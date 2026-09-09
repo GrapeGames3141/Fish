@@ -1,0 +1,31 @@
+{
+  "label": "v32-tilt-ready-safe0",
+  "started": "2026-09-08T20:33:28.4326016-05:00",
+  "finished": "2026-09-08T20:33:33.9039063-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\gallery\\tilt-ready-safe0.png",
+    "--capture-scenario=cedar_ready"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-rustic-ui-v32",
+  "rootPid": 98136,
+  "observedPids": [
+    98136
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\v32-tilt-ready-safe0.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\rustic-ui-v32\\validation\\v32-tilt-ready-safe0.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

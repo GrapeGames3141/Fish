@@ -1,0 +1,9 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <application>
+        <!-- The build helper generates this string only into a configured AAR. -->
+        <meta-data android:name="com.google.android.gms.games.APP_ID" android:value="@string/play_games_app_id" />
+        <meta-data android:name="com.google.android.gms.games.SUPPRESS_GAME_PROFILE_CREATION" android:value="true" />
+        <meta-data android:name="org.godotengine.plugin.v2.PlayGamesRecords" android:value="com.tak.castandcrank.playgames.PlayGamesRecordsPlugin" />
+    </application>
+</manifest>

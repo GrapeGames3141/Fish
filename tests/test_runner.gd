@@ -8,6 +8,20 @@ const FishDefinition = preload("res://src/domain/fish_definition.gd")
 const HapticService = preload("res://src/services/haptic_service.gd")
 const CastCaptureService = preload("res://src/services/cast_capture_service.gd")
 const GameMain = preload("res://src/ui/main.gd")
+const LeaderboardService = preload("res://src/services/leaderboard_service.gd")
+const PlayGamesConfig = preload("res://addons/play_games/play_games_config.gd")
+
+class MockPlayGamesBridge extends RefCounted:
+	signal play_games_event(raw_json: String)
+	var calls: Array[Dictionary] = []
+	func initialize(request_id: int, generation: int) -> void: calls.append({"method": "initialize", "request_id": request_id, "generation": generation})
+	func isAuthenticated(request_id: int, generation: int) -> void: calls.append({"method": "isAuthenticated", "request_id": request_id, "generation": generation})
+	func signIn(request_id: int, generation: int) -> void: calls.append({"method": "signIn", "request_id": request_id, "generation": generation})
+	func requestLeaderboard(fish_id: String, leaderboard_id: String, weekly: bool, request_id: int, generation: int, account_id: String) -> void:
+		calls.append({"method": "requestLeaderboard", "fish_id": fish_id, "leaderboard_id": leaderboard_id, "weekly": weekly, "request_id": request_id, "generation": generation, "account_id": account_id})
+	func submitScore(fish_id: String, leaderboard_id: String, score_mm: int, request_id: int, generation: int, account_id: String) -> void:
+		calls.append({"method": "submitScore", "fish_id": fish_id, "leaderboard_id": leaderboard_id, "score_mm": score_mm, "request_id": request_id, "generation": generation, "account_id": account_id})
+	func emit_payload(payload: Dictionary) -> void: play_games_event.emit(JSON.stringify(payload))
 
 var failures: Array[String] = []
 
@@ -22,6 +36,7 @@ func _init() -> void:
 	_test_injectable_motion()
 	_test_physical_cast_profile_motion()
 	_test_haptic_signatures()
+	_test_leaderboard_service()
 	_test_admob_contract()
 	_test_project_source_settings()
 	if failures.is_empty():
@@ -44,6 +59,79 @@ func _max_emitted_amplitude(pulses: Array[Dictionary]) -> float:
 func _motion_sample(linear: Vector3, gyro := Vector3(0, 0, 0.72)) -> Dictionary:
 	var gravity := Vector3(0, -9.8, 0)
 	return {"gravity": gravity, "accelerometer": gravity + linear, "gyro": gyro}
+
+func _leaderboard_config(internal_testboard := false) -> Dictionary:
+	return {"game_id": "1234567890", "internal_testboard": internal_testboard, "leaderboards": {
+		"bluegill": "CgkI-board-blue", "largemouth_bass": "CgkI-board-largemouth", "channel_catfish": "CgkI-board-catfish",
+		"rainbow_trout": "CgkI-board-trout", "smallmouth_bass": "CgkI-board-smallmouth", "northern_pike": "CgkI-board-pike"
+	}}
+
+func _board_event(request_id: int, generation: int, fish_id: String, period: String, empty := false, account_id := "player-a") -> Dictionary:
+	return {"kind": "board", "request_id": request_id, "account_generation": generation, "fish_id": fish_id, "period": period,
+		"top_score_mm": 0 if empty else 426, "top_rank": 1, "top_name": "River Pro", "player_score_mm": 0 if empty else 318,
+		"player_rank": 7, "player_name": "Tak", "empty": empty, "account_id": account_id}
+
+func _test_leaderboard_service() -> void:
+	var owner_json := JSON.stringify(_leaderboard_config())
+	var resolved_owner: Dictionary = PlayGamesConfig.configuration_from_json(owner_json)
+	expect(PlayGamesConfig.is_valid(resolved_owner) and str(resolved_owner.game_id) == "1234567890", "owner JSON resolves one validated six-board configuration for both export and runtime")
+	expect(PlayGamesConfig.matches_build_receipt(resolved_owner, {"configured": true, "game_id": "1234567890", "sha256": "ABCD"}, "abcd") and not PlayGamesConfig.matches_build_receipt(resolved_owner, {"configured": true, "game_id": "123", "sha256": "ABCD"}, "abcd"), "configured export receipt must match the resolved owner game ID and AAR hash")
+	if FileAccess.file_exists(PlayGamesConfig.OWNER_CONFIG_PATH):
+		expect(PlayGamesConfig.matches_bundled_aar(PlayGamesConfig.as_dictionary(), "res://addons/play_games/bin/cast-and-crank-play-games-release.aar", "res://addons/play_games/bin/build_receipt.json"), "owner configuration, helper-built AAR hash receipt, and runtime PCK injection gate agree before a configured export")
+	var invalid := LeaderboardService.new(MockPlayGamesBridge.new(), {"game_id": "0", "leaderboards": {}})
+	invalid.open_records()
+	expect(invalid.status == LeaderboardService.STATUS_UNAVAILABLE, "leaderboards stay unavailable until one numeric game ID and six distinct board IDs are owner-configured")
+	var duplicate := _leaderboard_config(); duplicate.leaderboards.northern_pike = duplicate.leaderboards.bluegill
+	expect(not LeaderboardService._valid_configuration(duplicate), "leaderboard configuration rejects duplicate board IDs instead of accepting a six-entry dictionary")
+	var mock := MockPlayGamesBridge.new()
+	var service := LeaderboardService.new(mock, _leaderboard_config())
+	service.open_records()
+	expect(mock.calls.size() == 1 and str(mock.calls[0].method) == "initialize" and service.status == LeaderboardService.STATUS_CONNECTING, "opening World Records performs a quiet auth check without prompting during fishing")
+	var auth_request := int(mock.calls[0].request_id)
+	mock.emit_payload({"kind": "auth", "request_id": auth_request, "account_generation": 0, "state": "unauthenticated", "account_id": ""})
+	expect(service.status == LeaderboardService.STATUS_NO_AUTH and service.account_id.is_empty(), "cancelled or unavailable sign-in reports no-auth without inventing a player")
+	service.begin_sign_in()
+	expect(str(mock.calls.back().method) == "signIn", "only the explicit World Connect control invokes Play Games sign-in")
+	var sign_in_request := int(mock.calls.back().request_id)
+	mock.emit_payload({"kind": "auth", "request_id": sign_in_request, "account_generation": int(mock.calls.back().generation), "state": "authenticated", "account_id": "player-a"})
+	var board_calls: Array[Dictionary] = []
+	for call in mock.calls:
+		if str(call.method) == "requestLeaderboard": board_calls.append(call)
+	expect(board_calls.size() == LeaderboardService.FISH_IDS.size() and service.account_generation == 2, "authenticated account requests top and player scores for all six fish with a fresh account generation")
+	var first_request := board_calls[0]
+	mock.emit_payload(_board_event(int(first_request.request_id), 1, str(first_request.fish_id), "ALL TIME"))
+	expect(service.board_for(str(first_request.fish_id)).is_empty(), "stale account-generation board callbacks cannot overwrite the current player cache")
+	mock.emit_payload(_board_event(int(first_request.request_id), 2, str(first_request.fish_id), "WEEKLY"))
+	expect(service.board_for(str(first_request.fish_id)).is_empty(), "wrong-period board callbacks cannot overwrite the selected period")
+	for call in board_calls:
+		mock.emit_payload(_board_event(int(call.request_id), 2, str(call.fish_id), "ALL TIME"))
+	expect(service.status == LeaderboardService.STATUS_READY and int(service.board_for("bluegill").player_rank) == 7 and str(service.board_for("bluegill").top_name) == "River Pro", "online player rank and global angler/length are cached separately from local records")
+	service.set_period(LeaderboardService.PERIOD_WEEKLY)
+	var weekly_calls: Array[Dictionary] = []
+	for call in mock.calls:
+		if str(call.method) == "requestLeaderboard" and bool(call.weekly): weekly_calls.append(call)
+	expect(weekly_calls.size() == LeaderboardService.FISH_IDS.size(), "weekly selector requests all six boards, not only Bluegill")
+	for call in weekly_calls: mock.emit_payload(_board_event(int(call.request_id), 2, str(call.fish_id), "WEEKLY", true))
+	expect(service.status == LeaderboardService.STATUS_EMPTY and service.board_for("northern_pike").get("empty", false), "empty weekly boards render as an honest online empty state")
+	service.open_records()
+	var account_check: Dictionary = mock.calls.back()
+	mock.emit_payload({"kind": "auth", "request_id": int(account_check.request_id), "account_generation": 2, "state": "authenticated", "account_id": "player-b"})
+	expect(service.account_id == "player-b" and service.account_generation == 3 and service.board_for("bluegill").is_empty(), "account changes clear old account caches before requesting fresh boards")
+	var fresh_call: Dictionary = mock.calls.back()
+	mock.emit_payload({"kind": "error", "request_id": int(fresh_call.request_id), "account_generation": 3, "operation": "leaderboard", "reason": "network"})
+	expect(service.status == LeaderboardService.STATUS_ERROR and service.last_error == "network", "matching native errors surface an honest retry state")
+	var public_context := {"landed": true, "motion_cast": true, "motion_hook": true, "motion_fight": true, "fight_seconds": 12.0, "android": true, "debug": false, "capture": false, "fixture": false, "legacy": false, "simulated": false, "catch_token": 77}
+	service.account_id = "player-b"
+	expect(service.submit_landed("bluegill", 25.04, public_context), "new legitimate Android motion-loop catch submits in integer millimetres")
+	var submit: Dictionary = mock.calls.back()
+	expect(str(submit.method) == "submitScore" and int(submit.score_mm) == 250 and not service.submit_landed("bluegill", 25.04, public_context), "one landed catch submits once with 0.1cm-to-mm precision")
+	var blocked_context := public_context.duplicate(true); blocked_context.fixture = true
+	expect(not service.can_submit("bluegill", 25.0, blocked_context), "capture fixtures, desktop/debug simulations, legacy aggregates, and invalid catches never backfill public boards")
+	blocked_context = public_context.duplicate(true); blocked_context.debug = true
+	expect(not service.can_submit("bluegill", 25.0, blocked_context), "ordinary debug APK catches stay off public boards")
+	var test_service := LeaderboardService.new(MockPlayGamesBridge.new(), _leaderboard_config(true)); test_service.account_id = "internal-player"
+	expect(test_service.can_submit("bluegill", 25.0, blocked_context), "an explicit owner internal-testboard configuration is the only debug submission exception")
+	expect(LeaderboardService.score_millimetres(25.04) == 250 and LeaderboardService.score_millimetres(25.05) == 251, "leaderboard unit conversion is stable at one-decimal fish precision")
 
 func _test_cast_capture_service() -> void:
 	var path := "user://cast_tuning_capture_test_%d.json" % Time.get_ticks_msec()
@@ -187,10 +275,11 @@ func _test_state_transitions_and_timing() -> void:
 
 func _fight_session(fish: FishDefinition, behavior_roll := 0.0) -> FishingSession:
 	var game := FishingSession.new()
-	game.set_location(fish.location_id, 0.0); game.fish = fish; game.behavior_roll = behavior_roll; game.fight_phase_offset = behavior_roll * (fish.run_seconds + fish.lull_seconds); game.state = FishingSession.State.REELING; game.tension = 0.30
+	game.set_location(fish.location_id, 0.0); game.fish = fish; game.behavior_roll = behavior_roll; game.catch_length_cm = snappedf(lerpf(fish.min_length_cm, fish.max_length_cm, 0.50), 0.1); game.fight_phase_offset = behavior_roll * (fish.run_seconds + fish.lull_seconds); game.state = FishingSession.State.REELING; game.tension = 0.30
 	return game
-func _simulate_fight_policy(fish: FishDefinition, fps: int, policy: String, behavior_roll := 0.0) -> FishingSession:
+func _simulate_fight_policy(fish: FishDefinition, fps: int, policy: String, behavior_roll := 0.0, size_fraction := 0.50) -> FishingSession:
 	var game := _fight_session(fish, behavior_roll)
+	game.catch_length_cm = snappedf(lerpf(fish.min_length_cm, fish.max_length_cm, size_fraction), 0.1)
 	var delta := 1.0 / float(fps)
 	var target := 0.80 if policy == "reactive" else (1.0 if policy == "hard" else 0.70)
 	var delayed_tension := game.tension
@@ -219,6 +308,17 @@ func _test_pump_and_recover_fight() -> void:
 				expect(reactive.state == FishingSession.State.CAUGHT and reactive.fight_elapsed >= 10.0 and reactive.fight_elapsed <= 20.0, "300ms-delayed pull/ease lands %s in 10–20 seconds at %dHz / roll %.2f" % [fish.id, fps, behavior_roll])
 				expect(hard.state == FishingSession.State.ESCAPED or hard.fight_elapsed > reactive.fight_elapsed + 2.0, "constant hard pull underperforms responsive %s at %dHz" % [fish.id, fps])
 				expect(moderate.state == FishingSession.State.ESCAPED or moderate.fight_elapsed > reactive.fight_elapsed + 1.0, "constant moderate pull underperforms responsive %s at %dHz" % [fish.id, fps])
+		var upper_tail := _fight_session(fish, 0.37)
+		upper_tail.catch_length_cm = snappedf(lerpf(fish.min_length_cm, fish.max_length_cm, 0.96), 0.1)
+		var responsive_large := _simulate_fight_policy(fish, 60, "reactive", 0.37, 0.96)
+		expect(upper_tail.catch_length_cm <= fish.max_length_cm and is_equal_approx(upper_tail.catch_length_cm, snappedf(upper_tail.catch_length_cm, 0.1)) and responsive_large.state == FishingSession.State.CAUGHT and responsive_large.fight_elapsed >= 10.0 and responsive_large.fight_elapsed <= 24.0, "upper-tail %s stays bounded, one-decimal precise, and modestly demanding" % fish.id)
+	var staged := _fight_session(FishDefinition.all_planned()[1], 0.83)
+	staged.fight_elapsed = 7.0; staged.fight_progress = 0.71; staged.tick(0.01)
+	expect(staged.fight_stage == FishingSession.FightStage.LAST_SURGE and staged.last_surge_started and staged.last_surge_remaining > 0.0, "eligible behavior has one bounded perceptible last surge")
+	staged.tick(0.40)
+	expect(staged.last_surge_started and is_zero_approx(staged.last_surge_remaining) and staged.fight_stage != FishingSession.FightStage.LAST_SURGE, "last surge completes once rather than becoming an end-fight trap")
+	staged.fight_progress = 0.93; staged.tick(0.01)
+	expect(staged.fight_stage == FishingSession.FightStage.LANDING and staged.land_opportunity and staged.fight_effort <= 0.22, "landing stage is an explicit quiet opportunity")
 	var pike := _fight_session(FishDefinition.all_planned().back(), 0.0)
 	pike.tension = 0.82; pike.strain = 0.78; pike.set_rod_load(0.04)
 	for frame in range(60): pike.tick(1.0 / 60.0)
@@ -324,7 +424,15 @@ func _test_ui_controller_interactions() -> void:
 	controller.save = SaveService.new("user://ui-controller-%d.json" % Time.get_ticks_usec()); controller.save.data = SaveService.default_data()
 	var view = GameMain.FishingView.new(); view.controller = controller; view.size = Vector2(720, 1280); view.font = ThemeDB.fallback_font; controller.view = view
 	for safe_top in [0.0, 91.0, 180.0]:
-		view.safe_top_override = safe_top; view.overlay = ""; view._refresh_top_nav_geometry(); view._handle_press(view.settings_rect.get_center())
+		controller.session.state = FishingSession.State.READY
+		view.safe_top_override = safe_top; view.overlay = ""; view._refresh_top_nav_geometry()
+		var engraved_points := [Vector2(440.0, safe_top + 60.0), Vector2(539.0, safe_top + 60.0), Vector2(637.0, safe_top + 60.0)]
+		expect(view.records_rect.has_point(engraved_points[0]) and view.locations_rect.has_point(engraved_points[1]) and view.settings_rect.has_point(engraved_points[2]), "shared top-nav hit bounds contain the rendered ledger/map/gear plaque interiors at safe-top %.0f" % safe_top)
+		view._handle_press(engraved_points[0])
+		expect(view.overlay == "records", "engraved ledger plaque opens Records through the shared current geometry at safe-top %.0f" % safe_top)
+		view.overlay = ""; view._handle_press(engraved_points[1])
+		expect(view.overlay == "locations", "engraved map plaque opens Waters through the shared current geometry at safe-top %.0f" % safe_top)
+		view.overlay = ""; view._handle_press(engraved_points[2])
 		expect(view.overlay == "settings", "Settings press routes through its current shared safe-top target at %.0f" % safe_top)
 		view._refresh_modal_layout()
 		var controls := [view.settings_haptics_rect, view.settings_reduced_motion_rect, view.settings_handedness_rect, view.settings_test_haptics_rect, view.settings_motion_setup_rect, view.settings_footer_close_rect]
@@ -361,6 +469,12 @@ func _test_ui_controller_interactions() -> void:
 	expect(not old_footer.has_point(resized_footer_point), "new safe-top footer-bottom point is outside the stale pre-resize target")
 	view._handle_press(resized_footer_point)
 	expect(view.overlay == "", "immediate safe-top change refreshes the Settings footer before hit routing")
+	for world_safe_top in [0.0, 91.0, 180.0]:
+		view.safe_top_override = world_safe_top; view.overlay = "world_records"; view._refresh_modal_layout()
+		view.world_retry_rect = Rect2(86, view.modal_panel_rect.position.y + 710, 260, 70)
+		view.world_period_rect = Rect2(374, view.modal_panel_rect.position.y + 710, 260, 70)
+		view.world_back_rect = view.modal_footer_rect
+		expect(view.world_retry_rect.end.y <= view.world_back_rect.position.y and view.world_period_rect.end.y <= view.world_back_rect.position.y and not view.world_retry_rect.intersects(view.world_period_rect) and view.world_back_rect.end.y <= 1280.0, "World Records controls remain separate from the shared baked footer at safe-top %.0f" % world_safe_top)
 	view.safe_top_override = 0.0; view.overlay = "settings"; view._refresh_modal_layout()
 	var touch := InputEventScreenTouch.new(); touch.pressed = true; touch.index = 0; touch.device = 0; touch.position = view.settings_haptics_rect.get_center()
 	var emulated_mouse := InputEventMouseButton.new(); emulated_mouse.pressed = true; emulated_mouse.button_index = MOUSE_BUTTON_LEFT; emulated_mouse.device = InputEvent.DEVICE_ID_EMULATION; emulated_mouse.position = touch.position
@@ -944,12 +1058,16 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 30 and export_config.get_value("preset.0.options", "version/name") == "0.5.1-settingsfix1", "Settings footer repair package version is bumped")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 31 and export_config.get_value("preset.0.options", "version/name") == "0.6.0-riverrecords1", "River and records package version is bumped")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
 	var excluded := str(export_config.get_value("preset.0", "exclude_filter"))
 	expect("build/**" in excluded and "reports/**" in excluded and "tools/**" in excluded and "art/ui_v1/mockups/**" in excluded and "art/ui_v1/runtime_source/catch-frame-clean-v01.png" in excluded and "art/ui_v1/runtime_source/bluegill-v01.png" in excluded and "art/ui_v1/runtime_source/app-icon-v01.png" in excluded and "art/ui_v1/runtime_source/records-screen-v01.png" in excluded and "art/ui_v1/runtime_source/rod-bend-strip-v01.png" in excluded and "addons/admob/internal/editor/**" in excluded and "addons/admob/internal/mock/**" in excluded and not "addons/admob/gdscript/src/mediation/**" in excluded, "tools, mockups, and superseded unreferenced masters are excluded while runtime mediation dependencies remain")
+	expect("addons/play_games/bin/**" in excluded and "addons/play_games/local_play_games_config.json" in excluded and not "addons/play_games/play_games_config.gd" in excluded, "Play Games owner material stays out of the PCK while the runtime config loader remains available")
+	expect("res://addons/play_games/plugin.cfg" in str(config.get_value("editor_plugins", "enabled")) and FileAccess.file_exists("res://addons/play_games/export_plugin.gd") and FileAccess.file_exists("res://addons/play_games/play_games_config.gd"), "Play Games EditorExportPlugin is registered while its runtime config script is packaged")
+	var play_games_export_source := FileAccess.get_file_as_string("res://addons/play_games/export_plugin.gd")
+	expect("add_file(Config.RUNTIME_CONFIG_PATH" in play_games_export_source and "_configured_aar_matches" in play_games_export_source and "matches_bundled_aar" in play_games_export_source, "configured exports inject only the validated sanitized runtime Play Games config into the PCK")
 	expect(config.get_value("application", "config/icon") == "res://art/ui_v1/runtime_source/app-icon-runtime-512.png" and config.get_value("application", "boot_splash/image") == "res://art/ui_v1/runtime_source/loading-splash-v01.png", "optimized runtime icon and approved splash are configured")
 	var runtime_assets := {
 		"res://art/ui_v1/runtime_source/pine-lake-clean-v01.png": Vector2i(941, 1672),
@@ -970,7 +1088,7 @@ func _test_project_source_settings() -> void:
 		"res://art/ui_v1/runtime_source/records-screen-v02.png": Vector2i(941, 1672),
 		"res://art/ui_v1/runtime_source/records-screen-v03-empty-slots.png": Vector2i(941, 1672),
 		"res://art/ui_v1/runtime_source/journal-detail-v01.png": Vector2i(941, 1672),
-		"res://art/ui_v1/runtime_source/top-nav-strip-v01.png": Vector2i(1774, 887)
+		"res://art/ui_v1/runtime_source/top-nav-rustic-v01.png": Vector2i(2172, 724)
 	}
 	for asset_path in runtime_assets:
 		var texture := load(asset_path) as Texture2D
@@ -991,9 +1109,9 @@ func _test_project_source_settings() -> void:
 	var control_texture := load("res://art/ui_v1/runtime/control-kit-alpha-v01.png") as Texture2D
 	var control_image := control_texture.get_image() if control_texture else Image.new()
 	expect(not control_image.is_empty() and control_image.get_size() == Vector2i(1024, 1536) and control_image.get_pixel(0, 0).a == 0.0, "derived control-kit atlas retains transparent matte corners")
-	var nav_texture := load("res://art/ui_v1/runtime_source/top-nav-strip-v01.png") as Texture2D
+	var nav_texture := load("res://art/ui_v1/runtime_source/top-nav-rustic-v01.png") as Texture2D
 	var nav_image := nav_texture.get_image() if nav_texture else Image.new()
-	expect(not nav_image.is_empty() and nav_image.get_size() == Vector2i(1774, 887) and nav_image.detect_alpha() == Image.ALPHA_NONE, "top navigation strip is one opaque authored runtime plate")
+	expect(not nav_image.is_empty() and nav_image.get_size() == Vector2i(2172, 724) and nav_image.detect_alpha() == Image.ALPHA_NONE, "rustic top navigation beam is one opaque authored runtime plate")
 	var source := FileAccess.get_file_as_string("res://src/services/admob_service.gd")
 	expect("ConsentInformation" in source and "MAX_AD_CONTENT_RATING_PG" in source and "failed_closed" in source and "game_content_reserve_height" in source and "OnInitializationCompleteListener" in source and "sdk_initializing" in source and "banner_requested" in source, "consent-first SDK-sequenced AdMob contract retained")
 	var haptic_source := FileAccess.get_file_as_string("res://src/services/haptic_service.gd")
@@ -1005,12 +1123,13 @@ func _test_project_source_settings() -> void:
 	expect("randf()" in main_source and not "haptics.cue(\"cock\")" in main_source and "haptics.cue(\"bite\")" in main_source and "haptics.cue(\"hook\")" in main_source and "menu_motion_settle_remaining" in main_source and "MOTION_CAST_CANCEL reason=timeout" in main_source and "snap_projection=%.2f" in main_source and "cock_projection=%.2f" in main_source and "MOTION_HOOK state=REELING projection=%.2f alignment=%.2f gyro=%.2f sweep_samples=%d" in main_source, "physical arm selects a fresh weighted fish without motor feedback and menu return owns a deterministic motion settle guard")
 	expect("PROFILE_HANDEDNESS_ALIGNMENT" in motion_source and "CALIBRATION_HANDEDNESS_ALIGNMENT" in motion_source and "RUNTIME_X_POLARITY_ALIGNMENT" in motion_source and "RUNTIME_PHYSICAL_COCK_THRESHOLD_FACTOR := 6.0" in motion_source and "RUNTIME_SNAP_THRESHOLD_FACTOR := 24.0" in motion_source and "RUNTIME_SNAP_AXIS_MIN := 0.78" in motion_source and "RUNTIME_SNAP_POLARITY_MIN := 0.62" in motion_source and "RUNTIME_HOOK_MIN_IMPULSE_FACTOR := 0.055" in motion_source and "_physical_cock_threshold" in motion_source and "_runtime_snap_threshold" in motion_source and "linear.dot(_back_axis_direction())" in motion_source and "_back_axis = _back_axis_direction()" in motion_source and "RUNTIME_SWEEP_MIN_SAMPLES" in motion_source and "RUNTIME_COCK_MIN_IMPULSE_FACTOR" in motion_source and "RUNTIME_SNAP_MIN_IMPULSE_FACTOR" in motion_source and is_equal_approx(MotionService.RUNTIME_COCK_MIN_IMPULSE_FACTOR, 0.045) and is_equal_approx(MotionService.RUNTIME_SNAP_MIN_IMPULSE_FACTOR, 0.055) and "_sweep_ready(\"hook\"" in motion_source and "hook_projection" in motion_source and "hook_sweep_samples" in motion_source and "_sweep_ready" in motion_source and "_snap_axis_tolerance" in motion_source and "_snap_polarity_tolerance" in motion_source and "_snap_gyro_threshold" in motion_source and "RUNTIME_FULL_REVERSAL_SECONDS" in motion_source and "RUNTIME_MAX_REVERSAL_SECONDS" in motion_source and "cast_cancel" in motion_source and "snap_projection" in motion_source and "_burst_failure_latched" in motion_source and "MOTION_FAIL stage=%s reason=%s count=%d" in motion_source and not "SNAP_MIN_AXIS_TOLERANCE" in motion_source and not "MOTION_FAIL linear=" in motion_source and not "MOTION_FAIL gyro=" in motion_source and "sqrt(raw_fight_load)" in motion_source, "v25 retains signed physical cock with replay-backed snap floors and derived-only three-sample hook telemetry")
 	expect("CAST_COUNT := 10" in capture_source and "ACTIVE_WINDOW_SECONDS := 2.0" in capture_source and "REST_WINDOW_SECONDS := 1.0" in capture_source and "MAX_SAMPLES_PER_CAST" in capture_source and "completed" in capture_source and "accelerometer" in capture_source and "linear" in capture_source and not "print(" in capture_source, "raw samples are bounded and retained only by the explicit capture service without logging")
-	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and not "reel_fallback" in main_source and "COCK RIGHT, THEN SNAP LEFT" in main_source and "FISH ON — WAIT FOR THE PULSES" in main_source and "BITE — PULL RIGHT" in main_source and "session.state == FishingSession.State.HOOK_WINDOW" in main_source and "TILT LEFT TO EASE" in main_source and "TILT RIGHT TO PULL" in main_source and "MOTION_FIGHT caught elapsed=" in main_source and "MOTION_FIGHT escaped elapsed=" in main_source and "_record_catch_once" in main_source and "records-screen-v03-empty-slots.png" in main_source and "journal-detail-v01.png" in main_source and "ROD_TIP_ANCHORS" in main_source and "_rod_tip_for_frame" in main_source and "RECORD 10 CASTS" in main_source and "cast_capture.is_active()" in main_source and "_start_cast_capture" in main_source and not "DIAGNOSTIC_AUTO_CAPTURE_ON_ANDROID" in main_source and "DisplayServer.get_display_safe_area" in main_source and "_virtual_safe_top" in main_source and "set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)" in main_source and "mouse_filter = Control.MOUSE_FILTER_STOP" in main_source and "font = ThemeDB.fallback_font" in main_source and "queue_redraw()" in main_source and "can_recast_from_motion" in main_source, "bite guard, safe top, terminal recast, and motion-only gameplay contracts remain explicit")
+	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and not "InputEventScreenDrag" in main_source and not "_handle_drag" in main_source and not "reel_fallback" in main_source and "TILT RIGHT, THEN SNAP LEFT" in main_source and "TILT LEFT, THEN SNAP RIGHT" in main_source and not "COCK RIGHT, THEN SNAP LEFT" in main_source and "FISH ON — WAIT FOR THE PULSES" in main_source and "BITE — PULL RIGHT" in main_source and "session.state == FishingSession.State.HOOK_WINDOW" in main_source and "TILT LEFT TO EASE" in main_source and "TILT RIGHT TO PULL" in main_source and "MOTION_FIGHT caught elapsed=" in main_source and "MOTION_FIGHT escaped elapsed=" in main_source and "_record_catch_once" in main_source and "records-screen-rustic-v01.png" in main_source and "journal-detail-v01.png" in main_source and "ROD_TIP_ANCHORS" in main_source and "_rod_tip_for_frame" in main_source and "RECORD 10 CASTS" in main_source and "cast_capture.is_active()" in main_source and "_start_cast_capture" in main_source and not "DIAGNOSTIC_AUTO_CAPTURE_ON_ANDROID" in main_source and "DisplayServer.get_display_safe_area" in main_source and "_virtual_safe_top" in main_source and "set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)" in main_source and "mouse_filter = Control.MOUSE_FILTER_STOP" in main_source and "font = ThemeDB.fallback_font" in main_source and "queue_redraw()" in main_source and "can_recast_from_motion" in main_source, "Tilt instructions remain mirrored while bite, terminal recast, and motion-only gameplay contracts remain explicit")
 	expect("pine_lake_texture" in main_source and "cedar_river_texture" in main_source and "pine-fish-atlas-v02.png" in main_source and "cedar-fish-atlas-v02.png" in main_source and "_draw_fish_atlas_contained" in main_source and "largemouth_bass" in main_source and "channel_catfish" in main_source and "rainbow_trout" in main_source and "smallmouth_bass" in main_source and "northern_pike" in main_source and "row * 512" in main_source, "UI v2 maps all six fish IDs to the two runtime atlas row regions and both location plates")
-	expect("MOTION FISHING" in main_source and not "s.fish.display_name.to_upper()], Vector2(48" in main_source, "gameplay chrome remains neutral and does not reveal the selected fish before catch")
+	var gameplay_chrome_source := main_source.get_slice("func _draw_top_chrome(s: FishingSession) -> void:", 1).get_slice("func _draw_glance_hint", 0)
+	expect("s.location_id.replace" in gameplay_chrome_source and not "s.fish.display_name" in gameplay_chrome_source, "gameplay chrome remains neutral and does not reveal the selected fish before catch")
 	expect(not "catch-frame-clean-v01.png" in main_source and not "catch_frame_texture" in main_source and "FIRST CATCH" in main_source and "NEW BEST" in main_source and "MATCHED BEST" in main_source and "catch_prior_best_cm" in main_source, "catch reveal uses a scenic native plaque with prior-record status rather than a trophy frame")
 	var records_source := main_source.get_slice("func _draw_records() -> void:", 1).get_slice("func _fish_definition", 0)
-	expect("records-screen-v03-empty-slots.png" in main_source and "journal-detail-v01.png" in main_source and "UNDISCOVERED" in records_source and "_draw_fish_atlas_contained" in records_source and "_journal_page_rect" in records_source and "_journal_map_rect" in records_source and not "_text(\"CATCH RECORDS\"" in records_source and "journal_slot_rects" in records_source, "Records uses one opaque blank-slot master with only dynamic fish, discovery, and values")
+	expect("records-screen-rustic-v01.png" in main_source and "journal-detail-v01.png" in main_source and "UNDISCOVERED" in records_source and "_draw_fish_atlas_contained" in records_source and "_journal_page_rect" in records_source and "_journal_map_rect" in records_source and not "_text(\"CATCH RECORDS\"" in records_source and "journal_slot_rects" in records_source, "Records uses one opaque blank-slot master with only dynamic fish, discovery, and values")
 	expect("_draw_location_card" in main_source and "pine_lake_texture" in main_source and "cedar_river_texture" in main_source and "locations_pine" in main_source and "locations_cedar" in main_source and "records_empty" in main_source and "_clear_capture_records" in main_source and "pine_bass_catch" in main_source and "pine_catfish_catch" in main_source and "cedar_trout_catch" in main_source and "cedar_smallmouth_catch" in main_source and "cast_armed" in main_source and "line_out" in main_source and "hook_window" in main_source and "reduced_bite" in main_source and "reduced_reeling_high" in main_source and "reduced_catch" in main_source, "capture scenarios cover all species, explicit empty records, motion states, and reduced-motion variants without a save write")
 	expect("FISH GOT AWAY" in main_source and "Ease forward when warning pulses speed up." in main_source and not "THE LINE WENT SLACK" in main_source, "escape card presents one neutral reason with motion-first recovery guidance")
 	expect("SELECTED" in main_source and "rect.grow(-4.0)" in main_source, "location cards retain large selected border and high-contrast selected badge treatment")
@@ -1023,7 +1142,8 @@ func _test_project_source_settings() -> void:
 	expect(not rod_repacked_image.is_empty() and rod_repacked_image.get_size() == Vector2i(1536, 1024) and rod_boundaries_clear, "repacked rod atlas has strict transparent frame boundaries")
 	expect("rod-bend-repacked-v02.png" in main_source and "AtlasTexture.new()" in main_source and "atlas.filter_clip = true" in main_source and "atlas.region = Rect2(frame * 512, 0, 512, 1024)" in main_source and "rod_frames.append(atlas)" in main_source and "draw_texture_rect(rod_frames[rod_region]" in main_source and "source_tip.x / ROD_FRAME_SIZE.x" in main_source and not "ROD_SOURCE_INSET_X" in main_source and not "ROD_SOURCE_FRAME_WIDTH" in main_source, "each repacked rod frame is a clipped AtlasTexture and maps its terminal guide through strict-cell coordinates")
 	expect("control-kit-alpha-v01.png" in main_source and "StyleBoxTexture.new()" in main_source and "_control_style" in main_source and "plaque_normal" in main_source and "row_selected" in main_source and "texture_margin_left = 22.0" in main_source and "draw_center = true" in main_source and "TEST VIBRATION" in main_source and "MOTION SETUP" in main_source and "BACK TO FISHING" in main_source and "SETTINGS" in main_source and "SELECTED" in main_source and not "_text(\"⚙\"" in main_source, "control-kit provides Godot 4.7 texture-margin skins for named Settings and exit controls")
-	expect("top-nav-strip-v01.png" in main_source and "_refresh_top_nav_geometry()" in main_source and "_handle_press(pos: Vector2)" in main_source and "records_rect" in main_source and "locations_rect" in main_source and "settings_rect" in main_source and "RECORDS" in main_source and "WATERS" in main_source and "SETTINGS" in main_source and "FINISH THIS CAST" in main_source and "controller._open_settings()" in main_source and "controller._can_open_records()" in main_source and not "_can_open_journal" in main_source and not "menu_medallion" in main_source, "top navigation shares current safe-area geometry for drawing and hits; Settings remains available while Records and Waters explain active-fishing gates")
+	var top_chrome_source := main_source.get_slice("func _draw_top_chrome(s: FishingSession) -> void:", 1).get_slice("func _draw_glance_hint", 0)
+	expect("top-nav-rustic-v01.png" in main_source and "_refresh_top_nav_geometry()" in main_source and "_handle_press(pos: Vector2)" in main_source and "records_rect" in main_source and "locations_rect" in main_source and "settings_rect" in main_source and not "_draw_top_nav_label" in top_chrome_source and not "\"RECORDS\"" in top_chrome_source and not "\"WATERS\"" in top_chrome_source and not "\"SETTINGS\"" in top_chrome_source and "FINISH THIS CAST" in main_source and "controller._open_settings()" in main_source and "controller._can_open_records()" in main_source and not "_can_open_journal" in main_source and not "menu_medallion" in main_source, "icon-only rustic top navigation shares current safe-area geometry for drawing and hits; Settings remains available while Records and Waters explain active-fishing gates")
 	var locations_source := main_source.get_slice("func _draw_locations() -> void:", 1).get_slice("func _draw_location_card", 0)
 	expect("records_safe_top" in main_source and "safe_top_override = 91.0" in main_source and "_journal_page_rect" in main_source and "_draw_back_to_fishing(safe_top)" in locations_source and "BACK TO FISHING" in main_source and not "back_medallion" in records_source and not "back_medallion" in locations_source and not "_text(\"BACK\"" in locations_source, "Records page and locations retain safe-aware Back to Fishing controls without page-turn arrows")
 	expect("top_nav_ready" in main_source and "top_nav_safe_top" in main_source and "settings_button_line_out_safe_top" in main_source and "waters_button_ready_safe_top" in main_source and "records_button_ready_safe_top" in main_source and "top_nav_active_locked" in main_source and "_capture_top_nav_press" in main_source and "view._handle_press(view.settings_rect.get_center())" in main_source and "view._handle_press(view.locations_rect.get_center())" in main_source and "view._handle_press(view.records_rect.get_center())" in main_source, "deterministic navigation capture fixtures use the same current-geometry press handler")

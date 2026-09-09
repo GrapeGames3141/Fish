@@ -71,9 +71,12 @@ func start_fight(fish: FishDefinition) -> void:
 	phrase_started = false
 	next_phrase_at = elapsed + INITIAL_FIGHT_DELAY_SECONDS
 
-func update_fight(delta: float, fish: FishDefinition, tension: float, effort := 1.0) -> void:
-	tick(delta)
+func update_fight(delta: float, fish: FishDefinition, tension: float, effort := 1.0, size_factor := 1.0) -> void:
+	# Decide lull/warning priority before dispatching any overdue normal pulse.
+	elapsed += maxf(delta, 0.0)
+	_motion_guard_remaining = maxf(0.0, _motion_guard_remaining - maxf(delta, 0.0))
 	if not enabled or not fighting or fish == null:
+		if not enabled: pending.clear()
 		return
 	active_fish = fish
 	var next_tier := _tier_for_tension(tension)
@@ -92,7 +95,7 @@ func update_fight(delta: float, fish: FishDefinition, tension: float, effort := 
 		next_phrase_at = maxf(next_phrase_at, elapsed + 0.08)
 		return
 	if elapsed >= next_phrase_at and pending.is_empty():
-		_schedule_phrase(_phrase_for_tier(warning_tier))
+		_schedule_phrase(_phrase_for_tier(warning_tier, effort, size_factor))
 		phrase_started = true
 		next_phrase_at = elapsed + _cycle_for_tier(warning_tier)
 	_dispatch_due()
@@ -128,12 +131,20 @@ func _tier_for_tension(tension: float) -> String:
 		return "high"
 	return "normal"
 
-func _phrase_for_tier(tier: String) -> Array[Dictionary]:
+func _phrase_for_tier(tier: String, effort := 1.0, size_factor := 1.0) -> Array[Dictionary]:
 	if tier == "red":
 		return [{"duration": 90, "amplitude": 1.0}, {"duration": 90, "amplitude": 1.0, "gap": 0.16}]
 	if tier == "high":
 		return [{"duration": 58, "amplitude": 0.85}, {"duration": 58, "amplitude": 0.85, "gap": 0.22}]
-	return active_fish.fight_pulse if active_fish != null else []
+	if active_fish == null: return []
+	# Species phrases stay recognizable (flutter / punch / heavy pull / triplet /
+	# double headshake / abrupt run), while larger or active-stage fish add only a
+	# mild physical weight rather than collapsing every cadence into one warning.
+	var weighted: Array[Dictionary] = []
+	var amplitude_scale := clampf(0.90 + maxf(0.0, effort - 0.22) * 0.10 + maxf(0.0, size_factor - 1.0) * 0.20, 0.90, 1.10)
+	for pulse in active_fish.fight_pulse:
+		weighted.append({"duration": int(pulse.duration), "amplitude": clampf(float(pulse.amplitude) * amplitude_scale, 0.05, 1.0), "gap": float(pulse.get("gap", 0.0))})
+	return weighted
 
 func _cycle_for_tier(tier: String) -> float:
 	if tier == "red":
