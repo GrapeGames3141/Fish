@@ -2,11 +2,10 @@
 
 ## Status
 
-Review-only composition direction for the requested photorealistic rod, line, and
-bobber refresh. **Human approval is pending; this image is not integrated into
-the game, has no runtime references, and must remain excluded from Android
-exports.** No sprite derivation, scene change, APK build, or device action was
-performed for this approval-gated preview.
+The user approved this material direction on September 8, 2026 as the basis
+for a new screen-family concept pass. **That approval is not runtime, device,
+or final human-aesthetic signoff.** This image itself is not integrated into
+the game, has no runtime references, and remains excluded from Android exports.
 
 ## Durable artifact
 
@@ -49,7 +48,7 @@ Materials/textures: matte graphite shaft, pitted cork, fine metal guides, transl
 Constraints: no stylized golden/toy rod, no thick yellow rope line, no turquoise splash graphic, no extra fishing characters, no fish visible, no UI text.
 ```
 
-## Intended approval question
+## Original approval question
 
 Does this first-person photoreal tackle direction—especially the smaller float,
 carbon-and-cork rod, line treatment, and visibly different bend under tension—
