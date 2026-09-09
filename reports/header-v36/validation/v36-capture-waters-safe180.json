@@ -1,0 +1,31 @@
+{
+  "label": "v36-capture-waters-safe180",
+  "started": "2026-09-09T17:11:57.3832419-05:00",
+  "finished": "2026-09-09T17:12:01.3829974-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\header-v36\\gallery\\waters-safe180-720.png",
+    "--capture-scenario=waters_locked_safe180"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-header-v36",
+  "rootPid": 50352,
+  "observedPids": [
+    50352
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\header-v36\\validation\\v36-capture-waters-safe180.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\header-v36\\validation\\v36-capture-waters-safe180.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

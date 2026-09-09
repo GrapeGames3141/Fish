@@ -540,7 +540,9 @@ func _test_ui_controller_interactions() -> void:
 	expect(is_equal_approx(view.tension_meter_value(-0.2), 0.0) and is_equal_approx(view.tension_meter_value(1.4), 1.0) and view.tension_status(0.12) == "SLACK" and view.tension_status(0.50) == "STEADY" and view.tension_status(0.75) == "EASE" and view.tension_status(0.90) == "TOO TIGHT", "tension meter clamps its fill/marker and exposes standard slack, middle, ease, and tight bands")
 	for tension_safe_top in [0.0, 91.0, 180.0]:
 		view.safe_top_override = tension_safe_top; view._refresh_tension_meter_geometry()
-		expect(view.tension_meter_rect.position.y == tension_safe_top + 112.0 and view.tension_meter_rect.end.x <= 720.0 and view.tension_meter_rect.end.y <= 1280.0, "tension meter uses the fixed safe-area anchor at %.0f" % tension_safe_top)
+		var bar_end: float = tension_safe_top + 108.0
+		var label_baseline: float = view.tension_meter_rect.position.y - 11.0
+		expect(view.tension_meter_rect.position.y == tension_safe_top + 146.0 and label_baseline > bar_end and view.tension_meter_rect.end.x <= 720.0 and view.tension_meter_rect.end.y <= 1280.0, "tension label and meter clear the full shared header at %.0f" % tension_safe_top)
 	var fight_visible := FishingSession.new(); fight_visible.state = FishingSession.State.REELING; view.overlay = ""
 	expect(view.should_draw_tension_meter(fight_visible), "tension meter is visible only during live reeling")
 	view.overlay = "settings"; expect(not view.should_draw_tension_meter(fight_visible), "ordinary overlays suppress the tension meter")
@@ -567,6 +569,24 @@ func _test_ui_controller_interactions() -> void:
 		expect(view.overlay == "", "current Settings baked-footer target closes exactly once at safe-top %.0f" % safe_top)
 		controller._close_overlay()
 		view.overlay = ""; view._handle_press(view.settings_rect.position - Vector2(1, 1)); expect(view.overlay == "", "nav boundary outside is inert at safe-top %.0f" % safe_top)
+	# Every normal state draws and routes through the same safe-area wood rail.  The
+	# active pair stays visibly present but preserves the existing notice-only gate.
+	for header_safe_top in [0.0, 91.0, 180.0]:
+		for header_state in [FishingSession.State.READY, FishingSession.State.CAST_ARMED, FishingSession.State.LINE_OUT, FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING, FishingSession.State.CAUGHT, FishingSession.State.ESCAPED]:
+			controller.session.state = header_state; view.overlay = ""; view.safe_top_override = header_safe_top; view._refresh_top_nav_geometry()
+			var expected_rail := Rect2(0, header_safe_top, 720, 108)
+			var fixed_icons: bool = view.records_rect == Rect2(398, header_safe_top + 17, 85, 86) and view.locations_rect == Rect2(496, header_safe_top + 17, 87, 86) and view.settings_rect == Rect2(594, header_safe_top + 17, 86, 86)
+			expect(view.top_nav_strip_rect == expected_rail and fixed_icons, "all normal fishing states retain one full rail and fixed icon targets at safe-top %.0f" % header_safe_top)
+		controller.session.state = FishingSession.State.LINE_OUT; view.overlay = ""; view.safe_top_override = header_safe_top; controller.ui_notice = ""; controller.ui_notice_remaining = 0.0; view._handle_press(view.records_rect.get_center())
+		expect(view.overlay == "" and controller.ui_notice == "FINISH THIS CAST", "active Records stays visibly locked and notice-gated at safe-top %.0f" % header_safe_top)
+		controller.ui_notice = ""; controller.ui_notice_remaining = 0.0; view._handle_press(view.locations_rect.get_center())
+		expect(view.overlay == "" and controller.ui_notice == "FINISH THIS CAST", "active Waters stays visibly locked and notice-gated at safe-top %.0f" % header_safe_top)
+		view._handle_press(view.settings_rect.get_center())
+		expect(view.overlay == "settings", "fixed active-fishing Settings target remains routable at safe-top %.0f" % header_safe_top)
+		controller._close_overlay()
+		controller.session.state = FishingSession.State.CAUGHT; view.overlay = ""; view._refresh_top_nav_geometry(); view._handle_press(view.records_rect.get_center())
+		expect(view.overlay == "records", "terminal catch exposes its fixed Records target at safe-top %.0f" % header_safe_top)
+	controller.session.state = FishingSession.State.READY; view.overlay = ""; view.safe_top_override = 0.0
 	view.safe_top_override = 180.0; view.overlay = "motion_setup"; view._refresh_modal_layout()
 	var motion_controls := [view.motion_sensitivity_rect, view.motion_recalibrate_rect, view.motion_capture_rect, view.motion_diagnostics_rect, view.motion_back_rect]
 	var motion_inside: bool = view.motion_back_rect == view.modal_footer_rect and view.motion_back_rect.size.y >= 64.0
@@ -1284,7 +1304,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 35 and export_config.get_value("preset.0.options", "version/name") == "0.7.1-balance1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Balance package version and visible Android label retain the package identifier")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 36 and export_config.get_value("preset.0.options", "version/name") == "0.7.2-header1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Header package version and visible Android label retain the package identifier")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
@@ -1375,6 +1395,6 @@ func _test_project_source_settings() -> void:
 	var top_chrome_source := main_source.get_slice("func _draw_top_chrome(s: FishingSession) -> void:", 1).get_slice("func _draw_glance_hint", 0)
 	expect("top-nav-rustic-v01.png" in main_source and "_refresh_top_nav_geometry()" in main_source and "_handle_press(pos: Vector2)" in main_source and "records_rect" in main_source and "locations_rect" in main_source and "settings_rect" in main_source and not "_draw_top_nav_label" in top_chrome_source and not "\"RECORDS\"" in top_chrome_source and not "\"WATERS\"" in top_chrome_source and not "\"SETTINGS\"" in top_chrome_source and "FINISH THIS CAST" in main_source and "controller._open_settings()" in main_source and "controller._can_open_records()" in main_source and not "_can_open_journal" in main_source and not "menu_medallion" in main_source, "icon-only rustic top navigation shares current safe-area geometry for drawing and hits; Settings remains available while Records and Waters explain active-fishing gates")
 	var locations_source := main_source.get_slice("func _draw_locations() -> void:", 1).get_slice("func _draw_location_card", 0)
-	expect("records_safe_top" in main_source and "safe_top_override = 91.0" in main_source and "_journal_map_y" in main_source and "back_to_fishing_rect = Rect2(32, safe_top + 18" in locations_source and "BACK TO FISHING" in main_source and not "back_medallion" in records_source and not "back_medallion" in locations_source and not "_text(\"BACK\"" in locations_source, "Records and Waters retain shared safe-aware Back to Fishing controls without page-turn arrows")
+	expect("records_safe_top" in main_source and "safe_top_override = 91.0" in main_source and "_journal_map_y" in main_source and "back_to_fishing_rect = Rect2(32, safe_top + 18" in locations_source and "waters_viewport_rect = Rect2(30, safe_top + 124" in locations_source and "_draw_wood_control(Rect2(0, safe_top, 720, 108))" in locations_source and "BACK TO FISHING" in main_source and not "back_medallion" in records_source and not "back_medallion" in locations_source and not "_text(\"BACK\"" in locations_source, "Records and Waters retain shared safe-aware Back to Fishing controls without page-turn arrows")
 	expect("top_nav_ready" in main_source and "top_nav_safe_top" in main_source and "settings_button_line_out_safe_top" in main_source and "waters_button_ready_safe_top" in main_source and "records_button_ready_safe_top" in main_source and "top_nav_active_locked" in main_source and "_capture_top_nav_press" in main_source and "view._handle_press(view.settings_rect.get_center())" in main_source and "view._handle_press(view.locations_rect.get_center())" in main_source and "view._handle_press(view.records_rect.get_center())" in main_source, "deterministic navigation capture fixtures use the same current-geometry press handler")
 	expect("_refresh_modal_layout()" in main_source and "_draw_modal_panel()" in main_source and "modal_footer_rect" in main_source and "settings_footer_close_rect.has_point(pos)" in main_source and "settings_haptics_rect.has_point(pos)" in main_source and "motion_sensitivity_rect.has_point(pos)" in main_source and not "draw_style_box(_control_style(\"plaque_normal\"), settings_footer_close_rect)" in main_source, "Settings and Motion Setup route through one safe-aware baked-footer target without a duplicate runtime plaque")

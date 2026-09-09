@@ -1,5 +1,11 @@
 # Gate 1 — foundation, playable greybox, and concept direction
 
+## Continuous wood-header v36
+
+- Normal fishing states share one full-width, safe-area-aware authored wood rail; Records and Waters remain visibly locked during a cast/fight while Settings retains its fixed target.
+- Bite/fight guidance remains native, centered on the left plaque, and the live tension label/meter clear the taller rail. Waters uses one contiguous header with its cards still scrollable below it.
+- Scope is UI geometry and presentation only. Motion, fight simulation, haptics, Android packaging, and production art remain unchanged. Desktop render review and automated regression evidence are tracked in `reports/header-v36/`; physical-device and human visual review remain pending.
+
 ## Waters v34
 
 - Implemented and independently verified: four regional waters, twelve fish, scrolling species-completion unlocks, v6 save migration, and paginated records. [Feature/art notes](docs/waters-v34.md), [desktop gallery](reports/waters-v34/gallery/README.md), and [signed v34 release receipt](reports/waters-v34/README-v34.md). APK and DriveFS copy are size/hash verified; Pixel install awaits a current wireless-debugging endpoint. Physical feel and human aesthetic approval remain pending.

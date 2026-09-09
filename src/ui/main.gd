@@ -543,9 +543,9 @@ class FishingView extends Control:
 		return clampf(float(safe_area.position.y) * scale_y, 0.0, 180.0)
 	func _refresh_top_nav_geometry() -> void:
 		var chrome_y := _virtual_safe_top()
-		if controller != null and controller.session != null and controller.session.state in [FishingSession.State.CAST_ARMED, FishingSession.State.LINE_OUT, FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]:
-			top_nav_strip_rect = Rect2(18, chrome_y + 10, 568, 62); records_rect = Rect2(); locations_rect = Rect2(); settings_rect = Rect2(624, chrome_y + 10, 70, 70)
-			return
+		# The authored beam is a fixed safe-area rail in every normal fishing state.
+		# Keeping the source and hit targets stable avoids the former short-plank /
+		# floating-gear jump after a cast begins.
 		top_nav_strip_rect = Rect2(0, chrome_y, 720, 108)
 		# These are the physical engraved plaques after the 2172px wood beam maps to
 		# the 720px presentation. Draw and hit routing deliberately share these bounds.
@@ -737,22 +737,24 @@ class FishingView extends Control:
 	func _draw_top_chrome(s: FishingSession) -> void:
 		var chrome_y := _virtual_safe_top()
 		var active := s.state in [FishingSession.State.CAST_ARMED, FishingSession.State.LINE_OUT, FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
-		if active:
-			# No tinted/opaque backing band: compact solid wood controls sit directly
-			# over the scenery while fishing remains eyes-off.
-			_refresh_top_nav_geometry()
-			if controller.top_nav_texture:
-				draw_texture_rect_region(controller.top_nav_texture, top_nav_strip_rect, Rect2(124, 172, 1012, 323))
-				draw_texture_rect_region(controller.top_nav_texture, settings_rect, Rect2(1793, 223, 249, 257))
-			return
 		_refresh_top_nav_geometry()
 		if controller.top_nav_texture: draw_texture_rect_region(controller.top_nav_texture, top_nav_strip_rect, Rect2(0, 172, 2172, 323))
 		# The location uses the actual clear left beam, not the old bolt-overlapping x=42 baseline.
-		_centered_text(s.location_id.replace("_", " ").to_upper(), Vector2(214, chrome_y + 37), 15, Color("332016"))
+		_centered_text(s.location_id.replace("_", " ").to_upper(), Vector2(214, chrome_y + 29), 15, Color("332016"))
+		if active:
+			# Records and Waters stay in their engraved positions while a cast/fight is
+			# active. Small native padlocks communicate the existing notice-only gate
+			# without adding a translucent card or a redundant icon label.
+			_draw_nav_lock(records_rect); _draw_nav_lock(locations_rect)
+	func _draw_nav_lock(rect: Rect2) -> void:
+		var body := Rect2(rect.end - Vector2(21, 20), Vector2(13, 10))
+		var shackle_center := Vector2(body.get_center().x, body.position.y + 1)
+		var lock_color := Color("3b2415")
+		draw_rect(body, lock_color, true); draw_rect(body, Color("e3bb62"), false, 1.0)
+		draw_arc(shackle_center, 4.5, PI, TAU, 10, lock_color, 2.0, true)
 	func _draw_glance_hint(s: FishingSession) -> void:
 		if controller.ui_notice_remaining > 0.0:
-			var active_notice := s.state in [FishingSession.State.CAST_ARMED, FishingSession.State.LINE_OUT, FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
-			_centered_text(_fit_text(controller.ui_notice, 540.0 if active_notice else 250.0, 15), Vector2(301 if active_notice else 214, _virtual_safe_top() + (51 if active_notice else 68)), 15, Color("332016")); return
+			_draw_top_hint_lines([_fit_text(controller.ui_notice, 280.0, 15)], 15, Color("332016")); return
 		var copy := "TILT LEFT, THEN SNAP RIGHT" if controller.motion.left_handed else "TILT RIGHT, THEN SNAP LEFT"
 		match s.state:
 			FishingSession.State.CAST_ARMED: copy = "SNAP RIGHT" if controller.motion.left_handed else "SNAP LEFT"
@@ -766,20 +768,19 @@ class FishingView extends Control:
 				else: copy = "HOLD THE MIDDLE"
 			FishingSession.State.CAUGHT: copy = "%s LANDED" % s.fish.display_name.to_upper()
 			FishingSession.State.ESCAPED: copy = s.last_reason.to_upper()
-		var compact := s.state in [FishingSession.State.CAST_ARMED, FishingSession.State.LINE_OUT, FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
-		# Every state shares the same top origin; only copy changes, never its plaque.
-		var hint_y := _virtual_safe_top() + (12.0 if compact else 36.0)
-		if compact:
-			_centered_text(_fit_text(copy, 540.0, 16), Vector2(301, hint_y + 39), 16, Color("332016"))
-			return
+		# The left plaque owns all native fishing guidance. The fixed two-line layout
+		# stays readable during a bite and never shifts across the cast/fight loop.
 		if s.state == FishingSession.State.READY:
-			_centered_text("TILT %s" % ("LEFT" if controller.motion.left_handed else "RIGHT"), Vector2(214, hint_y + 31), 18, Color("332016")); _centered_text("THEN SNAP %s" % ("RIGHT" if controller.motion.left_handed else "LEFT"), Vector2(214, hint_y + 57), 18, Color("332016"))
+			_draw_top_hint_lines(["TILT %s" % ("LEFT" if controller.motion.left_handed else "RIGHT"), "THEN SNAP %s" % ("RIGHT" if controller.motion.left_handed else "LEFT")], 17, Color("332016"))
 		elif s.state == FishingSession.State.HOOK_WINDOW:
-			_centered_text("BITE", Vector2(214, hint_y + 29), 21, Color("f2e4c2")); _centered_text("PULL %s" % ("LEFT" if controller.motion.left_handed else "RIGHT"), Vector2(214, hint_y + 57), 20, Color("f2e4c2"))
+			_draw_top_hint_lines(["BITE", "PULL %s" % ("LEFT" if controller.motion.left_handed else "RIGHT")], 18, Color("332016"))
 		elif s.state == FishingSession.State.BITE:
-			_centered_text("BITE", Vector2(214, hint_y + 36), 21, Color("f2e4c2")); _centered_text("WAIT FOR PULSES", Vector2(214, hint_y + 68), 18, Color("f2e4c2"))
-		elif s.state == FishingSession.State.ESCAPED: _centered_text("FISH GOT AWAY", Vector2(214, hint_y + 52), 20, Color("f2e4c2"))
-		else: _centered_text(copy, Vector2(214, hint_y + 43), 17, Color("f2e4c2"))
+			_draw_top_hint_lines(["FISH ON", "WAIT FOR PULSES"], 18, Color("332016"))
+		elif s.state == FishingSession.State.ESCAPED: _draw_top_hint_lines(["FISH GOT AWAY"], 18, Color("332016"))
+		else: _draw_top_hint_lines([_fit_text(copy, 280.0, 17)], 17, Color("332016"))
+	func _draw_top_hint_lines(lines: Array, point_size: int, color: Color) -> void:
+		var base_y := _virtual_safe_top() + (62.0 if lines.size() > 1 else 73.0)
+		for index in range(lines.size()): _centered_text(str(lines[index]), Vector2(214, base_y + index * 22.0), point_size, color)
 	func _draw_fight_status(s: FishingSession) -> void:
 		if not should_draw_tension_meter(s): return
 		_refresh_tension_meter_geometry()
@@ -805,7 +806,8 @@ class FishingView extends Control:
 		draw_circle(Vector2(marker_x, tension_meter_rect.get_center().y), 7.0, Color("fff0c9")); draw_circle(Vector2(marker_x, tension_meter_rect.get_center().y), 7.0, Color("2a180f"), false, 2.0)
 		_text("LANDING", Vector2(190, 1111), 14, Color("fff1d1")); draw_line(Vector2(275, 1106), Vector2(527, 1106), Color("2a180f"), 6.0); draw_line(Vector2(275, 1106), Vector2(275 + 252 * s.fight_progress, 1106), Color("d7ad6d"), 4.0)
 	func _refresh_tension_meter_geometry() -> void:
-		tension_meter_rect = Rect2(30, _virtual_safe_top() + 112, 540, 18)
+		# A full-height shared beam needs clear breathing room before the fight HUD.
+		tension_meter_rect = Rect2(30, _virtual_safe_top() + 146, 540, 18)
 	func tension_status(tension: float, profile: Dictionary = {}) -> String:
 		var active_profile := profile if not profile.is_empty() else FightChallenge.profile(FightChallenge.DEFAULT_ID)
 		match FightChallenge.tier(tension_meter_value(tension), active_profile):
@@ -919,9 +921,11 @@ class FishingView extends Control:
 			var scroll_range := content_height - waters_viewport_rect.size.y
 			var thumb_y := rail.position.y + (rail.size.y - thumb_height) * waters_scroll / maxf(scroll_range, 1.0)
 			draw_rect(rail, Color("3b2818", 0.68)); draw_rect(Rect2(rail.position.x, thumb_y, rail.size.x, thumb_height), Color("efdaa2"))
-		_draw_wood_control(back_to_fishing_rect)
+		# Waters is an overlay with its own continuous wood rail. Draw the single
+		# source first, then keep its Back target and title native on that same rail;
+		# do not assemble it from two separated planks over the scenery.
+		_draw_wood_control(Rect2(0, safe_top, 720, 108))
 		_centered_text_in_rect("BACK TO FISHING", back_to_fishing_rect, 15, Color("fff4d1"))
-		_draw_wood_control(Rect2(286, safe_top + 18, 402, 64))
 		_centered_text_in_rect("WATERS", Rect2(286, safe_top + 18, 402, 64), 22, Color("fff4d1"))
 	func _draw_back_to_fishing(safe_top: float) -> void:
 		_refresh_back_to_fishing_rect(safe_top)
@@ -939,7 +943,9 @@ class FishingView extends Control:
 		var visual_y := maxf(1168.0, safe_top + 18.0)
 		back_to_fishing_rect = Rect2(416, visual_y - 8.0, 280, 64)
 	func _refresh_location_card_rects(safe_top: float) -> void:
-		waters_viewport_rect = Rect2(30, safe_top + 94, 660, 1080 - safe_top)
+		# Cards start below the full header, leaving the fixed Back control reachable
+		# even at the tall device safe inset.
+		waters_viewport_rect = Rect2(30, safe_top + 124, 660, 1050 - safe_top)
 		var gap := 18.0
 		var content_height := 0.0
 		for index in range(LocationDefinition.all().size()): content_height += _waters_card_height(index) + (gap if index > 0 else 0.0)
@@ -1330,7 +1336,6 @@ class FishingView extends Control:
 		if controller.session.state == FishingSession.State.CAUGHT:
 			if catch_continue_rect.has_point(pos): controller._reset_session(); return
 			if catch_records_rect.has_point(pos): overlay = "records"; return
-			return
 		if records_rect.has_point(pos) and controller._can_open_records(): overlay = "records"; return
 		if records_rect.has_point(pos) or locations_rect.has_point(pos):
 			if not controller._can_open_records(): controller.ui_notice = "FINISH THIS CAST"; controller.ui_notice_remaining = 1.8

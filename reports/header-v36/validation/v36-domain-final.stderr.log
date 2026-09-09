@@ -1,0 +1,8 @@
+SCRIPT ERROR: Parse Error: Cannot infer the type of "bar_end" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:543)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "label_baseline" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:544)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "fixed_icons" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:578)
+ERROR: Failed to load script "res://tests/test_runner.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)

@@ -1,0 +1,31 @@
+{
+  "label": "v36-capture-fight-high-safe180",
+  "started": "2026-09-09T17:11:49.6548196-05:00",
+  "finished": "2026-09-09T17:11:53.4767994-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\header-v36\\gallery\\fight-high-safe180-720.png",
+    "--capture-scenario=cedar_reeling_high_safe180"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-header-v36",
+  "rootPid": 127484,
+  "observedPids": [
+    127484
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\header-v36\\validation\\v36-capture-fight-high-safe180.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\header-v36\\validation\\v36-capture-fight-high-safe180.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

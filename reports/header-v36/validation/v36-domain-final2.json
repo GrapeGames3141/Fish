@@ -1,0 +1,27 @@
+{
+  "label": "v36-domain-final2",
+  "started": "2026-09-09T17:09:05.1876137-05:00",
+  "finished": "2026-09-09T17:09:28.8281182-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-header-v36",
+  "rootPid": 117720,
+  "observedPids": [
+    117720
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\header-v36\\validation\\v36-domain-final2.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\header-v36\\validation\\v36-domain-final2.stderr.log",
+  "stderrMarker": "ERROR: Balance package version and visible Android label retain the package identifier",
+  "error": null
+}
