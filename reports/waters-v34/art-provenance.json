@@ -1,0 +1,138 @@
+{
+  "date": "2026-09-09",
+  "generator": "Built-in ImageGen",
+  "mode": "Text-to-image generation; selected source PNGs copied byte-identically to durable E: project assets. No specific model/version/tier selector was exposed.",
+  "status": "Integrated development art; human aesthetic approval and physical-device review pending.",
+  "assets": [
+    {
+      "file": "art/ui_v1/runtime_source/willow-pond-photo-v01.png",
+      "bytes": 2818946,
+      "width": 941,
+      "height": 1672,
+      "sha256": "6736F53DDFAF81AF3EE5247F99625E1F3F85124934D8EDD09492CB99CDF8D7FE",
+      "generation_output": "exec-649c5f69-fbb6-463c-80ce-405a91f42524.png",
+      "prompt": "Use case: photorealistic-natural\nAsset type: opaque portrait runtime gameplay scenery for Hooked mobile fishing game, 9:16 portrait.\nPrimary request: a true natural-camera photograph from the low bank of a small quiet woodland pond in the Hudson Valley of New York, late summer. A few graceful willow branches and mixed broadleaf maple/oak trees, gentle low hills, irregular reeds and sparse lily pads restricted to margins; a modest muddy-grassy near bank. It must clearly feel like a small pond, not a huge mountain lake.\nComposition: water occupies center and lower 65 percent with unobstructed open water for a separately rendered fishing line and float at middle right. Foreground shore only in lower corners; no central obstacles. Top remains visually calm for a separate runtime wood hint. Natural greens, subdued reflective brown-green water, soft blue sky. High-end ordinary outdoor photography, moderate dynamic range, 35mm camera, uneven natural detail scales, softer distant leaves, calm broad patches of water with irregular reflection.\nConstraints: scenery only, NO people, hands, rod, reel, line, float/bobber, fish, UI, wood signs, readable text, border, logo, watermark. No etched uniform high-frequency texture, no repeated tiling across trees/water/rocks, no HDR glow, no fantasy illustration, no teal tint, no excessive sharpness. Fully opaque photo, not transparent.",
+      "role": "opaque regional scenery"
+    },
+    {
+      "file": "art/ui_v1/runtime_source/hatteras-inlet-photo-v01.png",
+      "bytes": 2365598,
+      "width": 941,
+      "height": 1672,
+      "sha256": "BFB3C478688FDE34C15E63B38FF90E5F6BA8365EA47FD0A673E35F82E2FC65AD",
+      "generation_output": "exec-2d7481f4-cec3-42a5-817c-d108a12692e0.png",
+      "prompt": "Use case: photorealistic-natural\nAsset type: opaque portrait runtime gameplay scenery for Hooked mobile fishing game, 9:16 portrait.\nPrimary request: a convincing natural-camera photograph from the sandy shore at an Atlantic tidal inlet in the Outer Banks of North Carolina, inspired by Hatteras Inlet. Broad saltwater channel opens toward the ocean horizon. Low pale sandbar and dune with sparse sea oats on one distant side; NO mountains, conifers, tropical palms or freshwater lily pads. Modest gentle wind swell, irregular small traces of shore foam, muted Atlantic green-blue water and natural hazy blue sky.\nComposition: open water dominates middle and lower 65 percent, clear fishing contact around middle-right and clean rod space from lower left. Only a narrow sandy/grassy foreground corner, not a beach occupying the whole bottom. Real inshore shore-fishing viewpoint, not aerial/drone or deep-sea boat. Natural soft morning light and restrained photographic detail, uneven authentic wave spacing.\nConstraints: scenery only, NO fishing tackle, rod, hand, line, bobber, fish, boats, buildings, lighthouse, people, UI, text, signs, logos or borders. No cartoon/game painting, no repeated textured pattern, no etched/HDR oversharpening, no uniform rows of foam, no teal overlay. Fully opaque photograph.",
+      "role": "opaque regional scenery"
+    },
+    {
+      "file": "art/ui_v1/runtime_source/cedar-river-michigan-v01.png",
+      "bytes": 3080556,
+      "width": 941,
+      "height": 1672,
+      "sha256": "090120A787DBDE4C0A3E1A4E18B9FE6EA3C87AA83CE7401F8EC8A7AFBA928F1B",
+      "generation_output": "exec-340ce06a-0ef7-488d-9bda-c9da8a973ba2.png",
+      "prompt": "Use case: photorealistic-natural\nAsset type: opaque portrait runtime gameplay scenery for Hooked mobile fishing game, 9:16 portrait.\nPrimary request: an authentic natural-camera photograph at a fishable pool of a low-gradient river in Michigan's Upper Peninsula, late summer. Northern white cedar, white pine and mixed deciduous trees on modest banks, worn glacial stones and a low rocky riffle above a deeper greenish pool. Great Lakes woodland geography: rolling low relief, NOT Pacific Northwest alpine peaks, huge cliffs or giant redwoods. Clear shallows at margins and darker irregular current seam in center.\nComposition: foreground and center dominated by open river water, low stone/vegetation banks at sides, distant riffle around upper third, unobstructed middle-right contact point for a separately rendered float. Foreground bank only in lower corners. Soft afternoon daylight, natural restrained color, 35mm landscape photograph, broad quiet water areas between small irregular ripples, softer far tree detail.\nConstraints: no people, hands, fishing tackle, rod, reel, line, fish, float, UI, wood signs, text, border or watermark. No repeated tiled or etched microtexture; no hypersharp HDR, cartoon style, teal tint, sunburst, mist overlay. Fully opaque photograph.",
+      "role": "opaque regional scenery"
+    },
+    {
+      "file": "art/ui_v1/runtime_source/willow-fish-atlas-v01.png",
+      "bytes": 2642599,
+      "width": 1024,
+      "height": 1536,
+      "sha256": "524E3DA0F1B7D2C3391187D5328A4FBAFD6988EAFCC6258321047663B9DE35A1",
+      "generation_output": "exec-c91a7e59-5a43-46e7-884a-6bed7f8679a8.png",
+      "prompt": "Use case: scientific-educational\nAsset type: production fish sprite atlas on GENUINELY TRANSPARENT background with actual alpha, portrait 2:3 aspect, ideal canvas 1024x1536.\nPrimary request: exactly THREE photoreal isolated freshwater fish, each full body in perfectly lateral left-facing profile, head left/tail right, in THREE EQUAL horizontal rows, centered at 1/6, 1/2, 5/6 canvas height. One fish per row, no overlap, no row dividers.\nTOP row: Pumpkinseed sunfish (Lepomis gibbosus), deep oval body, small mouth, vivid but realistic turquoise/orange cheek lines, orange-yellow breast, short dark ear flap with red-orange spot, mottled olive-gold side, spiny dorsal fin.\nMIDDLE row: Black crappie (Pomoxis nigromaculatus), silver deep body with irregular dense dark mottling, large upturned mouth, tall spiny dorsal and fan tail, NOT striped bass.\nBOTTOM row: Brown bullhead (Ameiurus nebulosus), mottled brown olive stocky catfish with dark chin barbels, broad flattened head, rounded/squared tail NOT the forked channel-catfish tail.\nStyle: true fish specimen photography, alive-looking clean intact scales/skin and fins, natural wet sheen, no gore. Entire silhouette with every barbel/fin/tail within its own row. Each fish takes about 82 percent of row width, smaller deep-bodied fish can be 70 percent. At least 8 percent transparent padding at all sides and between row boundaries. Each row's silhouette stays well away from boundary.\nConstraints: actual transparent alpha around fish, no white/gray matte, no checkerboard drawn in pixels, no cast/drop shadows, no water/ground, no text/labels/numbers/frames/logos. No duplicate fish, no illustration hatch texture.",
+      "role": "true-alpha runtime fish atlas"
+    },
+    {
+      "file": "art/ui_v1/runtime_source/ocean-fish-atlas-v01.png",
+      "bytes": 2377410,
+      "width": 1024,
+      "height": 1536,
+      "sha256": "88577F5D2C919EC4B7C466BEACCEB3A653F95320214AEB7459A61110CD018E72",
+      "generation_output": "exec-16272c55-1271-4b64-a9d3-2e09568a50a3.png",
+      "prompt": "Use case: scientific-educational\nAsset type: production fish sprite atlas on GENUINELY TRANSPARENT background with actual alpha, portrait 2:3 aspect, ideal canvas 1024x1536.\nPrimary request: exactly THREE photoreal isolated North Carolina coastal fish, each entire body in perfectly lateral left-facing profile, head left/tail right, in THREE EQUAL horizontal rows centered at 1/6, 1/2, 5/6 of canvas height. One species per row, no overlaps or dividers.\nTOP row: Red drum (Sciaenops ocellatus), copper-bronze back and sides, pale silver belly, gently blunt head, clear black eyespot at tail base, separate spiny/soft dorsal sections, realistic modest adult proportions.\nMIDDLE row: Spotted seatrout (Cynoscion nebulosus), long streamlined silver body with gray-olive back, many clear round black spots across upper sides and dorsal/tail fins, slightly open prominent canine-toothed mouth, NOT rainbow trout, no pink stripe, NOT salmon.\nBOTTOM row: Bluefish (Pomatomus saltatrix), powerful streamlined blue-green back/silvery sides, robust head with slightly open toothed lower-jaw mouth, two dorsal fins and strongly forked dark tail, NO spots or stripes.\nStyle: accurate fish specimen photography, alive-looking clean intact fins and scales with restrained natural wet sheen. Whole fish within its own row, roughly82 percent row width, generous transparent padding and empty row boundaries for animation without texture bleeding.\nConstraints: genuinely transparent alpha surrounding fish, no drawn checkerboard, no white/gray matte, no cast/drop shadows, no water/ground, no text/labels/numbers/frames/logos. No fourth fish, no duplicate species, no illustration hatch texture.",
+      "role": "true-alpha runtime fish atlas"
+    },
+    {
+      "file": "art/ui_v1/mockups/waters-scroll-v34.png",
+      "bytes": 3102461,
+      "width": 941,
+      "height": 1672,
+      "sha256": "3E49409632A90E5D56D8264257FAF94FDCA4974768A1A340B5228822E354CB7F",
+      "generation_output": "exec-d36ecce9-c99c-4e91-a73e-7e5de7cff7df.png",
+      "prompt": "Use case: ui-mockup. Create a full 9:16 portrait screen-design reference for the scrollable Waters location menu in the Hooked fishing mobile game. Reference 1 is the existing approved rustic UI material/frame style, reference 2 is the new Willow Pond scenery. This is a design mockup only, not a runtime sprite. Preserve restrained aged timber, dark iron bolts and light warm parchment; no ornate gold, no white matte borders, no tinted/dim blanket overlay. Screen starts with a small fixed top wood BACK TO FISHING target at left and WATERS title on a larger wood sign beside it, leaving a small safe-top margin. Below is a vertical scroll region with broad cards, the first two fully visible and only the top of a third peeking at bottom as scroll affordance, plus a thin unobtrusive right scroll track. Each card has one broad natural photo window, not duplicate cards laid over baked cards, and light parchment text beneath. First card: WILLOW POND, HUDSON VALLEY · NEW YORK, POND, SELECTED, and three clean readable rows 'Pumpkinseed  ✓', 'Black crappie  ○', 'Brown bullhead  ○'. Use the willow photo for the card. Second card: PINE LAKE, CHAMPLAIN VALLEY · VERMONT, LAKE, LOCKED · 1 / 3, mountain-foothill lake photo. Small text 'Catch Black crappie and Brown bullhead in Willow Pond'. The partially visible third is CEDAR RIVER, UPPER PENINSULA · MICHIGAN. Attention hierarchy: location/photo first, readable region next, discovery/unlock checklist below. Comfortable native-sized white or dark-brown text (not tiny handwriting). Text naturally centered inside its own wood/parchment areas, consistent margins, no giant header or wasted blank pane. No rod, no action/cast button, no bottom navigation, no icon captions. Feel like a believable polished photoreal fishing game menu with useful collection progress.",
+      "role": "design reference only, excluded from export"
+    }
+  ],
+  "atlas_regions": {
+    "willow": [
+      {
+        "fish_id": "pumpkinseed",
+        "rect": [
+          0,
+          0,
+          1024,
+          543
+        ]
+      },
+      {
+        "fish_id": "black_crappie",
+        "rect": [
+          0,
+          543,
+          1024,
+          535
+        ]
+      },
+      {
+        "fish_id": "brown_bullhead",
+        "rect": [
+          0,
+          1078,
+          1024,
+          458
+        ]
+      }
+    ],
+    "ocean": [
+      {
+        "fish_id": "red_drum",
+        "rect": [
+          0,
+          0,
+          1024,
+          512
+        ]
+      },
+      {
+        "fish_id": "spotted_seatrout",
+        "rect": [
+          0,
+          512,
+          1024,
+          512
+        ]
+      },
+      {
+        "fish_id": "bluefish",
+        "rect": [
+          0,
+          1024,
+          1024,
+          512
+        ]
+      }
+    ]
+  },
+  "rejected_edits": [
+    {
+      "generation_output": "exec-a26f4011-3be5-4470-b747-ef6071e993d3.png",
+      "reason": "Baked opaque checkerboard. Never used in runtime."
+    },
+    {
+      "generation_output": "exec-57b7fa63-3381-4ed8-88e8-1b2448f751be.png",
+      "reason": "Baked opaque checkerboard. Never used in runtime."
+    }
+  ]
+}

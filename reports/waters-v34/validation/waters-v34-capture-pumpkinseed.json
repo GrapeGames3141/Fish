@@ -1,0 +1,31 @@
+{
+  "label": "waters-v34-capture-pumpkinseed",
+  "started": "2026-09-09T07:45:50.2291094-05:00",
+  "finished": "2026-09-09T07:45:53.2316560-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\catch-pumpkinseed-720.png",
+    "--capture-scenario=willow_pumpkinseed_catch"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-waters-v34",
+  "rootPid": 118272,
+  "observedPids": [
+    118272
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-capture-pumpkinseed.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-capture-pumpkinseed.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

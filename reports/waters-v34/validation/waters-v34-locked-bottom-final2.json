@@ -1,0 +1,31 @@
+{
+  "label": "waters-v34-locked-bottom-final2",
+  "started": "2026-09-09T07:28:01.2734924-05:00",
+  "finished": "2026-09-09T07:28:04.4027987-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-locked-bottom-720.png",
+    "--capture-scenario=waters_locked_bottom"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-waters-v34",
+  "rootPid": 109140,
+  "observedPids": [
+    109140
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-locked-bottom-final2.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-locked-bottom-final2.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

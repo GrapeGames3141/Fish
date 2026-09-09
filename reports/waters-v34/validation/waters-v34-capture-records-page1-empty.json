@@ -1,0 +1,31 @@
+{
+  "label": "waters-v34-capture-records-page1-empty",
+  "started": "2026-09-09T07:54:57.5043174-05:00",
+  "finished": "2026-09-09T07:55:00.5662236-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\records-page1-empty-720.png",
+    "--capture-scenario=records_empty"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-waters-v34",
+  "rootPid": 115460,
+  "observedPids": [
+    115460
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-capture-records-page1-empty.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-capture-records-page1-empty.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

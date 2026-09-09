@@ -1,5 +1,9 @@
 # Gate 1 — foundation, playable greybox, and concept direction
 
+## Waters v34
+
+- Implemented and independently verified: four regional waters, twelve fish, scrolling species-completion unlocks, v6 save migration, and paginated records. [Feature/art notes](docs/waters-v34.md), [desktop gallery](reports/waters-v34/gallery/README.md), and [signed v34 release receipt](reports/waters-v34/README-v34.md). APK and DriveFS copy are size/hash verified; Pixel install awaits a current wireless-debugging endpoint. Physical feel and human aesthetic approval remain pending.
+
 ## Acceptance
 
 - A portrait 720×1280 Godot 4.7.1 project runs a complete Pine Lake Bluegill loop: arm/cast, wait for bite, hook, physically lower then pull the rod through the fight, catch or escape, then cast again.

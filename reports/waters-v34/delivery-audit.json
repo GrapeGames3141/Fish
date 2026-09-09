@@ -1,0 +1,66 @@
+{
+  "path": "E:/AI Projects/games/haptic fish/build/android/Hooked-0.7.0-waters1-arm64-debug.apk",
+  "bytes": 65404104,
+  "sha256": "21A788E90EB3699DB429C6380ECA6963445A2F09DBB2C0A851338E582BAF7271",
+  "entryCount": 828,
+  "native": [
+    {
+      "FullName": "lib/arm64-v8a/libc++_shared.so",
+      "Length": 1374336,
+      "CompressedLength": 501772
+    },
+    {
+      "FullName": "lib/arm64-v8a/libgodot_android.so",
+      "Length": 76177376,
+      "CompressedLength": 27833653
+    }
+  ],
+  "art": [
+    "assets/.godot/imported/cedar-river-michigan-v01.png-b8e5b6aae7f813c98dbde1d209ddca35.ctex",
+    "assets/.godot/imported/hatteras-inlet-photo-v01.png-abd8b75adb38a7249f34c03724c5ac98.ctex",
+    "assets/.godot/imported/ocean-fish-atlas-v01.png-bb3dd715a7d13faba43b4161e3701862.ctex",
+    "assets/.godot/imported/willow-fish-atlas-v01.png-b36fe00816e0dfe9f9f49cd208974973.ctex",
+    "assets/.godot/imported/willow-pond-photo-v01.png-5a441e78bc9a59d876585e31744f20aa.ctex",
+    "assets/art/ui_v1/runtime_source/cedar-river-michigan-v01.png.import",
+    "assets/art/ui_v1/runtime_source/cedar-river-michigan-v01.png",
+    "assets/art/ui_v1/runtime_source/hatteras-inlet-photo-v01.png.import",
+    "assets/art/ui_v1/runtime_source/ocean-fish-atlas-v01.png.import",
+    "assets/art/ui_v1/runtime_source/willow-fish-atlas-v01.png.import",
+    "assets/art/ui_v1/runtime_source/willow-pond-photo-v01.png.import"
+  ],
+  "forbidden": [],
+  "version_code": 34,
+  "version_name": "0.7.0-waters1",
+  "package": "com.tak.castandcrank",
+  "label": "Hooked",
+  "min_sdk": 24,
+  "target_sdk": 36,
+  "vibrate_permission": true,
+  "signer_sha256": "c26373b2320fa530be93f5b6d255a4c8e10e6aa4476e430dedb6106a4de865dc",
+  "previous_build_bytes": 58139344,
+  "delta_bytes": 7264760,
+  "verification": "aapt dump badging; apksigner verify --print-certs exited0; .NET ZIP enumeration; SHA256",
+  "drive": {
+    "Source": "E:\\AI Projects\\games\\haptic fish\\build\\android\\Hooked-0.7.0-waters1-arm64-debug.apk",
+    "Destination": "H:\\My Drive\\AI Projects\\Haptic Fish\\Hooked-0.7.0-waters1-arm64-debug.apk",
+    "Bytes": 65404104,
+    "Megabytes": 62.37,
+    "SHA256": "21A788E90EB3699DB429C6380ECA6963445A2F09DBB2C0A851338E582BAF7271",
+    "Verified": true
+  },
+  "pixel": {
+    "installed": false,
+    "reason": "No devices or mDNS services were available at final delivery check. Waiting for current Wireless debugging address/port; no phone screenshots taken."
+  },
+  "cleanup": {
+    "godot_export_pid": 126936,
+    "gradle_daemon_pid": 118392,
+    "gradle_created": "2026-09-09T07:56:48-05:00",
+    "gradle_cwd": "E:\\CodexCache\\haptic-fish-project",
+    "gradle_stopped": true,
+    "final_godot_java_werfault_inventory": [],
+    "temporary_image_files_removed": 8,
+    "temporary_image_bytes_removed": 22639507,
+    "durable_art_copies_sha_verified": 6
+  }
+}

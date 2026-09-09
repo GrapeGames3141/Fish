@@ -1,0 +1,31 @@
+{
+  "label": "waters-v34-capture-hatteras-ready",
+  "started": "2026-09-09T07:44:48.0868406-05:00",
+  "finished": "2026-09-09T07:44:51.1474881-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\hatteras-ready-720.png",
+    "--capture-scenario=hatteras_ready"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-waters-v34",
+  "rootPid": 127088,
+  "observedPids": [
+    127088
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-capture-hatteras-ready.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-capture-hatteras-ready.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

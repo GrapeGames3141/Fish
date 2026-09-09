@@ -7,6 +7,7 @@ const AdMobService = preload("res://src/services/admob_service.gd")
 const HapticService = preload("res://src/services/haptic_service.gd")
 const CastCaptureService = preload("res://src/services/cast_capture_service.gd")
 const FishDefinition = preload("res://src/domain/fish_definition.gd")
+const LocationDefinition = preload("res://src/domain/location_definition.gd")
 const LeaderboardService = preload("res://src/services/leaderboard_service.gd")
 const PlayGamesConfig = preload("res://addons/play_games/play_games_config.gd")
 
@@ -42,12 +43,16 @@ var leaderboard_reel_sensor_seconds := 0.0
 var leaderboard_catch_token := 0
 
 var pine_lake_texture: Texture2D = load("res://art/ui_v1/runtime_source/pine-lake-photoreal-v03.png")
-var cedar_river_texture: Texture2D = load("res://art/ui_v1/runtime_source/cedar-river-photo-v03.png")
+var cedar_river_texture: Texture2D = load("res://art/ui_v1/runtime_source/cedar-river-michigan-v01.png")
+var willow_pond_texture: Texture2D = load("res://art/ui_v1/runtime_source/willow-pond-photo-v01.png")
+var hatteras_inlet_texture: Texture2D = load("res://art/ui_v1/runtime_source/hatteras-inlet-photo-v01.png")
 var pine_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/pine-fish-atlas-v02.png")
 var cedar_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/cedar-fish-atlas-v02.png")
+var willow_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/willow-fish-atlas-v01.png")
+var ocean_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/ocean-fish-atlas-v01.png")
 var photoreal_rod_texture: Texture2D = load("res://art/ui_v1/runtime_source/rod-photoreal-alpha-v01.png")
 var bobber_texture: Texture2D = load("res://art/ui_v1/runtime_source/bobber-photoreal-alpha-v01.png")
-var splash_texture: Texture2D = load("res://art/ui_v1/runtime_source/cedar-river-photo-v03.png")
+var splash_texture: Texture2D = load("res://art/ui_v1/runtime_source/cedar-river-michigan-v01.png")
 var records_texture: Texture2D = preload("res://art/ui_v1/runtime_source/records-screen-rustic-v01.png")
 var top_nav_texture: Texture2D = load("res://art/ui_v1/runtime_source/top-nav-rustic-v01.png")
 var rustic_settings_texture: Texture2D = load("res://art/ui_v1/runtime_source/rustic-clipboard-blank-v01.png")
@@ -55,7 +60,7 @@ var rustic_waters_texture: Texture2D = load("res://art/ui_v1/runtime_source/wate
 
 func _ready() -> void:
 	session = FishingSession.new(); motion = MotionService.new(); save = SaveService.new(); ads = AdMobService.new(); haptics = HapticService.new(); preview_haptics = HapticService.new(); cast_capture = CastCaptureService.new(CastCaptureService.PATH, Callable(motion, "sample"))
-	save.load_data(); motion.sensitivity = float(save.data.settings.get("sensitivity", 1.0)); motion.left_handed = bool(save.data.settings.get("left_handed", false)); session.set_location(str(save.data.get("selected_location_id", "pine_lake")), 0.0)
+	save.load_data(); motion.sensitivity = float(save.data.settings.get("sensitivity", 1.0)); motion.left_handed = bool(save.data.settings.get("left_handed", false)); session.set_location(str(save.data.get("selected_location_id", "willow_pond")), 0.0)
 	if not motion.set_profile(save.data.get("motion_profile", {})): motion.begin_calibration()
 	ads.initialize(); haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
 	view = FishingView.new(); view.controller = self; add_child(view)
@@ -178,8 +183,12 @@ func _hook(motion_event: Dictionary = {}) -> void:
 		leaderboard_motion_hook = OS.has_feature("android") and not motion_event.is_empty()
 		motion.begin_fight(); haptics.cue("hook"); haptics.start_fight(session.fish); print("MOTION_HOOK state=REELING projection=%.2f alignment=%.2f gyro=%.2f sweep_samples=%d" % [float(motion_event.get("hook_projection", 0.0)), float(motion_event.get("hook_alignment", 0.0)), float(motion_event.get("hook_gyro", 0.0)), int(motion_event.get("hook_sweep_samples", 0))])
 func _record_catch_once() -> void:
-	if caught_recorded or capture_mode: return
+	if caught_recorded or capture_mode or session.state != FishingSession.State.CAUGHT: return
+	var formerly_unlocked: Array = save.data.get("unlocked_location_ids", []).duplicate()
 	save.record_catch(session.fish.id, session.catch_length_cm, {"location_id": session.location_id, "fight_seconds": session.fight_elapsed, "cast_distance_m": session.cast_distance_m}); caught_recorded = true
+	for location in LocationDefinition.all():
+		if str(location.get("id", "")) != "willow_pond" and location.get("id", "") not in formerly_unlocked and is_location_unlocked(str(location.get("id", ""))):
+			ui_notice = "%s UNLOCKED" % str(location.get("title", "")).to_upper(); ui_notice_remaining = 3.0
 	if leaderboards != null:
 		leaderboards.submit_landed(session.fish.id, session.catch_length_cm, {
 			"landed": session.state == FishingSession.State.CAUGHT,
@@ -200,16 +209,19 @@ static func catch_status_for(prior_count: int, prior_best: float, length: float)
 	if shown_length > shown_best: return "NEW BEST  •  %d CAUGHT" % (prior_count + 1)
 	if is_equal_approx(shown_length, shown_best): return "MATCHED BEST  •  %d CAUGHT" % (prior_count + 1)
 	return "%d CAUGHT  •  BEST %.1f cm" % [prior_count + 1, shown_best]
-static func presentation_bobber_y(distance_m: float, fight_progress: float, is_reeling: bool, landing_blend: float) -> float:
+static func presentation_bobber_y(distance_m: float, fight_progress: float, is_reeling: bool, landing_blend: float, location_id := "pine_lake") -> float:
 	var distance_fraction := inverse_lerp(FishingSession.MIN_CAST_DISTANCE_M, FishingSession.MAX_CAST_DISTANCE_M, distance_m)
-	var landed_y := lerpf(780.0, 410.0, distance_fraction)
+	var near_y := 780.0
+	var far_y := 410.0
+	if location_id == "willow_pond": near_y = 820.0; far_y = 570.0
+	var landed_y := lerpf(near_y, far_y, distance_fraction)
 	if is_reeling: return lerpf(landed_y, 860.0, clampf(fight_progress, 0.0, 1.0))
-	return lerpf(786.0, landed_y, clampf(landing_blend, 0.0, 1.0))
-static func presentation_bobber_position(distance_m: float, fight_progress: float, is_reeling: bool, landing_blend: float) -> Vector2:
+	return lerpf(near_y + 6.0, landed_y, clampf(landing_blend, 0.0, 1.0))
+static func presentation_bobber_position(distance_m: float, fight_progress: float, is_reeling: bool, landing_blend: float, location_id := "pine_lake") -> Vector2:
 	var distance_fraction := inverse_lerp(FishingSession.MIN_CAST_DISTANCE_M, FishingSession.MAX_CAST_DISTANCE_M, distance_m)
 	# Cast speed selects a reachable water band, not a touch-aim cursor. The small
 	# lateral drift makes reeds / seam / deep-run landings visibly distinct.
-	return Vector2(lerpf(446.0, 528.0, distance_fraction), presentation_bobber_y(distance_m, fight_progress, is_reeling, landing_blend))
+	return Vector2(lerpf(446.0, 528.0, distance_fraction), presentation_bobber_y(distance_m, fight_progress, is_reeling, landing_blend, location_id))
 static func accepts_primary_press(is_touch: bool, is_pressed: bool, is_primary: bool, device_id: int) -> bool:
 	if not is_pressed or not is_primary: return false
 	return is_touch or device_id != InputEvent.DEVICE_ID_EMULATION
@@ -244,10 +256,31 @@ func _discovered_species_count(location: String) -> int:
 	for fish in FishDefinition.for_location(location):
 		if int(save.data.catches.get(fish.id, 0)) > 0: discovered += 1
 	return discovered
+func location_texture(location_id: String) -> Texture2D:
+	match location_id:
+		"willow_pond": return willow_pond_texture
+		"cedar_river": return cedar_river_texture
+		"hatteras_inlet": return hatteras_inlet_texture
+	return pine_lake_texture
+func is_location_unlocked(location_id: String) -> bool:
+	return not LocationDefinition.by_id(location_id).is_empty() and location_id in save.data.get("unlocked_location_ids", [])
+func missing_location_fish(location_id: String) -> Array[String]:
+	return SaveService.missing_species_for_location(save.data, location_id)
 func _select_location(location: String) -> void:
 	if not _can_open_records(): return
+	if LocationDefinition.by_id(location).is_empty(): return
+	if not is_location_unlocked(location):
+		var missing_names: Array[String] = []
+		for fish_id in missing_location_fish(location): missing_names.append(_fish_name(fish_id))
+		ui_notice = "LAND %s" % ", ".join(missing_names)
+		ui_notice_remaining = 2.6
+		return
 	if session.state in [FishingSession.State.CAUGHT, FishingSession.State.ESCAPED]: _reset_session()
 	if session.set_location(location, 0.0): save.data.selected_location_id = location; save.save_data(); view.overlay = ""
+func _fish_name(fish_id: String) -> String:
+	for fish in FishDefinition.all_planned():
+		if fish.id == fish_id: return fish.display_name
+	return fish_id.replace("_", " ").capitalize()
 func _open_settings() -> void:
 	# A menu visit pauses the loop and discards a partially cocked gesture.
 	if session.state == FishingSession.State.CAST_ARMED: session.cancel_cast(); prior_state = session.state
@@ -258,6 +291,7 @@ func _close_overlay() -> void:
 	# before clearing either channel. This prevents a preview pulse becoming a cast/hook.
 	var preserved_guard := maxf(HapticService.MOTION_SETTLE_SECONDS, maxf(haptics.motion_guard_seconds(), preview_haptics.motion_guard_seconds()))
 	terminal_motion_ready = false; session.terminal_still_elapsed = 0.0
+	if view != null: view.reset_waters_pointer()
 	haptics.stop(); preview_haptics.stop(); motion.reset_gesture(); menu_motion_settle_remaining = preserved_guard; view.overlay = ""
 func _test_haptics() -> void:
 	preview_haptics.stop(); preview_haptics.set_enabled(bool(save.data.settings.get("haptics", true))); preview_haptics.cue("bite")
@@ -269,6 +303,12 @@ func _apply_capture_scenario() -> void:
 	view.overlay = ""
 	match capture_scenario:
 		"loading": pass
+		"willow_ready": session.set_location("willow_pond", 0.0)
+		"willow_line_out": session.set_location("willow_pond", 0.0); session.arm_cast(); session.release_cast(0.8); session.elapsed = maxf(0.0, session.fish.bite_delay_seconds - 0.35)
+		"willow_reeling_danger": session.set_location("willow_pond", 0.0); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.95; session.rod_load = 0.95; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+		"hatteras_ready": session.set_location("hatteras_inlet", 0.0)
+		"hatteras_bite": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.BITE; session.bite_elapsed = 0.20
+		"hatteras_reeling_high": session.set_location("hatteras_inlet", 0.0); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.88; session.rod_load = 0.88; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"pine_ready": session.set_location("pine_lake", 0.0)
 		"cedar_ready": session.set_location("cedar_river", 0.0)
 		"cedar_ready_safe_top_180": session.set_location("cedar_river", 0.0); view.safe_top_override = 180.0
@@ -292,15 +332,26 @@ func _apply_capture_scenario() -> void:
 		"cedar_trout_catch": session.set_location("cedar_river", 0.0); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 42.0; session.last_reason = "%s landed!" % session.fish.display_name; session.cast_quality = 0.88; session.cast_distance_m = 36.2; caught_recorded = true
 		"cedar_smallmouth_catch": session.set_location("cedar_river", 0.65); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 45.0; session.last_reason = "%s landed!" % session.fish.display_name; session.cast_quality = 0.88; session.cast_distance_m = 36.2; caught_recorded = true
 		"cedar_catch": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.last_reason = "%s landed!" % session.fish.display_name; session.cast_quality = 0.88; session.cast_distance_m = 36.2; caught_recorded = true
+		"willow_pumpkinseed_catch": _capture_named_catch("willow_pond", "pumpkinseed", 20.8)
+		"willow_crappie_catch": _capture_named_catch("willow_pond", "black_crappie", 29.4)
+		"willow_bullhead_catch": _capture_named_catch("willow_pond", "brown_bullhead", 34.2)
+		"hatteras_reddrum_catch": _capture_named_catch("hatteras_inlet", "red_drum", 61.6)
+		"hatteras_seatrout_catch": _capture_named_catch("hatteras_inlet", "spotted_seatrout", 47.2)
+		"hatteras_bluefish_catch": _capture_named_catch("hatteras_inlet", "bluefish", 55.8)
 		"records": _seed_capture_records(); view.overlay = "records"
+		"records_page2": _seed_capture_records_mixed(); view.journal_page_index = 1; view.overlay = "records"
+		"records_page2_full_safe180": _seed_capture_records(); view.journal_page_index = 1; view.safe_top_override = 180.0; view.overlay = "records"
 		"records_mixed": _seed_capture_records_mixed(); view.overlay = "records"
 		"records_empty": _clear_capture_records(); view.overlay = "records"
+		"records_page2_empty": _clear_capture_records(); view.journal_page_index = 1; view.overlay = "records"
 		"records_safe_top": _seed_capture_records(); view.safe_top_override = 91.0; view.overlay = "records"
 		"records_safe_top_180": _seed_capture_records(); view.safe_top_override = 180.0; view.overlay = "records"
 		"records_detail": _seed_capture_records(); save.data.best_cm.northern_pike = 88.6; view.journal_fish_id = "northern_pike"; save.data.catch_history = [{"fish_id": "northern_pike", "length_cm": 72.1, "location_id": "cedar_river", "timestamp_utc": 1699900000, "fight_seconds": 18.2, "cast_distance_m": 31.0}, {"fish_id": "northern_pike", "length_cm": 88.6, "location_id": "cedar_river", "timestamp_utc": 1700000000, "fight_seconds": 16.4, "cast_distance_m": 34.0}]; view.overlay = "journal_detail"
 		"records_detail_safe_top_180": _seed_capture_records(); save.data.best_cm.northern_pike = 88.6; view.journal_fish_id = "northern_pike"; save.data.catch_history = [{"fish_id": "northern_pike", "length_cm": 72.1, "location_id": "cedar_river", "timestamp_utc": 1699900000, "fight_seconds": 18.2, "cast_distance_m": 31.0}, {"fish_id": "northern_pike", "length_cm": 88.6, "location_id": "cedar_river", "timestamp_utc": 1700000000, "fight_seconds": 16.4, "cast_distance_m": 34.0}]; view.safe_top_override = 180.0; view.overlay = "journal_detail"
 		"field_notes": _seed_capture_records(); save.data.best_cm.northern_pike = 88.6; view.journal_fish_id = "northern_pike"; save.data.catch_history = [{"fish_id": "northern_pike", "length_cm": 72.1, "location_id": "cedar_river", "timestamp_utc": 1699900000, "fight_seconds": 18.2, "cast_distance_m": 31.0}, {"fish_id": "northern_pike", "length_cm": 88.6, "location_id": "cedar_river", "timestamp_utc": 1700000000, "fight_seconds": 16.4, "cast_distance_m": 34.0}]; view.overlay = "journal_detail"
+		"field_notes_reddrum_safe180": _seed_capture_records(); save.data.best_cm.red_drum = 61.6; view.journal_fish_id = "red_drum"; save.data.catch_history = [{"fish_id": "red_drum", "length_cm": 61.6, "location_id": "hatteras_inlet", "timestamp_utc": 1700000000, "fight_seconds": 18.4, "cast_distance_m": 36.0}]; view.safe_top_override = 180.0; view.overlay = "journal_detail"
 		"world_offline": _seed_capture_records(); view.overlay = "world_records"
+		"world_page2": _seed_capture_records(); view.world_page_index = 1; view.overlay = "world_records"
 		"catch_safe_top_180": view.safe_top_override = 180.0; session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; caught_recorded = true
 		"catch_recast_ready": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; session.terminal_elapsed = FishingSession.TERMINAL_RECAST_DWELL_SECONDS; session.terminal_still_elapsed = FishingSession.TERMINAL_STILL_SECONDS; caught_recorded = true
 		"catch_tail_mid": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; session.terminal_elapsed = 0.32; ui_time = 0.16; caught_recorded = true
@@ -321,6 +372,11 @@ func _apply_capture_scenario() -> void:
 		"locations_safe_top_91": view.safe_top_override = 91.0; session.set_location("pine_lake", 0.0); view.overlay = "locations"
 		"locations_safe_top_180": view.safe_top_override = 180.0; session.set_location("pine_lake", 0.0); view.overlay = "locations"
 		"locations_cedar": session.set_location("cedar_river", 0.0); view.overlay = "locations"
+		"waters_locked_top": session.set_location("willow_pond", 0.0); save.data.selected_location_id = "willow_pond"; view.overlay = "locations"
+		"waters_locked_bottom": session.set_location("willow_pond", 0.0); save.data.selected_location_id = "willow_pond"; view.overlay = "locations"; view.waters_scroll = 9999.0
+		"waters_unlocked_bottom": _seed_capture_records(); save.data.unlocked_location_ids = ["willow_pond", "pine_lake", "cedar_river", "hatteras_inlet"]; session.set_location("hatteras_inlet", 0.0); save.data.selected_location_id = "hatteras_inlet"; view.overlay = "locations"; view.waters_scroll = 9999.0
+		"waters_locked_safe180": view.safe_top_override = 180.0; session.set_location("willow_pond", 0.0); save.data.selected_location_id = "willow_pond"; view.overlay = "locations"
+		"waters_locked_bottom_safe180": view.safe_top_override = 180.0; session.set_location("willow_pond", 0.0); save.data.selected_location_id = "willow_pond"; view.overlay = "locations"; view.waters_scroll = 9999.0
 		"escaped": session.state = FishingSession.State.ESCAPED; session.last_reason = "The line went slack."
 		"reduced_motion": save.data.settings.reduced_motion = true
 		"reduced_bite": save.data.settings.reduced_motion = true; session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.BITE; session.bite_elapsed = 0.20
@@ -345,6 +401,11 @@ func _set_capture_catch_record(count: int, best: float) -> void:
 	catch_prior_count = count; catch_prior_best_cm = best
 	save.data.catches[session.fish.id] = count
 	save.data.best_cm[session.fish.id] = best
+func _capture_named_catch(location_id: String, fish_id: String, length_cm: float) -> void:
+	session.set_location(location_id, 0.0)
+	for fish in FishDefinition.all_planned():
+		if fish.id == fish_id: session.fish = fish; break
+	session.state = FishingSession.State.CAUGHT; session.catch_length_cm = length_cm; session.last_reason = "%s landed!" % session.fish.display_name; session.cast_quality = 0.88; session.cast_distance_m = 36.2; caught_recorded = true
 func _capture_top_nav_press(target: String, safe_top: float) -> void:
 	view.safe_top_override = safe_top; view._refresh_top_nav_geometry()
 	match target:
@@ -391,8 +452,17 @@ class FishingView extends Control:
 	var locations_rect := Rect2(470, 12, 112, 156)
 	var settings_rect := Rect2(582, 12, 114, 156)
 	var back_to_fishing_rect := Rect2(420, 18, 264, 64)
-	var location_pine_rect := Rect2(42, 240, 636, 380)
-	var location_cedar_rect := Rect2(42, 680, 636, 380)
+	var location_pine_rect := Rect2()
+	var location_cedar_rect := Rect2()
+	var location_card_rects: Array[Rect2] = [Rect2(), Rect2(), Rect2(), Rect2()]
+	var waters_viewport_rect := Rect2()
+	var waters_scroll := 0.0
+	var waters_drag_start := Vector2.ZERO
+	var waters_drag_origin := 0.0
+	var waters_dragging := false
+	var waters_pointer_active := false
+	var waters_press_location_id := ""
+	var waters_secondary_touch_seen := false
 	var modal_panel_rect := Rect2(55, 150, 610, 960)
 	var modal_header_rect := Rect2(226, 178, 272, 102)
 	var modal_footer_rect := Rect2(222, 992, 278, 104)
@@ -423,12 +493,18 @@ class FishingView extends Control:
 	var journal_detail_note_rect := Rect2(94, 826, 532, 48)
 	var journal_fish_id := "bluegill"
 	var journal_history_offset := 0
+	var journal_page_index := 0
+	var records_previous_rect := Rect2()
+	var records_next_rect := Rect2()
 	var records_world_rect := Rect2(28, 24, 190, 58)
 	var world_back_rect := Rect2(92, 992, 250, 70)
 	var world_period_rect := Rect2(374, 860, 260, 70)
 	var world_retry_rect := Rect2(86, 860, 260, 70)
 	var world_status_rect := Rect2(86, 360, 548, 80)
 	var world_row_rects := [Rect2(), Rect2(), Rect2(), Rect2(), Rect2(), Rect2()]
+	var world_page_index := 0
+	var world_previous_rect := Rect2()
+	var world_next_rect := Rect2()
 	var tension_meter_rect := Rect2(30, 112, 540, 18)
 	var font: Font
 	func _ready() -> void:
@@ -509,7 +585,7 @@ class FishingView extends Control:
 		_draw_wood_control(Rect2(130, 932, 460, 96)); _centered_text_in_rect("HOOKED", Rect2(130, 944, 460, 42), 32, Color("fff4cf")); _centered_text_in_rect("MOTION FISHING", Rect2(130, 985, 460, 28), 15, Color("fff4cf"))
 	func _draw_world() -> void:
 		var s: FishingSession = controller.session
-		var background: Texture2D = controller.cedar_river_texture if s.location_id == "cedar_river" else controller.pine_lake_texture
+		var background: Texture2D = controller.location_texture(s.location_id)
 		if background: draw_texture_rect(background, Rect2(0, 0, 720, 1280), false)
 		else: draw_rect(Rect2(0, 0, 720, 1280), Color("1c617d"))
 		# Ordinary opaque screens retain only their natural scenery background. They
@@ -542,7 +618,7 @@ class FishingView extends Control:
 			return
 		var wave := 0.0 if reduced else sin(controller.ui_time * 2.2) * 5.0
 		var landing_blend := 1.0 if reduced else clampf(controller.cast_visual_elapsed / 0.32, 0.0, 1.0)
-		var bobber_pos: Vector2 = controller.presentation_bobber_position(s.cast_distance_m, s.fight_progress, s.state == FishingSession.State.REELING, landing_blend) + Vector2(0, wave)
+		var bobber_pos: Vector2 = controller.presentation_bobber_position(s.cast_distance_m, s.fight_progress, s.state == FishingSession.State.REELING, landing_blend, s.location_id) + Vector2(0, wave)
 		_draw_river_life(s, bobber_pos, reduced)
 		var submerged := s.state in [FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
 		# Keep the external line attached to the stable water-surface contact. The
@@ -575,16 +651,19 @@ class FishingView extends Control:
 				var drift := fmod(controller.ui_time * 18.0 + droplet * 7.0, 18.0)
 				draw_circle(bobber_pos + Vector2(-9 + droplet * 10, -4 - drift), 2.0, Color("e8fbf4", 0.54))
 	func _draw_river_life(s: FishingSession, bobber_pos: Vector2, reduced: bool) -> void:
-		if s.location_id != "cedar_river": return
 		# Code-native life sits only on water; the photographic plate remains the sole
 		# owner of banks and rocks, avoiding a second static layer or alpha seams.
 		if not reduced:
 			for band in range(3):
 				var flow_y := 510.0 + band * 126.0
-				var flow_x := fmod(controller.ui_time * (18.0 + band * 6.0) + band * 188.0, 720.0)
+				var speed := 18.0
+				var tint := Color(0.82, 0.94, 0.92, 0.11)
+				if s.location_id == "willow_pond": flow_y = 660.0 + band * 74.0; speed = 7.0; tint = Color(0.82, 0.91, 0.74, 0.10)
+				elif s.location_id == "hatteras_inlet": flow_y = 560.0 + band * 112.0; speed = 31.0; tint = Color(0.82, 0.94, 0.98, 0.15)
+				var flow_x := 229.0 + fmod(controller.ui_time * (speed + band * 6.0) + band * 188.0, 334.0)
 				# Low-cost reflection flow is confined to the known open-water bands; it
 				# never moves photographic banks, rocks, or adds duplicate foliage.
-				draw_line(Vector2(flow_x - 24, flow_y), Vector2(flow_x + 24, flow_y + 3), Color(0.82, 0.94, 0.92, 0.11), 1.2)
+				draw_line(Vector2(flow_x - 24, flow_y), Vector2(flow_x + 24, flow_y + 3), tint, 1.2)
 		if s.state != FishingSession.State.LINE_OUT: return
 		var bite_delay := maxf(0.01, s.fish.bite_delay_seconds)
 		var approach := clampf(inverse_lerp(maxf(0.0, bite_delay - 1.05), bite_delay, s.elapsed), 0.0, 1.0)
@@ -793,14 +872,24 @@ class FishingView extends Control:
 	func _draw_locations() -> void:
 		var safe_top := _virtual_safe_top()
 		_refresh_location_card_rects(safe_top)
-		var background: Texture2D = controller.cedar_river_texture if controller.session.location_id == "cedar_river" else controller.pine_lake_texture
+		var background: Texture2D = controller.location_texture(controller.session.location_id)
 		if background: draw_texture_rect(background, Rect2(0, 0, 720, 1280), false)
-		_draw_location_card("PINE LAKE", "Near reeds • mid coves • far channel", controller.pine_lake_texture, location_pine_rect, controller.session.location_id == "pine_lake")
-		_draw_location_card("CEDAR RIVER", "Near eddies • mid current • far run", controller.cedar_river_texture, location_cedar_rect, controller.session.location_id == "cedar_river")
+		# The viewport owns scrolling water cards; fixed wood controls do not move.
+		for index in range(LocationDefinition.all().size()):
+			var location: Dictionary = LocationDefinition.all()[index]
+			_draw_location_card(location, location_card_rects[index])
+		var content_height := 0.0
+		for index in range(LocationDefinition.all().size()): content_height += _waters_card_height(index) + (18.0 if index > 0 else 0.0)
+		if content_height > waters_viewport_rect.size.y:
+			var rail := Rect2(682, waters_viewport_rect.position.y + 10, 6, waters_viewport_rect.size.y - 20)
+			var thumb_height := maxf(56.0, rail.size.y * waters_viewport_rect.size.y / content_height)
+			var scroll_range := content_height - waters_viewport_rect.size.y
+			var thumb_y := rail.position.y + (rail.size.y - thumb_height) * waters_scroll / maxf(scroll_range, 1.0)
+			draw_rect(rail, Color("3b2818", 0.68)); draw_rect(Rect2(rail.position.x, thumb_y, rail.size.x, thumb_height), Color("efdaa2"))
 		_draw_wood_control(back_to_fishing_rect)
 		_centered_text_in_rect("BACK TO FISHING", back_to_fishing_rect, 15, Color("fff4d1"))
-		if controller.session.location_id == "pine_lake": draw_rect(location_pine_rect.grow(-5), Color("d6b56d", 0.38), false, 4.0)
-		else: draw_rect(location_cedar_rect.grow(-5), Color("d6b56d", 0.38), false, 4.0)
+		_draw_wood_control(Rect2(286, safe_top + 18, 402, 64))
+		_centered_text_in_rect("WATERS", Rect2(286, safe_top + 18, 402, 64), 22, Color("fff4d1"))
 	func _draw_back_to_fishing(safe_top: float) -> void:
 		_refresh_back_to_fishing_rect(safe_top)
 		_draw_wood_control(back_to_fishing_rect)
@@ -817,28 +906,72 @@ class FishingView extends Control:
 		var visual_y := maxf(1168.0, safe_top + 18.0)
 		back_to_fishing_rect = Rect2(416, visual_y - 8.0, 280, 64)
 	func _refresh_location_card_rects(safe_top: float) -> void:
-		# Each card is an intentional framed crop. It is independent from the scenic
-		# selected-water backdrop, so safe insets never shrink a full unrelated master.
-		var top_y := safe_top + 94.0
-		location_pine_rect = Rect2(50, top_y, 620, 429)
-		location_cedar_rect = Rect2(50, top_y + 459, 620, 460)
+		waters_viewport_rect = Rect2(30, safe_top + 94, 660, 1080 - safe_top)
+		var gap := 18.0
+		var content_height := 0.0
+		for index in range(LocationDefinition.all().size()): content_height += _waters_card_height(index) + (gap if index > 0 else 0.0)
+		var max_scroll := maxf(0.0, content_height - waters_viewport_rect.size.y)
+		waters_scroll = clampf(waters_scroll, 0.0, max_scroll)
+		var y := waters_viewport_rect.position.y - waters_scroll
+		for index in range(location_card_rects.size()):
+			var height := _waters_card_height(index)
+			location_card_rects[index] = Rect2(50, y, 620, height); y += height + gap
+		location_pine_rect = location_card_rects[1]
+		location_cedar_rect = location_card_rects[2]
 		back_to_fishing_rect = Rect2(32, safe_top + 18, 242, 64)
-	func _draw_location_card(title: String, species: String, texture: Texture2D, rect: Rect2, selected: bool) -> void:
-		var top := title == "PINE LAKE"
-		var source := Rect2(32, 224, 877, 607) if top else Rect2(32, 868, 877, 650)
-		var source_image := Rect2(60, 258, 823, 417) if top else Rect2(60, 898, 823, 454)
-		var local_image := Rect2(source_image.position - source.position, source_image.size)
-		var scale := rect.size.x / source.size.x
-		var image_rect := Rect2(rect.position + local_image.position * scale, local_image.size * scale)
-		if controller.rustic_waters_texture: draw_texture_rect_region(controller.rustic_waters_texture, rect, source)
+	func _waters_card_height(index: int) -> float:
+		if controller == null or controller.save == null: return 416.0
+		var location: Dictionary = LocationDefinition.all()[index]
+		var missing_count: int = controller.missing_location_fish(str(location.get("id", ""))).size()
+		return 416.0 + (ceil(float(missing_count) / 3.0) * 18.0 if missing_count > 0 else 0.0)
+	func _draw_waters_clipped_texture(texture: Texture2D, destination: Rect2, source: Rect2) -> void:
+		if texture == null: return
+		var visible := destination.intersection(waters_viewport_rect)
+		if visible.size.x <= 0.0 or visible.size.y <= 0.0: return
+		var fraction := (visible.position - destination.position) / destination.size
+		var clipped_source := Rect2(source.position + source.size * fraction, source.size * (visible.size / destination.size))
+		draw_texture_rect_region(texture, visible, clipped_source)
+	func _draw_waters_text(value: String, rect: Rect2, size: int, color: Color) -> void:
+		if waters_viewport_rect.encloses(rect): _centered_text_in_rect(value, rect, size, color)
+	func _draw_location_card(location: Dictionary, rect: Rect2) -> void:
+		if not rect.intersects(waters_viewport_rect): return
+		# Only reusable border strips are taken from the Waters master; no baked card
+		# photo or copy survives underneath the new real preview and parchment panel.
+		var frame: Texture2D = controller.rustic_waters_texture
+		_draw_waters_clipped_texture(frame, Rect2(rect.position, Vector2(rect.size.x, 20)), Rect2(32, 224, 877, 34))
+		_draw_waters_clipped_texture(frame, Rect2(rect.position + Vector2(0, rect.size.y - 20), Vector2(rect.size.x, 20)), Rect2(32, 807, 877, 24))
+		_draw_waters_clipped_texture(frame, Rect2(rect.position, Vector2(20, rect.size.y)), Rect2(32, 258, 28, 549))
+		_draw_waters_clipped_texture(frame, Rect2(rect.position + Vector2(rect.size.x - 20, 0), Vector2(20, rect.size.y)), Rect2(881, 258, 28, 549))
+		var image_rect := Rect2(rect.position + Vector2(20, 24), Vector2(580, 190))
+		var texture: Texture2D = controller.location_texture(str(location.get("id", "")))
 		if texture:
-			var texture_size := texture.get_size()
-			var crop_height := texture_size.x / maxf(image_rect.size.x / image_rect.size.y, 0.01)
-			var crop_y := clampf(texture_size.y * 0.30 - crop_height * 0.5, 0.0, texture_size.y - crop_height)
-			draw_texture_rect_region(texture, image_rect, Rect2(0, crop_y, texture_size.x, crop_height))
-		if selected: draw_style_box(_panel_style(Color(0.0, 0.0, 0.0, 0.0), Color("f0d579")), rect.grow(-4.0))
-		var info_rect := Rect2(rect.position + Vector2(30, rect.size.y - 88), Vector2(rect.size.x - 60, 70))
-		_centered_text_in_rect("SELECTED • " + title if selected else title, Rect2(info_rect.position, Vector2(info_rect.size.x, 30)), 20, Color("3b2818")); _centered_text_in_rect(_fit_text(species + "  •  %d / 3 DISCOVERED" % controller._discovered_species_count("pine_lake" if top else "cedar_river"), info_rect.size.x - 8, 12), Rect2(info_rect.position + Vector2(0, 30), Vector2(info_rect.size.x, 28)), 12, Color("3b2818"))
+			var image_size := texture.get_size()
+			var crop_height := image_size.x / maxf(image_rect.size.x / image_rect.size.y, 0.01)
+			var center := 0.35 if str(location.get("id", "")) == "hatteras_inlet" else (0.40 if str(location.get("id", "")) == "cedar_river" else 0.46)
+			var crop_y := clampf(image_size.y * center - crop_height * 0.5, 0.0, image_size.y - crop_height)
+			_draw_waters_clipped_texture(texture, image_rect, Rect2(0, crop_y, image_size.x, crop_height))
+		var id := str(location.get("id", ""))
+		if controller.session.location_id == id: draw_rect(rect.intersection(waters_viewport_rect).grow(-4), Color("f0d579"), false, 4.0)
+		var info_rect := Rect2(rect.position + Vector2(20, 220), Vector2(580, rect.size.y - 240))
+		_draw_waters_clipped_texture(controller.rustic_settings_texture, info_rect, Rect2(120, 650, 700, 310))
+		var selected: bool = controller.session.location_id == id
+		var unlocked: bool = controller.is_location_unlocked(id)
+		_draw_waters_text(("SELECTED • " if selected else "") + str(location.get("title", "")).to_upper() + " • " + str(location.get("water_type", "")), Rect2(info_rect.position + Vector2(12, 8), Vector2(info_rect.size.x - 24, 24)), 18, Color("3b2818"))
+		_draw_waters_text(str(location.get("region", "")).to_upper(), Rect2(info_rect.position + Vector2(12, 33), Vector2(info_rect.size.x - 24, 21)), 16, Color("3b2818"))
+		for row in range(3):
+			var fish_id := str(location.get("species_ids", [])[row])
+			var caught := int(controller.save.data.catches.get(fish_id, 0)) > 0
+			_draw_waters_text(("✓ " if caught else "○ ") + controller._fish_name(fish_id), Rect2(info_rect.position + Vector2(12, 58 + row * 19), Vector2(info_rect.size.x - 24, 18)), 16, Color("3b2818"))
+		if unlocked:
+			_draw_waters_text("UNLOCKED • %d / 3 DISCOVERED" % controller._discovered_species_count(id), Rect2(info_rect.position + Vector2(12, 118), Vector2(info_rect.size.x - 24, 20)), 16, Color("3b2818"))
+		else:
+			var missing: Array[String] = []
+			for fish_id in controller.missing_location_fish(id): missing.append(controller._fish_name(fish_id))
+			var prerequisite_total := LocationDefinition.earlier_species(id).size()
+			_draw_waters_text("LOCKED • %d / %d PRIOR SPECIES" % [prerequisite_total - missing.size(), prerequisite_total], Rect2(info_rect.position + Vector2(12, 118), Vector2(info_rect.size.x - 24, 20)), 16, Color("3b2818"))
+			for group in range(ceili(float(missing.size()) / 3.0)):
+				var from := group * 3; var to := mini(from + 3, missing.size())
+				_draw_waters_text(", ".join(missing.slice(from, to)), Rect2(info_rect.position + Vector2(12, 139 + group * 18), Vector2(info_rect.size.x - 24, 17)), 16, Color("3b2818"))
 	func _draw_diagnostics() -> void:
 		_refresh_modal_layout()
 		var data: Dictionary = controller.motion.get_diagnostics(); var reasons: Dictionary = data.reasons
@@ -853,10 +986,14 @@ class FishingView extends Control:
 			draw_texture_rect_region(controller.records_texture, Rect2(0, band_height, 720, 1280 - band_height), Rect2(0, 150, 941, 1522))
 		# One opaque authored page owns the journal/title/slots. Fish, silhouettes,
 		# localized names, and stats are runtime-only because they change with saves.
-		var fish_ids := ["bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike"]
+		var all_fish := FishDefinition.all_planned()
+		var fish_ids: Array[FishDefinition] = []
+		for index in range(6):
+			var fish_index := journal_page_index * 6 + index
+			if fish_index < all_fish.size(): fish_ids.append(all_fish[fish_index])
 		var discovered_total := 0
 		for index in range(fish_ids.size()):
-			var fish := _fish_definition(fish_ids[index])
+			var fish: FishDefinition = fish_ids[index]
 			var count := int(controller.save.data.catches.get(fish.id, 0))
 			var best := float(controller.save.data.best_cm.get(fish.id, 0.0))
 			if count > 0: discovered_total += 1
@@ -871,6 +1008,9 @@ class FishingView extends Control:
 			_centered_text_in_rect("%d CAUGHT  •  %s" % [count, ("%.1f cm" % best) if best > 0.0 else "—"], stats_rect, maxi(11, int(14 * page.size.x / 720.0)), Color("5f4120"))
 		_centered_text_in_rect("WORLD RECORDS", records_world_rect, maxi(12, int(16 * page.size.x / 720.0)), Color("fff4d1"))
 		_centered_text_in_rect("BACK TO FISHING", back_to_fishing_rect, maxi(12, int(16 * page.size.x / 720.0)), Color("fff4d1"))
+		_draw_wood_control(records_previous_rect); _draw_wood_control(records_next_rect)
+		_centered_text_in_rect("PREV PAGE" if journal_page_index > 0 else "PAGE 1 / 2", records_previous_rect, 15, Color("fff4d1") if journal_page_index > 0 else Color("b5a789"))
+		_centered_text_in_rect("NEXT PAGE" if journal_page_index < 1 else "PAGE 2 / 2", records_next_rect, 15, Color("fff4d1") if journal_page_index < 1 else Color("b5a789"))
 	func _refresh_records_geometry(safe_top: float) -> void:
 		# All record art / text / hit windows are derived from one journal transform.
 		# The tap window intentionally unites its fish, wood name, and paper stats.
@@ -886,6 +1026,8 @@ class FishingView extends Control:
 			journal_slot_rects[index] = journal_fish_rects[index].merge(journal_name_rects[index]).merge(journal_stats_rects[index])
 		records_world_rect = _journal_map_rect(Rect2(77, 1477, 370, 78), page)
 		back_to_fishing_rect = _journal_map_rect(Rect2(493, 1477, 370, 78), page)
+		records_previous_rect = _journal_map_rect(Rect2(77, 1394, 370, 60), page)
+		records_next_rect = _journal_map_rect(Rect2(493, 1394, 370, 60), page)
 	func _draw_world_records() -> void:
 		_refresh_world_records_geometry()
 		_draw_rustic_clipboard()
@@ -904,8 +1046,11 @@ class FishingView extends Control:
 			_centered_text_in_rect("Try again when Play Games is available.", Rect2(world_status_rect.position + Vector2(0, 34), Vector2(world_status_rect.size.x, 26)), 13, paper_dark)
 		else:
 			_centered_text_in_rect("%s — %s" % ["CONNECTING" if status in ["LOADING", "CONNECTING"] else "ONLINE", period], world_status_rect, 17, paper_dark)
-		for index in range(FishDefinition.all_planned().size()):
-			var fish: FishDefinition = FishDefinition.all_planned()[index]
+		var all_fish := FishDefinition.all_planned()
+		for index in range(6):
+			var fish_index := world_page_index * 6 + index
+			if fish_index >= all_fish.size(): continue
+			var fish: FishDefinition = all_fish[fish_index]
 			var best := float(controller.save.data.best_cm.get(fish.id, 0.0))
 			var board: Dictionary = controller.leaderboards.board_for(fish.id) if controller.leaderboards != null else {}
 			var top_mm := int(board.get("top_score_mm", 0)); var mine_mm := int(board.get("player_score_mm", 0)); var rank := int(board.get("player_rank", 0))
@@ -918,6 +1063,9 @@ class FishingView extends Control:
 			_centered_text_in_rect(_fit_text("LOCAL %s  •  YOU %s  •  WORLD %s" % ["%.1f cm" % best if best > 0.0 else "—", player_copy, world_copy], row.size.x - 20.0, 11), Rect2(row.position + Vector2(0, 25), Vector2(row.size.x, 28)), 11, paper_dark)
 		_draw_wood_control(world_retry_rect); _draw_wood_control(world_period_rect)
 		_centered_text_in_rect("CONNECT" if status == "NO_AUTH" else "RETRY", world_retry_rect, 17, Color("fff4d1")); _centered_text_in_rect("WEEKLY" if period == "ALL TIME" else "ALL TIME", world_period_rect, 16, Color("fff4d1")); _centered_text_in_rect("BACK TO RECORDS", world_back_rect, _modal_footer_font_size("BACK TO RECORDS"), Color("fff4d1"))
+		_draw_wood_control(world_previous_rect); _draw_wood_control(world_next_rect)
+		_centered_text_in_rect("PREV PAGE" if world_page_index > 0 else "PAGE 1 / 2", world_previous_rect, 15, Color("fff4d1") if world_page_index > 0 else Color("b5a789"))
+		_centered_text_in_rect("NEXT PAGE" if world_page_index < 1 else "PAGE 2 / 2", world_next_rect, 15, Color("fff4d1") if world_page_index < 1 else Color("b5a789"))
 	func _refresh_world_records_geometry() -> void:
 		_refresh_modal_layout()
 		# Paper content starts below the clipboard's wood header. These fixed virtual
@@ -926,6 +1074,8 @@ class FishingView extends Control:
 		for index in range(world_row_rects.size()): world_row_rects[index] = Rect2(86, 470 + index * 60, 548, 56)
 		world_retry_rect = Rect2(86, 900, 260, 68)
 		world_period_rect = Rect2(374, 900, 260, 68)
+		world_previous_rect = Rect2(86, 980, 260, 50)
+		world_next_rect = Rect2(374, 980, 260, 50)
 		world_back_rect = modal_footer_rect
 	func _journal_page_rect(safe_top: float) -> Rect2:
 		# Records owns the full screen once. Under a tall safe inset its decorative
@@ -960,9 +1110,13 @@ class FishingView extends Control:
 			var date := Time.get_datetime_dict_from_unix_time(int(entry.timestamp_utc))
 			var line := "%.1f cm  •  %s  •  %04d-%02d-%02d  •  %.1fs" % [float(entry.length_cm), str(entry.location_id).replace("_", " ").to_upper(), int(date.year), int(date.month), int(date.day), float(entry.fight_seconds)]
 			_centered_text_in_rect(_fit_text(line, journal_detail_history_rect.size.x - 16.0, 12), Rect2(journal_detail_history_rect.position + Vector2(0, 28 + row * 30), Vector2(journal_detail_history_rect.size.x, 28)), 12, paper_dark)
-		var habitat_note := "Near reeds favor lighter strikes; far water can hold heavier runs."
+		var location := LocationDefinition.by_id(fish.location_id)
+		var habitat_note := str(location.get("habitat", "Work the water band, then ease between runs."))
+		habitat_note = "%s. %s" % [habitat_note, "Near water favors quick contact; far water can hold longer runs."]
 		if fish.id == "northern_pike": habitat_note = "Pike runs hard. Ease at the urgent pulse, then pull in the lull."
 		elif fish.id == "channel_catfish": habitat_note = "Catfish hold steady pressure. Let the line breathe between pulls."
+		elif fish.id == "red_drum": habitat_note = "Red drum pull with weight. Ease before the red line, then pull through the gap."
+		elif fish.id == "bluefish": habitat_note = "Bluefish surge in fast bursts. Keep the rod responsive, not pinned."
 		_centered_text_in_rect(_fit_text(habitat_note, journal_detail_note_rect.size.x - 16.0, 12), journal_detail_note_rect, 12, paper_dark)
 		_draw_wood_control(journal_detail_back_rect); _draw_wood_control(journal_detail_next_rect)
 		_centered_text_in_rect("BACK TO RECORDS", journal_detail_back_rect, 15, Color("fff4d1"))
@@ -981,32 +1135,17 @@ class FishingView extends Control:
 			if fish.id == fish_id: return fish
 		return FishDefinition.bluegill()
 	func _draw_fish_atlas_contained(fish_id: String, destination: Rect2, modulate := Color.WHITE) -> void:
-		var row := 0
-		var atlas: Texture2D = controller.pine_fish_atlas
-		match fish_id:
-			"bluegill": row = 0
-			"largemouth_bass": row = 1
-			"channel_catfish": row = 2
-			"rainbow_trout": atlas = controller.cedar_fish_atlas; row = 0
-			"smallmouth_bass": atlas = controller.cedar_fish_atlas; row = 1
-			"northern_pike": atlas = controller.cedar_fish_atlas; row = 2
+		var atlas := _fish_atlas_for(fish_id)
 		if atlas == null: return
-		var source := Rect2(0, row * 512, 1024, 512)
+		var source := _fish_atlas_region(fish_id)
 		var scale := minf(destination.size.x / source.size.x, destination.size.y / source.size.y)
 		var size := source.size * scale
 		var contained := Rect2(destination.position + (destination.size - size) * 0.5, size)
 		draw_texture_rect_region(atlas, contained, source, modulate)
 	func _draw_fish_catch_flick(fish_id: String, destination: Rect2, tail_offset: float) -> void:
-		var row := 0
-		var atlas: Texture2D = controller.pine_fish_atlas
-		match fish_id:
-			"largemouth_bass": row = 1
-			"channel_catfish": row = 2
-			"rainbow_trout": atlas = controller.cedar_fish_atlas; row = 0
-			"smallmouth_bass": atlas = controller.cedar_fish_atlas; row = 1
-			"northern_pike": atlas = controller.cedar_fish_atlas; row = 2
+		var atlas := _fish_atlas_for(fish_id)
 		if atlas == null: return
-		var source := Rect2(0, row * 512, 1024, 512)
+		var source := _fish_atlas_region(fish_id)
 		var scale := minf(destination.size.x / source.size.x, destination.size.y / source.size.y)
 		var size := source.size * scale
 		var contained := Rect2(destination.position + (destination.size - size) * 0.5, size)
@@ -1023,11 +1162,72 @@ class FishingView extends Control:
 			var colors := PackedColorArray([Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE])
 			var uvs := PackedVector2Array([Vector2((source.position.x + source.size.x * u0) / atlas_size.x, source.position.y / atlas_size.y), Vector2((source.position.x + source.size.x * u1) / atlas_size.x, source.position.y / atlas_size.y), Vector2((source.position.x + source.size.x * u1) / atlas_size.x, (source.position.y + source.size.y) / atlas_size.y), Vector2((source.position.x + source.size.x * u0) / atlas_size.x, (source.position.y + source.size.y) / atlas_size.y)])
 			draw_polygon(points, colors, uvs, atlas)
+	func _fish_atlas_for(fish_id: String) -> Texture2D:
+		if fish_id in ["pumpkinseed", "black_crappie", "brown_bullhead"]: return controller.willow_fish_atlas
+		if fish_id in ["rainbow_trout", "smallmouth_bass", "northern_pike"]: return controller.cedar_fish_atlas
+		if fish_id in ["red_drum", "spotted_seatrout", "bluefish"]: return controller.ocean_fish_atlas
+		return controller.pine_fish_atlas
+	func _fish_atlas_region(fish_id: String) -> Rect2:
+		# The pond master intentionally has unequal safe rows; this shared metadata
+		# keeps contained records and tail mesh from clipping a fin or sampling a neighbor.
+		match fish_id:
+			"pumpkinseed": return Rect2(0, 0, 1024, 543)
+			"black_crappie": return Rect2(0, 543, 1024, 535)
+			"brown_bullhead": return Rect2(0, 1078, 1024, 458)
+			"largemouth_bass", "smallmouth_bass", "spotted_seatrout": return Rect2(0, 512, 1024, 512)
+			"channel_catfish", "northern_pike", "bluefish": return Rect2(0, 1024, 1024, 512)
+		return Rect2(0, 0, 1024, 512)
 	func _gui_input(event: InputEvent) -> void:
+		var scale := Vector2(720.0 / size.x, 1280.0 / size.y)
+		if overlay == "locations":
+			if event is InputEventScreenTouch and event.index == 0:
+				_handle_waters_touch(event.position * scale, bool(event.pressed)); return
+			if event is InputEventScreenTouch and event.index != 0:
+				# A second finger invalidates the pending primary tap.  Ignore its own
+				# coordinates so it cannot begin a competing scroll or card selection.
+				if bool(event.pressed) and waters_pointer_active:
+					waters_secondary_touch_seen = true; waters_dragging = true; waters_press_location_id = ""
+				return
+			if event is InputEventScreenDrag and event.index == 0:
+				_handle_waters_drag(event.position * scale); return
+			if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.device != InputEvent.DEVICE_ID_EMULATION:
+				_handle_waters_touch(event.position * scale, bool(event.pressed)); return
+			if event is InputEventMouseMotion and waters_pointer_active and event.device != InputEvent.DEVICE_ID_EMULATION:
+				_handle_waters_drag(event.position * scale); return
+			if event is InputEventMouseButton and event.device != InputEvent.DEVICE_ID_EMULATION and bool(event.pressed) and waters_viewport_rect.has_point(event.position * scale) and event.button_index == MOUSE_BUTTON_WHEEL_UP: _scroll_waters(-90.0); return
+			if event is InputEventMouseButton and event.device != InputEvent.DEVICE_ID_EMULATION and bool(event.pressed) and waters_viewport_rect.has_point(event.position * scale) and event.button_index == MOUSE_BUTTON_WHEEL_DOWN: _scroll_waters(90.0); return
 		if event is InputEventScreenTouch:
-			if controller.accepts_primary_press(true, bool(event.pressed), event.index == 0, event.device): _handle_press(event.position * Vector2(720.0 / size.x, 1280.0 / size.y))
+			if controller.accepts_primary_press(true, bool(event.pressed), event.index == 0, event.device): _handle_press(event.position * scale)
 		elif event is InputEventMouseButton:
-			if controller.accepts_primary_press(false, bool(event.pressed), event.button_index == MOUSE_BUTTON_LEFT, event.device): _handle_press(event.position * Vector2(720.0 / size.x, 1280.0 / size.y))
+			if controller.accepts_primary_press(false, bool(event.pressed), event.button_index == MOUSE_BUTTON_LEFT, event.device): _handle_press(event.position * scale)
+	func _scroll_waters(delta_y: float) -> void:
+		_refresh_location_card_rects(_virtual_safe_top())
+		waters_scroll += delta_y; _refresh_location_card_rects(_virtual_safe_top()); queue_redraw()
+	func reset_waters_pointer() -> void:
+		waters_pointer_active = false
+		waters_dragging = false
+		waters_press_location_id = ""
+		waters_secondary_touch_seen = false
+	func _handle_waters_touch(position: Vector2, pressed: bool) -> void:
+		if pressed:
+			if not waters_viewport_rect.has_point(position): _handle_press(position); return
+			waters_pointer_active = true; waters_dragging = false; waters_secondary_touch_seen = false; waters_drag_start = position; waters_drag_origin = waters_scroll; waters_press_location_id = _waters_location_at(position)
+			return
+		if not waters_pointer_active: return
+		if (position - waters_drag_start).length() > 12.0: waters_dragging = true
+		waters_pointer_active = false
+		if not waters_dragging and not waters_secondary_touch_seen and waters_press_location_id == _waters_location_at(position): _handle_press(position)
+		waters_press_location_id = ""; waters_secondary_touch_seen = false
+	func _handle_waters_drag(position: Vector2) -> void:
+		if not waters_pointer_active: return
+		var delta := position - waters_drag_start
+		if delta.length() > 12.0: waters_dragging = true
+		if waters_dragging:
+			waters_scroll = waters_drag_origin - delta.y; _refresh_location_card_rects(_virtual_safe_top()); queue_redraw()
+	func _waters_location_at(position: Vector2) -> String:
+		for index in range(location_card_rects.size()):
+			if location_card_rects[index].intersection(waters_viewport_rect).has_point(position): return str(LocationDefinition.all()[index].get("id", ""))
+		return ""
 	func _handle_press(pos: Vector2) -> void:
 		_refresh_top_nav_geometry()
 		_refresh_modal_layout()
@@ -1042,8 +1242,11 @@ class FishingView extends Control:
 				overlay = "world_records"
 				if controller.leaderboards != null and not controller.capture_mode: controller.leaderboards.open_records()
 				return
+			if records_previous_rect.has_point(pos): journal_page_index = maxi(0, journal_page_index - 1); return
+			if records_next_rect.has_point(pos): journal_page_index = mini(1, journal_page_index + 1); return
 			for index in range(journal_slot_rects.size()):
-				if journal_slot_rects[index].has_point(pos): journal_fish_id = ["bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike"][index]; journal_history_offset = 0; overlay = "journal_detail"; return
+				var fish_index := journal_page_index * 6 + index
+				if fish_index < FishDefinition.all_planned().size() and journal_slot_rects[index].has_point(pos): journal_fish_id = FishDefinition.all_planned()[fish_index].id; journal_history_offset = 0; overlay = "journal_detail"; return
 			return
 		if overlay == "journal_detail":
 			_refresh_field_notes_geometry()
@@ -1055,6 +1258,8 @@ class FishingView extends Control:
 		if overlay == "world_records":
 			_refresh_world_records_geometry()
 			if world_back_rect.has_point(pos): overlay = "records"
+			elif world_previous_rect.has_point(pos): world_page_index = maxi(0, world_page_index - 1)
+			elif world_next_rect.has_point(pos): world_page_index = mini(1, world_page_index + 1)
 			elif world_period_rect.has_point(pos):
 				if controller.leaderboards != null: controller.leaderboards.set_period("WEEKLY" if controller.leaderboards.period == "ALL TIME" else "ALL TIME")
 			elif world_retry_rect.has_point(pos):
@@ -1065,10 +1270,11 @@ class FishingView extends Control:
 		if overlay in ["locations", "diagnostics"]:
 			if overlay == "locations":
 				var location_safe_top := _virtual_safe_top()
-				_refresh_back_to_fishing_rect(location_safe_top); _refresh_location_card_rects(location_safe_top)
+				_refresh_location_card_rects(location_safe_top)
 				if back_to_fishing_rect.has_point(pos): controller._close_overlay()
-				elif controller._can_open_records() and location_pine_rect.has_point(pos): controller._select_location("pine_lake")
-				elif controller._can_open_records() and location_cedar_rect.has_point(pos): controller._select_location("cedar_river")
+				elif controller._can_open_records():
+					for index in range(location_card_rects.size()):
+						if location_card_rects[index].intersection(waters_viewport_rect).has_point(pos): controller._select_location(str(LocationDefinition.all()[index].get("id", ""))); return
 			elif overlay == "diagnostics" and motion_back_rect.has_point(pos): overlay = "motion_setup"
 			return
 		if overlay == "settings":
@@ -1095,7 +1301,7 @@ class FishingView extends Control:
 		if records_rect.has_point(pos) or locations_rect.has_point(pos):
 			if not controller._can_open_records(): controller.ui_notice = "FINISH THIS CAST"; controller.ui_notice_remaining = 1.8
 			elif records_rect.has_point(pos): overlay = "records"
-			else: overlay = "locations"
+			else: reset_waters_pointer(); overlay = "locations"
 			return
 		if controller.session.state == FishingSession.State.ESCAPED: controller._reset_session()
 	func _control_style(name: String) -> StyleBoxTexture:

@@ -1,0 +1,31 @@
+{
+  "label": "waters-v34-capture-world-page2",
+  "started": "2026-09-09T07:50:56.2469724-05:00",
+  "finished": "2026-09-09T07:50:59.3077898-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\world-page2-720.png",
+    "--capture-scenario=world_page2"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-waters-v34",
+  "rootPid": 127120,
+  "observedPids": [
+    127120
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-capture-world-page2.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-capture-world-page2.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

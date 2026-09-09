@@ -1,0 +1,1582 @@
+[
+  {
+    "receipt": "primary-v34-domain.json",
+    "label": "primary-v34-domain",
+    "started": "2026-09-09T07:54:36.5512027-05:00",
+    "finished": "2026-09-09T07:54:44.6222718-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:/CodexCache/haptic-fish-project",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 124836,
+    "observedPids": [
+      124836
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "primary-v34-export.json",
+    "label": "primary-v34-export",
+    "started": "2026-09-09T07:56:35.0869802-05:00",
+    "finished": "2026-09-09T07:57:33.2790445-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:/CodexCache/haptic-fish-project",
+      "--audio-driver",
+      "Dummy",
+      "--export-debug",
+      "Android Gate 1 Debug",
+      "E:/AI Projects/games/haptic fish/build/android/Hooked-0.7.0-waters1-arm64-debug.apk"
+    ],
+    "rootPid": 126936,
+    "observedPids": [
+      126936
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "primary-v34-import.json",
+    "label": "primary-v34-import",
+    "started": "2026-09-09T07:55:05.4172454-05:00",
+    "finished": "2026-09-09T07:55:21.6344699-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:/CodexCache/haptic-fish-project",
+      "--editor",
+      "--import",
+      "--quit"
+    ],
+    "rootPid": 66952,
+    "observedPids": [
+      66952
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-b-final-green.json",
+    "label": "waters-v34-b-final-green",
+    "started": "2026-09-09T07:40:18.4133543-05:00",
+    "finished": "2026-09-09T07:40:25.9342966-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 94000,
+    "observedPids": [
+      94000
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-b-fixtures-sourceguards.json",
+    "label": "waters-v34-b-fixtures-sourceguards",
+    "started": "2026-09-09T07:32:16.9619121-05:00",
+    "finished": "2026-09-09T07:32:24.1937456-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 122824,
+    "observedPids": [
+      122824
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-b-freeze-domain.json",
+    "label": "waters-v34-b-freeze-domain",
+    "started": "2026-09-09T07:43:10.8346275-05:00",
+    "finished": "2026-09-09T07:43:18.287819-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 87432,
+    "observedPids": [
+      87432
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-b-save-pages-pgs.json",
+    "label": "waters-v34-b-save-pages-pgs",
+    "started": "2026-09-09T07:38:33.9428754-05:00",
+    "finished": "2026-09-09T07:38:41.8586843-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 115544,
+    "observedPids": [
+      115544
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-bluefish.json",
+    "label": "waters-v34-capture-bluefish",
+    "started": "2026-09-09T07:50:11.0967034-05:00",
+    "finished": "2026-09-09T07:50:14.1294401-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\catch-bluefish-720.png",
+      "--capture-scenario=hatteras_bluefish_catch"
+    ],
+    "rootPid": 126548,
+    "observedPids": [
+      126548
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-bullhead.json",
+    "label": "waters-v34-capture-bullhead",
+    "started": "2026-09-09T07:46:26.6632985-05:00",
+    "finished": "2026-09-09T07:46:29.9208719-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\catch-brown-bullhead-720.png",
+      "--capture-scenario=willow_bullhead_catch"
+    ],
+    "rootPid": 118276,
+    "observedPids": [
+      118276
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-crappie.json",
+    "label": "waters-v34-capture-crappie",
+    "started": "2026-09-09T07:46:08.1113981-05:00",
+    "finished": "2026-09-09T07:46:11.0904129-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\catch-black-crappie-720.png",
+      "--capture-scenario=willow_crappie_catch"
+    ],
+    "rootPid": 125748,
+    "observedPids": [
+      125748
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-fieldnotes-reddrum-safe180.json",
+    "label": "waters-v34-capture-fieldnotes-reddrum-safe180",
+    "started": "2026-09-09T07:51:14.9818573-05:00",
+    "finished": "2026-09-09T07:51:18.1942667-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\field-notes-red-drum-safe180-720.png",
+      "--capture-scenario=field_notes_reddrum_safe180"
+    ],
+    "rootPid": 114116,
+    "observedPids": [
+      114116
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-hatteras-bite.json",
+    "label": "waters-v34-capture-hatteras-bite",
+    "started": "2026-09-09T07:45:09.3321158-05:00",
+    "finished": "2026-09-09T07:45:12.4752755-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\hatteras-bite-720.png",
+      "--capture-scenario=hatteras_bite"
+    ],
+    "rootPid": 121572,
+    "observedPids": [
+      121572
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-hatteras-high.json",
+    "label": "waters-v34-capture-hatteras-high",
+    "started": "2026-09-09T07:45:28.3940785-05:00",
+    "finished": "2026-09-09T07:45:31.7114281-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\hatteras-high-720.png",
+      "--capture-scenario=hatteras_reeling_high"
+    ],
+    "rootPid": 55480,
+    "observedPids": [
+      55480
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-hatteras-ready.json",
+    "label": "waters-v34-capture-hatteras-ready",
+    "started": "2026-09-09T07:44:48.0868406-05:00",
+    "finished": "2026-09-09T07:44:51.1474881-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\hatteras-ready-720.png",
+      "--capture-scenario=hatteras_ready"
+    ],
+    "rootPid": 127088,
+    "observedPids": [
+      127088
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-pumpkinseed.json",
+    "label": "waters-v34-capture-pumpkinseed",
+    "started": "2026-09-09T07:45:50.2291094-05:00",
+    "finished": "2026-09-09T07:45:53.231656-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\catch-pumpkinseed-720.png",
+      "--capture-scenario=willow_pumpkinseed_catch"
+    ],
+    "rootPid": 118272,
+    "observedPids": [
+      118272
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-records-page1-empty.json",
+    "label": "waters-v34-capture-records-page1-empty",
+    "started": "2026-09-09T07:54:57.5043174-05:00",
+    "finished": "2026-09-09T07:55:00.5662236-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\records-page1-empty-720.png",
+      "--capture-scenario=records_empty"
+    ],
+    "rootPid": 115460,
+    "observedPids": [
+      115460
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-records-page1-full.json",
+    "label": "waters-v34-capture-records-page1-full",
+    "started": "2026-09-09T07:54:34.9831272-05:00",
+    "finished": "2026-09-09T07:54:38.2718225-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\records-page1-full-720.png",
+      "--capture-scenario=records"
+    ],
+    "rootPid": 116788,
+    "observedPids": [
+      116788
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-records-page2-full-safe180.json",
+    "label": "waters-v34-capture-records-page2-full-safe180",
+    "started": "2026-09-09T07:55:19.506361-05:00",
+    "finished": "2026-09-09T07:55:22.600094-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\records-page2-full-safe180-720.png",
+      "--capture-scenario=records_page2_full_safe180"
+    ],
+    "rootPid": 90488,
+    "observedPids": [
+      90488
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-records-page2.json",
+    "label": "waters-v34-capture-records-page2",
+    "started": "2026-09-09T07:50:34.2807547-05:00",
+    "finished": "2026-09-09T07:50:38.0356553-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\records-page2-720.png",
+      "--capture-scenario=records_page2"
+    ],
+    "rootPid": 120584,
+    "observedPids": [
+      120584
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-reddrum.json",
+    "label": "waters-v34-capture-reddrum",
+    "started": "2026-09-09T07:49:27.2575218-05:00",
+    "finished": "2026-09-09T07:49:30.2889141-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\catch-red-drum-720.png",
+      "--capture-scenario=hatteras_reddrum_catch"
+    ],
+    "rootPid": 123040,
+    "observedPids": [
+      123040
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-seatrout.json",
+    "label": "waters-v34-capture-seatrout",
+    "started": "2026-09-09T07:49:45.5800386-05:00",
+    "finished": "2026-09-09T07:49:48.6843031-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\catch-spotted-seatrout-720.png",
+      "--capture-scenario=hatteras_seatrout_catch"
+    ],
+    "rootPid": 76220,
+    "observedPids": [
+      76220
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-willow-approach-waterband.json",
+    "label": "waters-v34-capture-willow-approach-waterband",
+    "started": "2026-09-09T07:48:46.4324364-05:00",
+    "finished": "2026-09-09T07:48:49.7063291-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\willow-approach-720.png",
+      "--capture-scenario=willow_line_out"
+    ],
+    "rootPid": 90228,
+    "observedPids": [
+      90228
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-willow-approach.json",
+    "label": "waters-v34-capture-willow-approach",
+    "started": "2026-09-09T07:44:06.7389588-05:00",
+    "finished": "2026-09-09T07:44:09.8020476-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\willow-approach-720.png",
+      "--capture-scenario=willow_line_out"
+    ],
+    "rootPid": 105872,
+    "observedPids": [
+      105872
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-willow-danger-waterband.json",
+    "label": "waters-v34-capture-willow-danger-waterband",
+    "started": "2026-09-09T07:49:09.4739546-05:00",
+    "finished": "2026-09-09T07:49:12.6257996-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\willow-danger-720.png",
+      "--capture-scenario=willow_reeling_danger"
+    ],
+    "rootPid": 108580,
+    "observedPids": [
+      108580
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-willow-danger.json",
+    "label": "waters-v34-capture-willow-danger",
+    "started": "2026-09-09T07:44:26.4006888-05:00",
+    "finished": "2026-09-09T07:44:29.385386-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\willow-danger-720.png",
+      "--capture-scenario=willow_reeling_danger"
+    ],
+    "rootPid": 119840,
+    "observedPids": [
+      119840
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-willow-ready.json",
+    "label": "waters-v34-capture-willow-ready",
+    "started": "2026-09-09T07:43:48.5512755-05:00",
+    "finished": "2026-09-09T07:43:51.6103398-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\willow-ready-720.png",
+      "--capture-scenario=willow_ready"
+    ],
+    "rootPid": 118228,
+    "observedPids": [
+      118228
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-capture-world-page2.json",
+    "label": "waters-v34-capture-world-page2",
+    "started": "2026-09-09T07:50:56.2469724-05:00",
+    "finished": "2026-09-09T07:50:59.3077898-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\world-page2-720.png",
+      "--capture-scenario=world_page2"
+    ],
+    "rootPid": 127120,
+    "observedPids": [
+      127120
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-domain-afterparse.json",
+    "label": "waters-v34-domain-afterparse",
+    "started": "2026-09-09T07:04:35.0929479-05:00",
+    "finished": "2026-09-09T07:04:43.7148315-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 121644,
+    "observedPids": [
+      121644
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "ERROR: save restores expanded settings and selected location",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-domain-catalog.json",
+    "label": "waters-v34-domain-catalog",
+    "started": "2026-09-09T07:03:42.9855887-05:00",
+    "finished": "2026-09-09T07:03:44.8932122-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 52084,
+    "observedPids": [
+      52084
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "SCRIPT ERROR: Parse Error: Could not preload resource script \"res://src/ui/main.gd\".",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-domain-finalattempt.json",
+    "label": "waters-v34-domain-finalattempt",
+    "started": "2026-09-09T07:06:51.8162378-05:00",
+    "finished": "2026-09-09T07:07:00.6160262-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 88984,
+    "observedPids": [
+      88984
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "ERROR: terminal catch selection resets the result without losing saved records",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-domain-initial.json",
+    "label": "waters-v34-domain-initial",
+    "started": "2026-09-09T06:58:45.7208418-05:00",
+    "finished": "2026-09-09T06:58:54.0631283-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 111600,
+    "observedPids": [
+      111600
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "SCRIPT ERROR: Parse Error: Identifier \"LocationDefinition\" not declared in the current scope.",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-domain-last.json",
+    "label": "waters-v34-domain-last",
+    "started": "2026-09-09T07:10:49.0103296-05:00",
+    "finished": "2026-09-09T07:10:57.2758232-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 119616,
+    "observedPids": [
+      119616
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "ERROR: catch record handler persists aggregate and history exactly once",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-domain-parsefix.json",
+    "label": "waters-v34-domain-parsefix",
+    "started": "2026-09-09T06:59:25.7088431-05:00",
+    "finished": "2026-09-09T07:00:11.1115295-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 58364,
+    "observedPids": [
+      58364
+    ],
+    "completed": false,
+    "exitCode": null,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "SCRIPT ERROR: Compile Error: Identifier not found: LocationDefinition",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-domain-tests.json",
+    "label": "waters-v34-domain-tests",
+    "started": "2026-09-09T07:05:46.6561173-05:00",
+    "finished": "2026-09-09T07:05:48.1602677-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 127296,
+    "observedPids": [
+      127296
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "SCRIPT ERROR: Parse Error: Identifier \"path\" not declared in the current scope.",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-import.json",
+    "label": "waters-v34-import",
+    "started": "2026-09-09T07:03:24.6023192-05:00",
+    "finished": "2026-09-09T07:03:33.8123109-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--editor",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--import",
+      "--quit"
+    ],
+    "rootPid": 109792,
+    "observedPids": [
+      109792
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "SCRIPT ERROR: Parse Error: Unexpected \"Indent\" in class body.",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-locked-bottom-final.json",
+    "label": "waters-v34-locked-bottom-final",
+    "started": "2026-09-09T07:19:31.2438462-05:00",
+    "finished": "2026-09-09T07:19:34.6678504-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-locked-bottom-720.png",
+      "--capture-scenario=waters_locked_bottom"
+    ],
+    "rootPid": 97568,
+    "observedPids": [
+      97568
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-locked-bottom-final2.json",
+    "label": "waters-v34-locked-bottom-final2",
+    "started": "2026-09-09T07:28:01.2734924-05:00",
+    "finished": "2026-09-09T07:28:04.4027987-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-locked-bottom-720.png",
+      "--capture-scenario=waters_locked_bottom"
+    ],
+    "rootPid": 109140,
+    "observedPids": [
+      109140
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-locked-bottom-safe180-final.json",
+    "label": "waters-v34-locked-bottom-safe180-final",
+    "started": "2026-09-09T07:28:50.4506041-05:00",
+    "finished": "2026-09-09T07:28:53.6966669-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-locked-bottom-safe180-720.png",
+      "--capture-scenario=waters_locked_bottom_safe180"
+    ],
+    "rootPid": 121184,
+    "observedPids": [
+      121184
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-locked-bottom.json",
+    "label": "waters-v34-locked-bottom",
+    "started": "2026-09-09T07:16:31.7774808-05:00",
+    "finished": "2026-09-09T07:16:35.0256173-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-locked-bottom-720.png",
+      "--capture-scenario=waters_locked_bottom"
+    ],
+    "rootPid": 126592,
+    "observedPids": [
+      126592
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-locked-safe180-final.json",
+    "label": "waters-v34-locked-safe180-final",
+    "started": "2026-09-09T07:17:39.4017073-05:00",
+    "finished": "2026-09-09T07:17:42.8630281-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "960x2142",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-locked-safe180-960x2142.png",
+      "--capture-scenario=waters_locked_safe180"
+    ],
+    "rootPid": 105944,
+    "observedPids": [
+      105944
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-locked-safe180-final2-actual.json",
+    "label": "waters-v34-locked-safe180-final2-actual",
+    "started": "2026-09-09T07:28:34.7955279-05:00",
+    "finished": "2026-09-09T07:28:38.3448981-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "960x2142",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-locked-safe180-960x1706.png",
+      "--capture-scenario=waters_locked_safe180"
+    ],
+    "rootPid": 77416,
+    "observedPids": [
+      77416
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-locked-safe180.json",
+    "label": "waters-v34-locked-safe180",
+    "started": "2026-09-09T07:16:38.1420455-05:00",
+    "finished": "2026-09-09T07:16:41.5715439-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "960x2142",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-locked-safe180-960x2142.png",
+      "--capture-scenario=waters_locked_safe180"
+    ],
+    "rootPid": 105492,
+    "observedPids": [
+      105492
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-locked-top-final.json",
+    "label": "waters-v34-locked-top-final",
+    "started": "2026-09-09T07:17:36.1761909-05:00",
+    "finished": "2026-09-09T07:17:39.3791882-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-locked-top-720.png",
+      "--capture-scenario=waters_locked_top"
+    ],
+    "rootPid": 123412,
+    "observedPids": [
+      123412
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-locked-top-final2.json",
+    "label": "waters-v34-locked-top-final2",
+    "started": "2026-09-09T07:27:45.09058-05:00",
+    "finished": "2026-09-09T07:27:48.3016103-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-locked-top-720.png",
+      "--capture-scenario=waters_locked_top"
+    ],
+    "rootPid": 88844,
+    "observedPids": [
+      88844
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-locked-top.json",
+    "label": "waters-v34-locked-top",
+    "started": "2026-09-09T07:16:06.0984254-05:00",
+    "finished": "2026-09-09T07:16:09.4885426-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-locked-top-720.png",
+      "--capture-scenario=waters_locked_top"
+    ],
+    "rootPid": 122908,
+    "observedPids": [
+      122908
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-main-parse.json",
+    "label": "waters-v34-main-parse",
+    "started": "2026-09-09T07:04:01.4135003-05:00",
+    "finished": "2026-09-09T07:04:02.4149026-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://src/ui/main.gd"
+    ],
+    "rootPid": 112660,
+    "observedPids": [
+      112660
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "SCRIPT ERROR: Parse Error: Unexpected \"Indent\" in class body.",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-main-picker-parse.json",
+    "label": "waters-v34-main-picker-parse",
+    "started": "2026-09-09T07:09:59.8082868-05:00",
+    "finished": "2026-09-09T07:10:45.2152821-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://src/ui/main.gd"
+    ],
+    "rootPid": 119680,
+    "observedPids": [
+      119680
+    ],
+    "completed": false,
+    "exitCode": null,
+    "remainingTaskPids": [],
+    "windows": [
+      {
+        "title": "ALERT!",
+        "pid": 119680
+      }
+    ],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-picker-compile.json",
+    "label": "waters-v34-picker-compile",
+    "started": "2026-09-09T07:15:27.4798278-05:00",
+    "finished": "2026-09-09T07:15:35.7309615-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 127884,
+    "observedPids": [
+      127884
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "ERROR: the resumed normal phrase starts fresh instead of replaying its stale second pulse",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-picker-domain.json",
+    "label": "waters-v34-picker-domain",
+    "started": "2026-09-09T07:14:30.1528567-05:00",
+    "finished": "2026-09-09T07:14:38.1270575-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 94984,
+    "observedPids": [
+      94984
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "SCRIPT ERROR: Parse Error: Cannot infer the type of \"missing\" variable because the value doesn't have a set type.",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-picker-interactions-final.json",
+    "label": "waters-v34-picker-interactions-final",
+    "started": "2026-09-09T07:19:00.8829208-05:00",
+    "finished": "2026-09-09T07:19:09.1192334-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 51024,
+    "observedPids": [
+      51024
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "ERROR: the resumed normal phrase starts fresh instead of replaying its stale second pulse",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-picker-interactions-final2.json",
+    "label": "waters-v34-picker-interactions-final2",
+    "started": "2026-09-09T07:24:12.6128488-05:00",
+    "finished": "2026-09-09T07:24:13.7168024-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "res://tests/test_runner.tscn"
+    ],
+    "rootPid": 123396,
+    "observedPids": [
+      123396
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "ERROR: Cannot open file 'res://tests/test_runner.tscn'.",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-picker-interactions-final3.json",
+    "label": "waters-v34-picker-interactions-final3",
+    "started": "2026-09-09T07:24:42.4860709-05:00",
+    "finished": "2026-09-09T07:25:27.8991507-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 127072,
+    "observedPids": [
+      127072
+    ],
+    "completed": false,
+    "exitCode": null,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-picker-interactions-final4.json",
+    "label": "waters-v34-picker-interactions-final4",
+    "started": "2026-09-09T07:26:01.4482445-05:00",
+    "finished": "2026-09-09T07:26:02.8764946-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 96136,
+    "observedPids": [
+      96136
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "SCRIPT ERROR: Parse Error: Cannot infer the type of \"waters_scroll_before_wheel\" variable because the value doesn't have a set type.",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-picker-interactions-final5.json",
+    "label": "waters-v34-picker-interactions-final5",
+    "started": "2026-09-09T07:26:33.537149-05:00",
+    "finished": "2026-09-09T07:26:41.7039488-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 106864,
+    "observedPids": [
+      106864
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "ERROR: vertical travel scrolls the picker without selecting the pressed water",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-picker-interactions-final6.json",
+    "label": "waters-v34-picker-interactions-final6",
+    "started": "2026-09-09T07:30:06.2577712-05:00",
+    "finished": "2026-09-09T07:30:14.3360604-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 103140,
+    "observedPids": [
+      103140
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "ERROR: the resumed normal phrase starts fresh instead of replaying its stale second pulse",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-picker-interactions.json",
+    "label": "waters-v34-picker-interactions",
+    "started": "2026-09-09T07:18:28.5543275-05:00",
+    "finished": "2026-09-09T07:18:29.9909631-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "-s",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 124768,
+    "observedPids": [
+      124768
+    ],
+    "completed": true,
+    "exitCode": 1,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": "SCRIPT ERROR: Parse Error: Cannot infer the type of \"top_reachable\" variable because the value doesn't have a set type.",
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-unlocked-bottom-final.json",
+    "label": "waters-v34-unlocked-bottom-final",
+    "started": "2026-09-09T07:19:34.6804866-05:00",
+    "finished": "2026-09-09T07:19:37.9808772-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-unlocked-bottom-720.png",
+      "--capture-scenario=waters_unlocked_bottom"
+    ],
+    "rootPid": 124548,
+    "observedPids": [
+      124548
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-unlocked-bottom-final2.json",
+    "label": "waters-v34-unlocked-bottom-final2",
+    "started": "2026-09-09T07:28:18.1658438-05:00",
+    "finished": "2026-09-09T07:28:21.1849054-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-unlocked-bottom-720.png",
+      "--capture-scenario=waters_unlocked_bottom"
+    ],
+    "rootPid": 116852,
+    "observedPids": [
+      116852
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-unlocked-bottom.json",
+    "label": "waters-v34-unlocked-bottom",
+    "started": "2026-09-09T07:16:35.037162-05:00",
+    "finished": "2026-09-09T07:16:38.133302-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--resolution",
+      "720x1280",
+      "--audio-driver",
+      "Dummy",
+      "--",
+      "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\waters-unlocked-bottom-720.png",
+      "--capture-scenario=waters_unlocked_bottom"
+    ],
+    "rootPid": 122172,
+    "observedPids": [
+      122172
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  },
+  {
+    "receipt": "waters-v34-willow-waterband.json",
+    "label": "waters-v34-willow-waterband",
+    "started": "2026-09-09T07:48:06.8836697-05:00",
+    "finished": "2026-09-09T07:48:14.3118579-05:00",
+    "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+    "arguments": [
+      "--headless",
+      "--path",
+      "E:\\AI Projects\\games\\haptic fish",
+      "--script",
+      "res://tests/test_runner.gd"
+    ],
+    "rootPid": 116152,
+    "observedPids": [
+      116152
+    ],
+    "completed": true,
+    "exitCode": 0,
+    "remainingTaskPids": [],
+    "windows": [],
+    "stderrMarker": null,
+    "error": null
+  }
+]

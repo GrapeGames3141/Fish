@@ -1,0 +1,30 @@
+{
+  "label": "primary-v34-export",
+  "started": "2026-09-09T07:56:35.0869802-05:00",
+  "finished": "2026-09-09T07:57:33.2790445-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:/CodexCache/haptic-fish-project",
+    "--audio-driver",
+    "Dummy",
+    "--export-debug",
+    "Android Gate 1 Debug",
+    "E:/AI Projects/games/haptic fish/build/android/Hooked-0.7.0-waters1-arm64-debug.apk"
+  ],
+  "appdata": "E:/CodexCache/haptic-fish-waters-v34-primary",
+  "rootPid": 126936,
+  "observedPids": [
+    126936
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\primary-v34-export.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\primary-v34-export.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

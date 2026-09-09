@@ -7,7 +7,7 @@ extends RefCounted
 const GAME_ID := ""
 const LEADERBOARDS := {}
 const INTERNAL_TESTBOARD := false
-const FISH_IDS := ["bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike"]
+const FISH_IDS := ["pumpkinseed", "black_crappie", "brown_bullhead", "bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike", "red_drum", "spotted_seatrout", "bluefish"]
 const OWNER_CONFIG_PATH := "res://addons/play_games/local_play_games_config.json"
 const RUNTIME_CONFIG_PATH := "res://addons/play_games/runtime_play_games_config.json"
 

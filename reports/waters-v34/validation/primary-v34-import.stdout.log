@@ -1,0 +1,103 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Started Project initialization (5 steps)[39m[0m
+[   0% ] [90m[1mfirst_scan_filesystem[22m | Scanning file structure...[39m[0m
+[  16% ] [90m[1mfirst_scan_filesystem[22m | Loading global class names...[39m[0m
+[  33% ] [90m[1mfirst_scan_filesystem[22m | Verifying GDExtensions...[39m[0m
+[  50% ] [90m[1mfirst_scan_filesystem[22m | Creating autoload scripts...[39m[0m
+[  66% ] [90m[1mfirst_scan_filesystem[22m | Initializing plugins...[39m[0m
+[  83% ] [90m[1mfirst_scan_filesystem[22m | Starting file scan...[39m[0m
+[92m[ DONE ][39m [1mfirst_scan_filesystem[22m
+[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | Started Registering global classes... (6 steps)[39m[0m
+[   0% ] [90m[1mupdate_scripts_classes[22m | PlayGamesConfig[39m[0m
+[  14% ] [90m[1mupdate_scripts_classes[22m | LocationDefinition[39m[0m
+[  28% ] [90m[1mupdate_scripts_classes[22m | LeaderboardService[39m[0m
+[  42% ] [90m[1mupdate_scripts_classes[22m | SaveService[39m[0m
+[  57% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[  71% ] [90m[1mupdate_scripts_classes[22m | [39m[0m
+[92m[ DONE ][39m [1mupdate_scripts_classes[22m
+[0m
+[   0% ] [90m[1m_update_scan_actions[22m | Started Scanning actions... (22 steps)[39m[0m
+[   0% ] [90m[1m_update_scan_actions[22m | catch-black-crappie-720.png[39m[0m
+[   4% ] [90m[1m_update_scan_actions[22m | catch-bluefish-720.png[39m[0m
+[   8% ] [90m[1m_update_scan_actions[22m | catch-brown-bullhead-720.png[39m[0m
+[  13% ] [90m[1m_update_scan_actions[22m | catch-pumpkinseed-720.png[39m[0m
+[  17% ] [90m[1m_update_scan_actions[22m | catch-red-drum-720.png[39m[0m
+[  21% ] [90m[1m_update_scan_actions[22m | catch-spotted-seatrout-720.png[39m[0m
+[  26% ] [90m[1m_update_scan_actions[22m | field-notes-red-drum-safe180-720.png[39m[0m
+[  30% ] [90m[1m_update_scan_actions[22m | hatteras-bite-720.png[39m[0m
+[  34% ] [90m[1m_update_scan_actions[22m | hatteras-high-720.png[39m[0m
+[  39% ] [90m[1m_update_scan_actions[22m | hatteras-ready-720.png[39m[0m
+[  43% ] [90m[1m_update_scan_actions[22m | records-page1-empty-720.png[39m[0m
+[  47% ] [90m[1m_update_scan_actions[22m | records-page1-full-720.png[39m[0m
+[  52% ] [90m[1m_update_scan_actions[22m | records-page2-720.png[39m[0m
+[  56% ] [90m[1m_update_scan_actions[22m | waters-locked-bottom-720.png[39m[0m
+[  60% ] [90m[1m_update_scan_actions[22m | waters-locked-bottom-safe180-720.png[39m[0m
+[  65% ] [90m[1m_update_scan_actions[22m | waters-locked-safe180-960x1706.png[39m[0m
+[  69% ] [90m[1m_update_scan_actions[22m | waters-locked-top-720.png[39m[0m
+[  73% ] [90m[1m_update_scan_actions[22m | waters-unlocked-bottom-720.png[39m[0m
+[  78% ] [90m[1m_update_scan_actions[22m | willow-approach-720.png[39m[0m
+[  82% ] [90m[1m_update_scan_actions[22m | willow-danger-720.png[39m[0m
+[  86% ] [90m[1m_update_scan_actions[22m | willow-ready-720.png[39m[0m
+[  91% ] [90m[1m_update_scan_actions[22m | world-page2-720.png[39m[0m
+[92m[ DONE ][39m [1m_update_scan_actions[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started (Re)Importing Assets (22 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   4% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   8% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  13% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  17% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  21% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  26% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  30% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  34% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  39% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  43% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  47% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  52% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  56% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  60% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  65% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  69% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  73% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  78% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  82% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  86% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[  91% ] [90m[1mreimport[22m | Preparing files to reimport...[39m[0m
+[   0% ] [90m[1mreimport[22m | Executing pre-reimport operations...[39m[0m
+[   0% ] [90m[1mreimport[22m | world-page2-720.png[39m[0m
+[   4% ] [90m[1mreimport[22m | willow-ready-720.png[39m[0m
+[   8% ] [90m[1mreimport[22m | willow-danger-720.png[39m[0m
+[  13% ] [90m[1mreimport[22m | willow-approach-720.png[39m[0m
+[  17% ] [90m[1mreimport[22m | waters-unlocked-bottom-720.png[39m[0m
+[  21% ] [90m[1mreimport[22m | waters-locked-top-720.png[39m[0m
+[  26% ] [90m[1mreimport[22m | waters-locked-safe180-960x1706.png[39m[0m
+[  30% ] [90m[1mreimport[22m | waters-locked-bottom-safe180-720.png[39m[0m
+[  34% ] [90m[1mreimport[22m | waters-locked-bottom-720.png[39m[0m
+[  39% ] [90m[1mreimport[22m | records-page2-720.png[39m[0m
+[  43% ] [90m[1mreimport[22m | records-page1-full-720.png[39m[0m
+[  47% ] [90m[1mreimport[22m | records-page1-empty-720.png[39m[0m
+[  52% ] [90m[1mreimport[22m | hatteras-ready-720.png[39m[0m
+[  56% ] [90m[1mreimport[22m | hatteras-high-720.png[39m[0m
+[  60% ] [90m[1mreimport[22m | hatteras-bite-720.png[39m[0m
+[  65% ] [90m[1mreimport[22m | field-notes-red-drum-safe180-720.png[39m[0m
+[  69% ] [90m[1mreimport[22m | catch-spotted-seatrout-720.png[39m[0m
+[  73% ] [90m[1mreimport[22m | catch-red-drum-720.png[39m[0m
+[  78% ] [90m[1mreimport[22m | catch-pumpkinseed-720.png[39m[0m
+[  82% ] [90m[1mreimport[22m | catch-brown-bullhead-720.png[39m[0m
+[  86% ] [90m[1mreimport[22m | catch-bluefish-720.png[39m[0m
+[  91% ] [90m[1mreimport[22m | catch-black-crappie-720.png[39m[0m
+[  95% ] [90m[1mreimport[22m | Finalizing Asset Import...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mreimport[22m | Started (Re)Importing Assets (22 steps)[39m[0m
+[   0% ] [90m[1mreimport[22m | Executing post-reimport operations...[39m[0m
+[92m[ DONE ][39m [1mreimport[22m
+[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Started Loading editor (5 steps)[39m[0m
+[   0% ] [90m[1mloading_editor_layout[22m | Loading editor layout...[39m[0m
+[  16% ] [90m[1mloading_editor_layout[22m | Loading docks...[39m[0m
+[92m[ DONE ][39m [1mloading_editor_layout[22m
+[0m

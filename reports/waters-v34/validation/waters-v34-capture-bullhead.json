@@ -1,0 +1,31 @@
+{
+  "label": "waters-v34-capture-bullhead",
+  "started": "2026-09-09T07:46:26.6632985-05:00",
+  "finished": "2026-09-09T07:46:29.9208719-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\gallery\\catch-brown-bullhead-720.png",
+    "--capture-scenario=willow_bullhead_catch"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-waters-v34",
+  "rootPid": 118276,
+  "observedPids": [
+    118276
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-capture-bullhead.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v34\\validation\\waters-v34-capture-bullhead.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

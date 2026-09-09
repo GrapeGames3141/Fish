@@ -1,0 +1,186 @@
+[
+  {
+    "file": "catch-black-crappie-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 2027774,
+    "sha256": "0DBCC97E85D91A8ECC9F9A3E975C99682495DC5D775B96D1B7AF077278B32949",
+    "receipt": "waters-v34-capture-crappie.json"
+  },
+  {
+    "file": "catch-bluefish-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1743904,
+    "sha256": "8949FB56ABCC09F71D9FE631959E79351A611970A0E422BDE114897D7EDFA3CF",
+    "receipt": "waters-v34-capture-bluefish.json"
+  },
+  {
+    "file": "catch-brown-bullhead-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1982347,
+    "sha256": "676F837C66F193E2653EEE8E1D6A7969A1F8F90A27BB4883DD680B660BC111F9",
+    "receipt": "waters-v34-capture-bullhead.json"
+  },
+  {
+    "file": "catch-pumpkinseed-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 2015061,
+    "sha256": "DDF64C1CAC09AE6ECA2BC81FFFA2D6C11ACE63C2BB0432FFFCB351F470F48F77",
+    "receipt": "waters-v34-capture-pumpkinseed.json"
+  },
+  {
+    "file": "catch-red-drum-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1756923,
+    "sha256": "73974BA45BDF71F55B4CF4D867250E9E4CD704C28EC7A3D1EE7999CB1877BC02",
+    "receipt": "waters-v34-capture-reddrum.json"
+  },
+  {
+    "file": "catch-spotted-seatrout-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1750250,
+    "sha256": "AFA5BAD7EFDB527F15325DA930294FFAC6555537A0FB52FD101E39349500B27A",
+    "receipt": "waters-v34-capture-seatrout.json"
+  },
+  {
+    "file": "field-notes-red-drum-safe180-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1746006,
+    "sha256": "977FC8289530187FDFFAD335AD1DB8F89FA9BD32FB73E2676590942992A13C10",
+    "receipt": "waters-v34-capture-fieldnotes-reddrum-safe180.json"
+  },
+  {
+    "file": "hatteras-bite-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1591428,
+    "sha256": "7A52024EA49B32C3BB690636D1C3F5FA37B1F35CD335F8B3DAB1DAB5C95817B1",
+    "receipt": "waters-v34-capture-hatteras-bite.json"
+  },
+  {
+    "file": "hatteras-high-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1580279,
+    "sha256": "1472C20F653C1C35E6FCE080EC124D40B3545DAEECDAC74B55669FF66AFACCD4",
+    "receipt": "waters-v34-capture-hatteras-high.json"
+  },
+  {
+    "file": "hatteras-ready-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1651814,
+    "sha256": "F5A3DA77B581E82B0E0B17780D0159C524EABC98AF7220127702E8DF8EEC64CA",
+    "receipt": "waters-v34-capture-hatteras-ready.json"
+  },
+  {
+    "file": "records-page1-empty-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1804206,
+    "sha256": "DEAC2EB5A39D62B3D49B6A57EDF7C77B76B20A77554915013891C766909F590D",
+    "receipt": "waters-v34-capture-records-page1-empty.json"
+  },
+  {
+    "file": "records-page1-full-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1904318,
+    "sha256": "7F378F585AECD96321ACEEAF1229D86B29369B50607DC47B85C8B5D15E5965CD",
+    "receipt": "waters-v34-capture-records-page1-full.json"
+  },
+  {
+    "file": "records-page2-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1808170,
+    "sha256": "32BD7BC567BBD96208724FEB88D3456380FEE34F2EA7D97DDA797CCFC395E668",
+    "receipt": "waters-v34-capture-records-page2.json"
+  },
+  {
+    "file": "records-page2-full-safe180-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1875846,
+    "sha256": "AE2710BF83ECBE416EDB201FA8796AD108417D66B1D35B5DBC2CF084805FDDAD",
+    "receipt": "waters-v34-capture-records-page2-full-safe180.json"
+  },
+  {
+    "file": "waters-locked-bottom-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1850588,
+    "sha256": "1055931A3BA657DFF1CD86845948D06642A9A0EB075D5F319A4F0D3687A80B32",
+    "receipt": "waters-v34-locked-bottom-final2.json"
+  },
+  {
+    "file": "waters-locked-bottom-safe180-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1799339,
+    "sha256": "731FED69ACF65A105A17CD5712AC2AFA419D0D2F182E6D0BB37B01B7500AB141",
+    "receipt": "waters-v34-locked-bottom-safe180-final.json"
+  },
+  {
+    "file": "waters-locked-safe180-960x1706.png",
+    "width": 960,
+    "height": 1706,
+    "bytes": 2954738,
+    "sha256": "DF0C37B59D645EDDCE24F4895C6DA8914246D340804CAEF72A3B7984D2FAC588",
+    "receipt": "waters-v34-locked-safe180-final2-actual.json"
+  },
+  {
+    "file": "waters-locked-top-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1888850,
+    "sha256": "89450252CA9B217F9AA468D5AC06B4472BB18640A1BE14E0B8596B24E575AF79",
+    "receipt": "waters-v34-locked-top-final2.json"
+  },
+  {
+    "file": "waters-unlocked-bottom-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1739008,
+    "sha256": "8B8AFA3723565CE2E8D20121A81218134A71BF7A49985357C7D4C3E8EF581913",
+    "receipt": "waters-v34-unlocked-bottom-final2.json"
+  },
+  {
+    "file": "willow-approach-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1873880,
+    "sha256": "6DC73291022B36E800A60D3A23B3D4CB714EA164DA74A656908706BB974A6D41",
+    "receipt": "waters-v34-capture-willow-approach-waterband.json"
+  },
+  {
+    "file": "willow-danger-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1852124,
+    "sha256": "C89BDEDE2E4D5F25F3D9DE97558E59CDCB58FED4134574BAF9C181CB86EBD46C",
+    "receipt": "waters-v34-capture-willow-danger-waterband.json"
+  },
+  {
+    "file": "willow-ready-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1919130,
+    "sha256": "8BD1DCD261B09D046CF8B10794BB610E57F0EB929D3A5E251F9EB2C72C11B6A3",
+    "receipt": "waters-v34-capture-willow-ready.json"
+  },
+  {
+    "file": "world-page2-720.png",
+    "width": 720,
+    "height": 1280,
+    "bytes": 1685124,
+    "sha256": "FBA187EFB0AA1CA9ABFBBA4AC2DBCAC03BF98F565B5D36C0AD87B1BB44E426BF",
+    "receipt": "waters-v34-capture-world-page2.json"
+  }
+]
