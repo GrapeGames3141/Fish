@@ -1,0 +1,16 @@
+{
+  "label": "tarpon-diagnostic-v40-domain-final2",
+  "rootPid": 87468,
+  "observedPids": [
+    87468
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/tarpon_diagnostic.gd"
+  ],
+  "started": "2026-09-10T13:14:59.6417689-05:00"
+}

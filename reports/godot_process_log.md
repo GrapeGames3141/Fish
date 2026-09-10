@@ -418,3 +418,32 @@ check, window list, and stdout/stderr.
   The compact afterward inventory had no Godot/WerFault/java/aapt2 process or
   crash dialog. Pixel launch/dwell and DriveFS hash facts are in the v40 release
   audit; no screenshot or physical-feel claim is made.
+
+## Tarpon diagnostic v40 — 2026-09-10
+
+- Focused command: `Godot_v4.7.1-stable_win64.exe --headless --path
+  E:\CodexCache\haptic-fish-project --script res://tests/tarpon_diagnostic.gd`,
+  with isolated cache `E:\CodexCache\haptic-fish-tarpon-diagnostic-v40` and
+  evidence `reports/tarpon-diagnostic-v40/validation/`.
+- Initial focused receipt root `83652` exited `1` only because the harness
+  asserted the exact floating cumulative cut line; it was corrected to test
+  just inside the Tarpon interval. The next root `111396` exited `1` because a
+  fixed `user://` fixture path made a repeat count two catches; it was corrected
+  to a process-unique, isolated save path. These are superseded harness receipts,
+  not Tarpon gameplay faults; both had no remaining task PID/window/cleanup.
+- Final focused [receipt](tarpon-diagnostic-v40/validation/tarpon-diagnostic-v40-domain-final2.json)
+  root `87468` ran 13:14:59–13:15:13 CDT and exited `0`; same-cache repeat
+  [receipt](tarpon-diagnostic-v40/validation/tarpon-diagnostic-v40-domain-repeat.json)
+  root `50544` ran 13:15:42–13:15:56 CDT and exited `0`. Both report no stderr
+  marker, task window, cleanup PID, or remaining task process.
+- Primary full regression [receipt](tarpon-diagnostic-v40/validation/primary-tarpon-v40-domain.json)
+  root `123492` ran 13:11:52–13:12:36 CDT, exited `0`, and left no task
+  process/window. Its only messages are the established 12 ObjectDB / 5-resource
+  teardown notices. No Pixel was connected; no device state was read or written.
+- Primary same-cache targeted [receipt](tarpon-diagnostic-v40/validation/primary-tarpon-v40-targeted.json)
+  root `114108` ran 13:16:43–13:16:59 CDT, exited `0`, and had no stderr marker,
+  error, task window, or remaining task PID. It reproduced the same 243 Tarpon
+  cases, weighted odds, and timing envelope.
+- Final cleanup inventory confirmed all diagnostic-owned roots (`50544`,
+  `83652`, `87468`, `111396`, `114108`, `123492`) absent, with no Godot/WerFault
+  process or corresponding crash dialog. No cleanup termination was needed.

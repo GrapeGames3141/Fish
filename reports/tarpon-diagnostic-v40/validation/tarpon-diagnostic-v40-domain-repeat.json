@@ -1,0 +1,27 @@
+{
+  "label": "tarpon-diagnostic-v40-domain-repeat",
+  "started": "2026-09-10T13:15:42.0267309-05:00",
+  "finished": "2026-09-10T13:15:56.1656096-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/tarpon_diagnostic.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-tarpon-diagnostic-v40",
+  "rootPid": 50544,
+  "observedPids": [
+    50544
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\tarpon-diagnostic-v40\\validation\\tarpon-diagnostic-v40-domain-repeat.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\tarpon-diagnostic-v40\\validation\\tarpon-diagnostic-v40-domain-repeat.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

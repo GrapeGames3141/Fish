@@ -1,0 +1,27 @@
+{
+  "label": "tarpon-diagnostic-v40-domain-final",
+  "started": "2026-09-10T13:13:18.8819931-05:00",
+  "finished": "2026-09-10T13:13:34.0427780-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/tarpon_diagnostic.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-tarpon-diagnostic-v40",
+  "rootPid": 111396,
+  "observedPids": [
+    111396
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\tarpon-diagnostic-v40\\validation\\tarpon-diagnostic-v40-domain-final.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\tarpon-diagnostic-v40\\validation\\tarpon-diagnostic-v40-domain-final.stderr.log",
+  "stderrMarker": "ERROR: real Tarpon record_catch persists count, best, and history through isolated save reload",
+  "error": null
+}
