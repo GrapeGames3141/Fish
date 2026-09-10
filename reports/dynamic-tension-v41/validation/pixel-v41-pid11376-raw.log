@@ -1,0 +1,8 @@
+--------- beginning of system
+09-10 18:02:49.201 11376 11401 I DisplayManager: Choreographer implicitly registered for the refresh rate.
+09-10 18:02:49.357 11376 11376 D InsetsController: Setting requestedVisibleTypes to 496 (was 503)
+09-10 18:02:49.476 11376 11376 D InsetsController: hide(ime())
+09-10 18:02:49.476 11376 11376 I ImeTracker: com.tak.castandcrank:52c2f898: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+09-10 18:02:50.893 11376 11585 V ResourcesManager: The following library key has been added: ResourcesKey{ mHash=4e56caca mResDir=null mSplitDirs=[] mOverlayDirs=[] mLibDirs=[/data/app/~~JSCj_9RFvnMx8QyyiBmFeQ==/com.google.android.webview-TsSbnzvcfyOSpEBUXramTA==/base.apk,/system/framework/android.test.base.jar,/system_ext/framework/androidx.window.extensions.jar] mDisplayId=0 mOverrideConfig=v37 mCompatInfo={480dpi always-compat} mLoaders=[]}
+--------- beginning of crash
+09-10 18:02:52.243 11376 11421 F libc    : FORTIFY: pthread_mutex_lock called on a destroyed mutex (0xb40000701ad736a0)

@@ -90,7 +90,11 @@ All eight water scenes/atlases/masks and Cinzel OFL remain present; excluded
 development content is absent from the 868-entry APK. Android generated files
 were hash-unchanged from the pre-export baseline.
 
-No install, Drive copy, or remote push occurred in this v41 delivery.
+The initial desktop delivery did not install, copy to Drive, or push remotely.
+A subsequent user-requested [Pixel install](../reports/dynamic-tension-v41/pixel-install-v41.md)
+succeeded and preserved the save. Android later reported task removal, with a
+native error during engine shutdown; sustained runtime stability and physical
+feel remain unverified. No Drive copy or remote push occurred.
 
 ### Read-only header follow-up
 
@@ -103,4 +107,5 @@ in this scope.
 
 Automated evidence cannot validate whether the moving sweet spot, growing red
 zones, haptic phrasing, or motion response feel fair in-hand. Pixel installation
-and human physical-feel acceptance remain pending.
+is complete; human physical-feel acceptance and the observed shutdown error
+remain open.

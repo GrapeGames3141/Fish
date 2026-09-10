@@ -207,3 +207,8 @@ The user authorized generation and integration of this first ImageGen UI pass. H
   VIBRATE, arm64 only, valid v2 signing, and no excluded payload. Nine primary
   desktop meter captures passed visual review; no install, Drive delivery,
   remote push, phone screenshot, or physical-feel approval is claimed.
+- Subsequent user-requested [Pixel v41 install](reports/dynamic-tension-v41/pixel-install-v41.md)
+  succeeded with the player save hash unchanged. Initial cold launch reached
+  the main loop; Android then reported task removal and the log contained a
+  native engine-shutdown error. Installation is verified, sustained runtime and
+  physical-feel acceptance are not. No phone screenshot or Drive copy occurred.

@@ -477,3 +477,10 @@ check, window list, and stdout/stderr.
   Standard Tarpon wide/narrow/left/right roots `116228` / `124364` / `123504` /
   `49952`; Expert wide/narrow/Safe-180/Reduced roots `103856` / `121148` /
   `123932` / `59052`; Bluegill baseline root `119352`.
+- Subsequent Pixel install: no desktop Godot process; Android app PID `11376`,
+  observed render thread `11421`. In-place v41 install and save preservation
+  passed; cold launch returned `ok` (557 ms) and entered the main loop.
+  Android then recorded `USER REQUESTED / REMOVE TASK` at 18:02:53.109;
+  shutdown emitted a destroyed-mutex FORTIFY error. PID absent at final check;
+  no relaunch or engine/gameplay changes. See
+  [install evidence](dynamic-tension-v41/pixel-install-v41.md).
