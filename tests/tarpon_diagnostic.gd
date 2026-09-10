@@ -113,16 +113,17 @@ func _fight_with_delayed_policy(distance_m: float, size_roll: float, behavior_ro
 	var game := _make_live_tarpon(distance_m, size_roll, behavior_roll, challenge)
 	var delta := 1.0 / float(fps)
 	var target := 1.0 if sustained else 0.68
-	var delayed_tension := game.tension
+	var delayed_sample: Dictionary = {"tension": game.tension, "tier": FightChallenge.tier(game.tension, game.live_challenge_profile), "low_warning": game.live_challenge_profile.low_warning, "high_warning": game.live_challenge_profile.high_warning}
 	var next_decision := 0.10
 	var tension_history: Array[Dictionary] = []
 	for frame in range(60 * fps):
 		if game.state != FishingSession.State.REELING: break
-		tension_history.append({"at": game.fight_elapsed, "tension": game.tension})
+		tension_history.append({"at": game.fight_elapsed, "tension": game.tension, "tier": FightChallenge.tier(game.tension, game.live_challenge_profile), "low_warning": game.live_challenge_profile.low_warning, "high_warning": game.live_challenge_profile.high_warning})
 		if not sustained and game.fight_elapsed >= next_decision:
 			for sample in tension_history:
-				if float(sample.at) <= game.fight_elapsed - 0.30: delayed_tension = float(sample.tension)
-			target = 0.10 if delayed_tension >= float(game.challenge_profile.high_warning) else (0.68 if delayed_tension <= float(game.challenge_profile.low_warning) else target)
+				if float(sample.at) <= game.fight_elapsed - 0.30: delayed_sample = sample
+			var delayed_tier := str(delayed_sample.tier)
+			target = 0.10 if delayed_tier in ["ease", "snap"] else (0.68 if delayed_tier in ["pull", "slack"] else target)
 			next_decision += 0.10
 		game.set_rod_load(move_toward(game.rod_load, target, delta / 0.10))
 		game.tick(delta)

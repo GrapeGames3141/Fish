@@ -1,0 +1,23 @@
+{
+  "label": "primary-v41-bluegill_baseline",
+  "rootPid": 119352,
+  "observedPids": [
+    119352
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\dynamic-tension-v41\\gallery\\bluegill_baseline.png",
+    "--capture-scenario=bluegill_baseline",
+    "--capture-time=1"
+  ],
+  "started": "2026-09-10T14:12:51.5500094-05:00"
+}

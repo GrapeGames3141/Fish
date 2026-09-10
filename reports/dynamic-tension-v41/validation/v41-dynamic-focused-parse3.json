@@ -1,0 +1,27 @@
+{
+  "label": "v41-dynamic-focused-parse3",
+  "started": "2026-09-10T13:58:29.0046542-05:00",
+  "finished": "2026-09-10T13:58:31.9366450-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--script",
+    "res://tests/dynamic_tension_test.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-dynamic-tension-v41",
+  "rootPid": 58628,
+  "observedPids": [
+    58628
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\dynamic-tension-v41\\validation\\v41-dynamic-focused-parse3.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\dynamic-tension-v41\\validation\\v41-dynamic-focused-parse3.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

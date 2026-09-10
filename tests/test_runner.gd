@@ -354,19 +354,22 @@ func _simulate_fight_policy(fish: FishDefinition, fps: int, policy: String, beha
 	game.catch_length_cm = snappedf(lerpf(fish.min_length_cm, fish.max_length_cm, size_fraction), 0.1)
 	var delta := 1.0 / float(fps)
 	var target := 0.82 if policy == "strong_reactive" else (0.62 if policy == "reactive" else (1.0 if policy == "hard" else 0.70))
-	var delayed_tension := game.tension
+	var delayed_sample: Dictionary = {"tension": game.tension, "tier": FightChallenge.tier(game.tension, game.live_challenge_profile), "low_warning": game.live_challenge_profile.low_warning, "high_warning": game.live_challenge_profile.high_warning}
 	var next_decision := 0.10
 	var tension_history: Array[Dictionary] = []
 	for frame in range(50 * fps):
 		if game.state != FishingSession.State.REELING: break
-		tension_history.append({"at": game.fight_elapsed, "tension": game.tension})
+		tension_history.append({"at": game.fight_elapsed, "tension": game.tension, "tier": FightChallenge.tier(game.tension, game.live_challenge_profile), "low_warning": game.live_challenge_profile.low_warning, "high_warning": game.live_challenge_profile.high_warning})
 		if policy in ["reactive", "strong_reactive"] and game.fight_elapsed >= next_decision:
 			# A 300ms-old warning sample plus a 100ms load ramp models a human response.
 			for sample in tension_history:
-				if float(sample.at) <= game.fight_elapsed - 0.30: delayed_tension = float(sample.tension)
+				if float(sample.at) <= game.fight_elapsed - 0.30: delayed_sample = sample
 			var ease_target := 0.10 if policy == "strong_reactive" else 0.10
 			var pull_target := 0.82 if policy == "strong_reactive" else 0.68
-			target = ease_target if delayed_tension >= float(game.challenge_profile.high_warning) else (pull_target if delayed_tension <= float(game.challenge_profile.low_warning) else target)
+			# Decision is based on the 300ms-old heard/seen tier, never the current
+			# profile after it has drifted under the simulated player's feet.
+			var delayed_tier := str(delayed_sample.tier)
+			target = ease_target if delayed_tier in ["ease", "snap"] else (pull_target if delayed_tier in ["pull", "slack"] else target)
 			next_decision += 0.10
 		var current := game.rod_load
 		game.set_rod_load(move_toward(current, target, delta / 0.10))
@@ -383,7 +386,9 @@ func _test_pump_and_recover_fight() -> void:
 					var hard := _simulate_fight_policy(fish, fps, "hard", behavior_roll, 0.50, challenge)
 					var moderate := _simulate_fight_policy(fish, fps, "moderate", behavior_roll, 0.50, challenge)
 					var ceiling := 20.0 if challenge == "standard" else 24.0
-					expect(reactive.state == FishingSession.State.CAUGHT and reactive.fight_elapsed >= 10.0 and reactive.fight_elapsed <= ceiling, "300ms-delayed pull/ease lands %s for %s at %dHz / roll %.2f (state=%d elapsed=%.2f)" % [fish.id, challenge, fps, behavior_roll, reactive.state, reactive.fight_elapsed])
+					# `fight_elapsed` is frame accumulation; 20.0000000000001 is the same
+					# physical 20.0s boundary, not an extended timing allowance.
+					expect(reactive.state == FishingSession.State.CAUGHT and reactive.fight_elapsed >= 10.0 and reactive.fight_elapsed <= ceiling + 0.000001, "300ms-delayed pull/ease lands %s for %s at %dHz / roll %.2f (state=%d elapsed=%.2f)" % [fish.id, challenge, fps, behavior_roll, reactive.state, reactive.fight_elapsed])
 					expect(strong_reactive.state == FishingSession.State.CAUGHT and strong_reactive.fight_elapsed >= 10.0 and strong_reactive.fight_elapsed <= 24.0, "a stronger .82/.10 delayed pull/ease remains catch-capable for %s %s at %dHz / roll %.2f" % [challenge, fish.id, fps, behavior_roll])
 					if challenge == "standard":
 						expect(hard.state == FishingSession.State.ESCAPED or hard.fight_elapsed > reactive.fight_elapsed + 2.0, "constant hard pull underperforms responsive %s at %dHz" % [fish.id, fps])
@@ -1400,7 +1405,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 40 and export_config.get_value("preset.0.options", "version/name") == "0.8.0-waters2" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Waters v40 package version and visible Android label retain the package identifier")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 41 and export_config.get_value("preset.0.options", "version/name") == "0.8.1-tension1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Tension v41 package version and visible Android label retain the package identifier")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")

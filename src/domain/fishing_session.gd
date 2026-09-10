@@ -25,7 +25,10 @@ var bite_wait_seconds := 8.0
 var shadow_visit_start := -1.0
 var shadow_visit_duration := 0.0
 var challenge_id := FightChallenge.DEFAULT_ID
+# `challenge_profile` is the immutable per-cast snapshot. The live copy is the
+# only profile consumed in fight play after the opening grace.
 var challenge_profile: Dictionary = FightChallenge.profile(FightChallenge.DEFAULT_ID)
+var live_challenge_profile: Dictionary = FightChallenge.profile(FightChallenge.DEFAULT_ID)
 var elapsed := 0.0
 var bite_elapsed := 0.0
 var tension := 0.12
@@ -75,6 +78,7 @@ func release_cast(quality: float) -> bool:
 	catch_length_cm = _rolled_length(size_roll)
 	fight_phase_offset = behavior_roll * maxf(0.20, fish.run_seconds + fish.lull_seconds)
 	challenge_profile = FightChallenge.profile(challenge_id)
+	live_challenge_profile = challenge_profile.duplicate(true)
 	# A dedicated per-cast roll prevents fish size/behavior from accidentally
 	# choosing bite timing. Species retain only a modest, bounded character offset.
 	bite_wait_seconds = clampf(5.0 + bite_roll * 9.0 + clampf(fish.bite_delay_seconds - 2.8, -0.65, 0.65), 5.0, 14.0)
@@ -109,6 +113,7 @@ func tick(delta: float) -> void:
 
 func _tick_fight(delta: float) -> void:
 	fight_elapsed += delta
+	refresh_live_challenge_profile()
 	# A readable, deterministic arc: an opening run, working runs/lulls, and only
 	# some behavior rolls get one modest final surge before landing. It is a cue to
 	# ease, never a hidden timed loss gate.
@@ -151,14 +156,14 @@ func _tick_fight(delta: float) -> void:
 	var relief := maxf(0.0, 0.52 - pull) / 0.52 * (0.50 + fish.recovery_rate * 0.30)
 	tension = clampf(tension + (fish_pressure + rod_pressure - relief) * delta, 0.0, 1.0)
 	var protected_start := fight_elapsed < float(challenge_profile.startup_grace)
-	if tension >= float(challenge_profile.high_critical) and not protected_start:
+	if tension >= float(live_challenge_profile.high_critical) and not protected_start:
 		red_elapsed += delta
 		if red_elapsed >= float(challenge_profile.danger_seconds):
 			escape("The line snapped under %s's pull." % fish.display_name)
 			return
 	else:
 		red_elapsed = maxf(0.0, red_elapsed - delta * 2.8)
-	if tension <= float(challenge_profile.low_critical) and not protected_start:
+	if tension <= float(live_challenge_profile.low_critical) and not protected_start:
 		slack_elapsed += delta
 		if slack_elapsed >= float(challenge_profile.slack_seconds):
 			escape("The line went slack and %s shook free." % fish.display_name)
@@ -171,17 +176,29 @@ func _tick_fight(delta: float) -> void:
 		# Ordinary fish keep the proven 10–20s rhythm; only the bounded upper tail
 		# carries a small additional pull requirement.
 		size_factor += maxf(0.0, inverse_lerp(fish.min_length_cm, fish.max_length_cm, catch_length_cm) - 0.85) * 0.25
-	var center_work := FightChallenge.center_reward(tension, challenge_profile)
-	var danger_penalty := 1.0 - maxf(0.0, tension - float(challenge_profile.high_warning)) * 1.25
+	var center_work := FightChallenge.center_reward(tension, live_challenge_profile)
+	var danger_penalty := 1.0 - maxf(0.0, tension - float(live_challenge_profile.high_warning)) * 1.25
 	var efficiency := fish.pull_efficiency / size_factor * pull_window * center_work * (1.0 - strain * 0.72) * danger_penalty
 	if fight_stage == FightStage.LANDING: efficiency *= 1.24
 	fight_progress = clampf(fight_progress + sustained_pull * efficiency * delta, 0.0, CATCH_PROGRESS)
 	# The red-line check happens before landing: a simultaneous snap never becomes a catch.
-	if fight_progress >= CATCH_PROGRESS and fight_elapsed >= MIN_LANDING_SECONDS and FightChallenge.tier(tension, challenge_profile) not in ["slack", "snap"]:
+	if fight_progress >= CATCH_PROGRESS and fight_elapsed >= MIN_LANDING_SECONDS and FightChallenge.tier(tension, live_challenge_profile) not in ["slack", "snap"]:
 		state = State.CAUGHT; last_reason = "%s landed!" % fish.display_name
+func refresh_live_challenge_profile() -> void:
+	# No wall-clock source or RNG: pause/tick(0) leaves the live target exactly where
+	# it was. The first grace interval stays at the cast baseline, then blends over
+	# 2.4 seconds so no stage or hook boundary can teleport the danger bands.
+	var relative_size := 0.50
+	if catch_length_cm > 0.0 and fish.max_length_cm > fish.min_length_cm:
+		relative_size = clampf(inverse_lerp(fish.min_length_cm, fish.max_length_cm, catch_length_cm), 0.0, 1.0)
+	var dynamic := FightChallenge.dynamic_profile(challenge_profile, fish.fight_strength, relative_size, behavior_roll, fight_elapsed)
+	var grace := float(challenge_profile.startup_grace)
+	var blend := smoothstep(grace, grace + 2.40, fight_elapsed)
+	live_challenge_profile = FightChallenge.blend_profile(challenge_profile, dynamic, blend)
+
 func set_hook() -> bool:
 	if state != State.HOOK_WINDOW: return false
-	state = State.REELING; elapsed = 0.0; fight_elapsed = 0.0; fight_progress = 0.0; fight_stage = FightStage.OPENING_RUN; land_opportunity = false; last_surge_started = false; last_surge_remaining = 0.0; rod_load = 1.0; tension = 0.50; strain = 0.0; red_elapsed = 0.0; slack_elapsed = 0.0; return true
+	state = State.REELING; elapsed = 0.0; fight_elapsed = 0.0; fight_progress = 0.0; fight_stage = FightStage.OPENING_RUN; land_opportunity = false; last_surge_started = false; last_surge_remaining = 0.0; rod_load = 1.0; tension = 0.50; strain = 0.0; red_elapsed = 0.0; slack_elapsed = 0.0; live_challenge_profile = challenge_profile.duplicate(true); return true
 func set_rod_load(value: float) -> void: if state == State.REELING: rod_load = clampf(value, 0.0, 1.0)
 func credit_terminal_still(delta: float, quiet: bool) -> void:
 	if state not in [State.CAUGHT, State.ESCAPED]: return
@@ -190,4 +207,4 @@ func credit_terminal_still(delta: float, quiet: bool) -> void:
 func can_recast_from_motion() -> bool:
 	return state in [State.CAUGHT, State.ESCAPED] and terminal_elapsed >= TERMINAL_RECAST_DWELL_SECONDS and terminal_still_elapsed >= TERMINAL_STILL_SECONDS
 func escape(reason: String) -> void: state = State.ESCAPED; last_reason = reason
-func reset() -> void: state = State.READY; elapsed = 0.0; bite_elapsed = 0.0; tension = 0.12; strain = 0.0; red_elapsed = 0.0; slack_elapsed = 0.0; fight_progress = 0.0; fight_elapsed = 0.0; fight_stage = FightStage.OPENING_RUN; land_opportunity = false; last_surge_started = false; last_surge_remaining = 0.0; rod_load = 0.0; cast_quality = 0.0; cast_distance_m = 0.0; catch_length_cm = 0.0; fight_running = false; fight_effort = 0.0; terminal_elapsed = 0.0; terminal_still_elapsed = 0.0; last_reason = ""
+func reset() -> void: state = State.READY; elapsed = 0.0; bite_elapsed = 0.0; tension = 0.12; strain = 0.0; red_elapsed = 0.0; slack_elapsed = 0.0; fight_progress = 0.0; fight_elapsed = 0.0; fight_stage = FightStage.OPENING_RUN; land_opportunity = false; last_surge_started = false; last_surge_remaining = 0.0; rod_load = 0.0; cast_quality = 0.0; cast_distance_m = 0.0; catch_length_cm = 0.0; fight_running = false; fight_effort = 0.0; terminal_elapsed = 0.0; terminal_still_elapsed = 0.0; live_challenge_profile = challenge_profile.duplicate(true); last_reason = ""

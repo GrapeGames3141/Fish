@@ -1,0 +1,12 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MOTION_FAIL stage=snap reason=timeout count=1
+V35_FIGHT_TIMINGS {"expert_reactive":{"max":19.6666666666668,"min":10.9},"expert_strong":{"max":16.7916666666664,"min":10.0000000000001},"relaxed_reactive":{"max":19.3833333333335,"min":11.25},"relaxed_strong":{"max":17.3,"min":10.0000000000001},"standard_reactive":{"max":20.0000000000001,"min":10.0000000000001},"standard_strong":{"max":17.4333333333334,"min":10.0000000000001}}
+MOTION_CAST quality=1.00 distance_m=40.0 snap_projection=104.83 axis_match=1.00 polarity=1.00 gyro=0.72 reversal_s=0.120 cock_projection=12.95
+MOTION_FIGHT caught elapsed=0.00 progress=0.00 tension=0.12
+MOTION_CAST quality=1.00 distance_m=40.0 snap_projection=104.83 axis_match=1.00 polarity=1.00 gyro=0.72 reversal_s=0.120 cock_projection=12.95
+MOTION_FAIL stage=snap reason=timeout count=1
+MOTION_FAIL stage=cock reason=polarity count=1
+MOTION_FAIL stage=snap reason=timeout count=1
+MOTION_FAIL stage=snap reason=timeout count=1
+PASS: Cast & Crank Gate 1 domain tests

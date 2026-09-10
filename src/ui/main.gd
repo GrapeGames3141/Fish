@@ -167,10 +167,10 @@ func _process(delta: float) -> void:
 		if session.state in [FishingSession.State.CAUGHT, FishingSession.State.ESCAPED]: motion.reset_fight()
 		prior_state = session.state
 	if session.state == FishingSession.State.REELING:
-		if not haptics.fighting: haptics.start_fight(session.fish, session.challenge_profile)
+		if not haptics.fighting: haptics.start_fight(session.fish, session.live_challenge_profile)
 		var fight_size_factor := 1.0 + (inverse_lerp(session.fish.min_length_cm, session.fish.max_length_cm, session.catch_length_cm) * 0.10 if session.catch_length_cm > 0.0 else 0.0)
 		var felt_effort := session.fight_effort + (0.16 if session.fight_stage == FishingSession.FightStage.LAST_SURGE else (0.08 if session.fight_stage == FishingSession.FightStage.OPENING_RUN else 0.0))
-		haptics.update_fight(delta, session.fish, session.tension, felt_effort, fight_size_factor, session.challenge_profile)
+		haptics.update_fight(delta, session.fish, session.tension, felt_effort, fight_size_factor, session.live_challenge_profile)
 	else: haptics.tick(delta)
 	view.queue_redraw()
 
@@ -199,7 +199,7 @@ func _cast(quality: float = 0.78, motion_event: Dictionary = {}) -> void:
 func _hook(motion_event: Dictionary = {}) -> void:
 	if session.set_hook():
 		leaderboard_motion_hook = OS.has_feature("android") and not motion_event.is_empty()
-		motion.begin_fight(); haptics.cue("hook"); haptics.start_fight(session.fish, session.challenge_profile); print("MOTION_HOOK state=REELING projection=%.2f alignment=%.2f gyro=%.2f sweep_samples=%d" % [float(motion_event.get("hook_projection", 0.0)), float(motion_event.get("hook_alignment", 0.0)), float(motion_event.get("hook_gyro", 0.0)), int(motion_event.get("hook_sweep_samples", 0))])
+		motion.begin_fight(); haptics.cue("hook"); haptics.start_fight(session.fish, session.live_challenge_profile); print("MOTION_HOOK state=REELING projection=%.2f alignment=%.2f gyro=%.2f sweep_samples=%d" % [float(motion_event.get("hook_projection", 0.0)), float(motion_event.get("hook_alignment", 0.0)), float(motion_event.get("hook_gyro", 0.0)), int(motion_event.get("hook_sweep_samples", 0))])
 func _record_catch_once() -> void:
 	if caught_recorded or capture_mode or session.state != FishingSession.State.CAUGHT: return
 	var formerly_unlocked: Array = save.data.get("unlocked_location_ids", []).duplicate()
@@ -373,6 +373,15 @@ func _apply_capture_scenario() -> void:
 		"offshore_line_out": _capture_world_state("bluewater_offshore", "line_out")
 		"offshore_reeling": _capture_world_state("bluewater_offshore", "reeling")
 		"offshore_reduced": _capture_world_state("bluewater_offshore", "reduced")
+		"tarpon_large_standard_wide": _capture_dynamic_tension("standard", "wide")
+		"tarpon_large_standard_narrow": _capture_dynamic_tension("standard", "narrow")
+		"tarpon_large_standard_drift_left": _capture_dynamic_tension("standard", "drift_left")
+		"tarpon_large_standard_drift_right": _capture_dynamic_tension("standard", "drift_right")
+		"tarpon_large_expert_wide": _capture_dynamic_tension("expert", "wide")
+		"tarpon_large_expert_narrow": _capture_dynamic_tension("expert", "narrow")
+		"tarpon_large_expert_safe180": _capture_dynamic_tension("expert", "narrow"); view.safe_top_override = 180.0
+		"tarpon_large_expert_reduced": save.data.settings.reduced_motion = true; _capture_dynamic_tension("expert", "drift_right")
+		"bluegill_baseline": _capture_dynamic_tension("standard", "wide", "bluegill")
 		"willow_line_out_t2": session.set_location("willow_pond", 0.0); session.arm_cast(); session.release_cast(0.8); ui_time = 2.0
 		"hatteras_line_out_t2": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8); ui_time = 2.0
 		"cedar_line_out": session.set_location("cedar_river", 0.0); session.arm_cast(); session.release_cast(0.8)
@@ -383,8 +392,8 @@ func _apply_capture_scenario() -> void:
 		"reeling", "reeling_low": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.32; session.rod_load = 0.38; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"fight_slack": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.06; session.rod_load = 0.04; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"fight_center": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.50; session.rod_load = 0.52; session.cast_quality = 0.86; session.cast_distance_m = 35.5
-		"fight_center_relaxed": session.set_next_cast_challenge("relaxed"); session.challenge_id = "relaxed"; session.challenge_profile = FightChallenge.profile("relaxed"); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.50; session.rod_load = 0.52; session.cast_quality = 0.86; session.cast_distance_m = 35.5
-		"fight_center_expert": session.set_next_cast_challenge("expert"); session.challenge_id = "expert"; session.challenge_profile = FightChallenge.profile("expert"); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.50; session.rod_load = 0.52; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+		"fight_center_relaxed": session.set_next_cast_challenge("relaxed"); session.challenge_id = "relaxed"; session.challenge_profile = FightChallenge.profile("relaxed"); session.live_challenge_profile = session.challenge_profile.duplicate(true); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.50; session.rod_load = 0.52; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+		"fight_center_expert": session.set_next_cast_challenge("expert"); session.challenge_id = "expert"; session.challenge_profile = FightChallenge.profile("expert"); session.live_challenge_profile = session.challenge_profile.duplicate(true); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.50; session.rod_load = 0.52; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"reeling_high": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.88; session.rod_load = 0.88; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"reeling_danger": session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.95; session.rod_load = 0.95; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"cedar_reeling_high_safe180": session.set_location("cedar_river", 0.0); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.88; session.rod_load = 0.88; session.cast_quality = 0.86; session.cast_distance_m = 35.5; view.safe_top_override = 180.0
@@ -505,6 +514,35 @@ func _capture_world_state(location_id: String, state: String) -> void:
 		session.arm_cast(); session.release_cast(0.8)
 	elif state == "reeling":
 		session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.78; session.rod_load = 0.78; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+func _capture_dynamic_tension(challenge: String, phase: String, fish_id := "atlantic_tarpon") -> void:
+	# Capture-only setup selects a deterministic production live profile at a named
+	# phase. It writes no player save and uses the exact session refresh path that
+	# gameplay calls; each named still is therefore an inspectable phase, not a
+	# frozen decorative substitute for the mechanical meter.
+	for fish in FishDefinition.all_planned():
+		if fish.id == fish_id: session.fish = fish; break
+	session.set_location(session.fish.location_id, 0.0)
+	for fish in FishDefinition.all_planned():
+		if fish.id == fish_id: session.fish = fish; break
+	session.challenge_id = FightChallenge.sanitize(challenge)
+	session.challenge_profile = FightChallenge.profile(session.challenge_id)
+	session.live_challenge_profile = session.challenge_profile.duplicate(true)
+	session.behavior_roll = 0.83 if fish_id == "atlantic_tarpon" else 0.37
+	session.catch_length_cm = lerpf(session.fish.min_length_cm, session.fish.max_length_cm, 0.96 if fish_id == "atlantic_tarpon" else 0.50)
+	session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.rod_load = 0.50; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+	var best_seconds := 4.0
+	var best_value := -INF
+	for step in range(160):
+		var seconds := 4.0 + float(step) * 0.10
+		session.fight_elapsed = seconds; session.refresh_live_challenge_profile()
+		var profile := session.live_challenge_profile
+		var value := float(profile.high_warning) - float(profile.low_warning)
+		if phase == "narrow": value = -value
+		elif phase == "drift_left": value = -float(profile.target_center)
+		elif phase == "drift_right": value = float(profile.target_center)
+		if value > best_value: best_value = value; best_seconds = seconds
+	session.fight_elapsed = best_seconds; session.refresh_live_challenge_profile()
+	session.tension = float(session.live_challenge_profile.target_center)
 func _unlock_all_capture_locations() -> void:
 	save.data.unlocked_location_ids = LocationDefinition.ids().duplicate()
 func _capture_top_nav_press(target: String, safe_top: float) -> void:
@@ -884,10 +922,10 @@ class FishingView extends Control:
 			FishingSession.State.BITE: copy = "FISH ON — WAIT FOR THE PULSES"
 			FishingSession.State.HOOK_WINDOW: copy = "BITE — PULL LEFT" if controller.motion.left_handed else "BITE — PULL RIGHT"
 			FishingSession.State.REELING:
-				var fight_tier := FightChallenge.tier(s.tension, s.challenge_profile)
+				var fight_tier := FightChallenge.tier(s.tension, s.live_challenge_profile)
 				if fight_tier in ["ease", "snap"]: copy = "TILT RIGHT TO EASE" if controller.motion.left_handed else "TILT LEFT TO EASE"
 				elif fight_tier in ["slack", "pull"]: copy = "TILT LEFT TO PULL" if controller.motion.left_handed else "TILT RIGHT TO PULL"
-				else: copy = "HOLD THE MIDDLE"
+				else: copy = "HOLD THE GREEN"
 			FishingSession.State.CAUGHT: copy = "%s LANDED" % s.fish.display_name.to_upper()
 			FishingSession.State.ESCAPED: copy = s.last_reason.to_upper()
 		# The left plaque owns all native fishing guidance. The title has its own
@@ -939,7 +977,7 @@ class FishingView extends Control:
 		if not should_draw_tension_meter(s): return
 		_refresh_tension_meter_geometry()
 		var tension := tension_meter_value(s.tension)
-		var profile: Dictionary = s.challenge_profile
+		var profile: Dictionary = s.live_challenge_profile
 		var tier := tension_status(tension, profile)
 		var label := "TENSION  %d%%  %s" % [roundi(tension * 100.0), tier]
 		var label_pos := tension_meter_rect.position + Vector2(0, -11)
@@ -956,6 +994,8 @@ class FishingView extends Control:
 		for boundary in [low_critical, low_warning, high_warning, high_critical]:
 			var boundary_x: float = tension_meter_rect.position.x + tension_meter_rect.size.x * float(boundary)
 			draw_line(Vector2(boundary_x, tension_meter_rect.position.y), Vector2(boundary_x, tension_meter_rect.end.y), Color("fff0c9", 0.70), 1.0)
+		var center_x := tension_meter_rect.position.x + tension_meter_rect.size.x * float(profile.get("target_center", 0.50))
+		draw_line(Vector2(center_x, tension_meter_rect.position.y - 3), Vector2(center_x, tension_meter_rect.end.y + 3), Color("f5df9f", 0.92), 2.0)
 		var marker_x := tension_meter_rect.position.x + tension_meter_rect.size.x * tension
 		draw_circle(Vector2(marker_x, tension_meter_rect.get_center().y), 7.0, Color("fff0c9")); draw_circle(Vector2(marker_x, tension_meter_rect.get_center().y), 7.0, Color("2a180f"), false, 2.0)
 		_text("LANDING", Vector2(190, 1111), 14, Color("fff1d1")); draw_line(Vector2(275, 1106), Vector2(527, 1106), Color("2a180f"), 6.0); draw_line(Vector2(275, 1106), Vector2(275 + 252 * s.fight_progress, 1106), Color("d7ad6d"), 4.0)

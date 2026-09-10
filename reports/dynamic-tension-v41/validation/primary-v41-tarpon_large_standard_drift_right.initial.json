@@ -1,0 +1,23 @@
+{
+  "label": "primary-v41-tarpon_large_standard_drift_right",
+  "rootPid": 49952,
+  "observedPids": [
+    49952
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\dynamic-tension-v41\\gallery\\tarpon_large_standard_drift_right.png",
+    "--capture-scenario=tarpon_large_standard_drift_right",
+    "--capture-time=1"
+  ],
+  "started": "2026-09-10T14:12:32.9972453-05:00"
+}

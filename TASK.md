@@ -186,3 +186,24 @@ The user authorized generation and integration of this first ImageGen UI pass. H
 - Settings pauses safely: it cancels an armed cast, preserves a fight’s pose mapping, isolates preview haptics, and carries its remaining motor settle guard into return. Haptics-off clears preview work. Motion tuning is isolated in Motion Setup.
 - Deterministic baseline/frozen 720×1280 desktop captures are in `reports/ui-v4-polish-720/`, including ready safe-top 0/91/180, bite/fight, settings/motion, water safe-top 0/91/180, records, and first/new-best/tie/long-species catches. Full domain plus controller/view interaction checks pass. Export, package audit, Pixel install, and human visual/motion/haptic acceptance remain pending.
 - Primary delivery evidence: the signed arm64 v28 APK is `build/android/CastAndCrank-0.4.2-uipolish1-arm64-debug.apk`, 51,795,934 bytes, SHA-256 `F776269C33C747BD34A7973566BCF19EBFAD90D738A1F37D126035B66A01CB6A`. Parser/domain, all sixteen fresh desktop captures, export audit, and Pixel install/cold-start checks passed. DriveFS byte/hash delivery is verified at `H:\My Drive\AI Projects\Haptic Fish\CastAndCrank-0.4.2-uipolish1-arm64-debug.apk`; cloud-sync completion is not claimed. The Pixel was keyguarded with no resumed activity, so foreground touch, motion/haptic feel, ads, and human acceptance remain pending; no phone screenshot was taken.
+
+## Dynamic tension v41 — 2026-09-10
+
+- Implemented a deterministic per-cast live tension profile. Large/harder fish
+  can drift the green center, narrow the sweet spot, and breathe both red ends;
+  ordinary Bluegill remains baseline-stable. Settings cannot change an active
+  cast's immutable base profile.
+- Domain, meter, reward, red dwell, hint, and haptic warning tier use the same
+  live bounds. Reduced Motion does not freeze fight mechanics.
+- Focused final [receipt](reports/dynamic-tension-v41/validation/v41-dynamic-focused-final.json)
+  root `123044` passed 5,184 deterministic profile cases; full domain root
+  `125876` and Tarpon live-cue root `68428` also passed. The true 20-second
+  standard cap is retained with only a `1e-6` frame-accumulation comparison.
+- Primary focused/domain/export checks passed (roots `123844` / `120872` /
+  `96096`). The signed local arm64 APK is
+  `build/android/Hooked-0.8.1-tension1-arm64-debug.apk`, 76,232,563 bytes,
+  SHA-256 `6A400B3298C3C83C7300B37AAC7531280D9ADD63B37EE136C08696A65C75F951`.
+  Package audit confirms Hooked / code `41` / `0.8.1-tension1`, SDK `24/36`,
+  VIBRATE, arm64 only, valid v2 signing, and no excluded payload. Nine primary
+  desktop meter captures passed visual review; no install, Drive delivery,
+  remote push, phone screenshot, or physical-feel approval is claimed.

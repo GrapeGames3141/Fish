@@ -1,0 +1,27 @@
+{
+  "label": "v41-domain-full",
+  "started": "2026-09-10T14:01:58.0722251-05:00",
+  "finished": "2026-09-10T14:02:57.3387678-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--script",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-dynamic-tension-v41\\domain-full",
+  "rootPid": 108092,
+  "observedPids": [
+    108092
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\dynamic-tension-v41\\validation\\v41-domain-full.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\dynamic-tension-v41\\validation\\v41-domain-full.stderr.log",
+  "stderrMarker": "ERROR: 300ms-delayed pull/ease lands flathead_catfish for standard at 60Hz / roll 0.00 (state=6 elapsed=20.00)",
+  "error": null
+}

@@ -1,0 +1,16 @@
+{
+  "label": "v41-domain-full-final",
+  "rootPid": 125876,
+  "observedPids": [
+    125876
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--script",
+    "res://tests/test_runner.gd"
+  ],
+  "started": "2026-09-10T14:05:30.8823685-05:00"
+}

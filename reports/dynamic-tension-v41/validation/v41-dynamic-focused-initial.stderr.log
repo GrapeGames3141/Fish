@@ -1,0 +1,10 @@
+SCRIPT ERROR: Parse Error: Cannot infer the type of "center_span" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/dynamic_tension_test.gd:111)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "width_span" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/dynamic_tension_test.gd:112)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "low_span" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/dynamic_tension_test.gd:113)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "high_span" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/dynamic_tension_test.gd:114)
+ERROR: Failed to load script "res://tests/dynamic_tension_test.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)

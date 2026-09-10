@@ -1,0 +1,23 @@
+{
+  "label": "primary-v41-tarpon_large_expert_reduced",
+  "rootPid": 59052,
+  "observedPids": [
+    59052
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\dynamic-tension-v41\\gallery\\tarpon_large_expert_reduced.png",
+    "--capture-scenario=tarpon_large_expert_reduced",
+    "--capture-time=1"
+  ],
+  "started": "2026-09-10T14:12:47.7975322-05:00"
+}

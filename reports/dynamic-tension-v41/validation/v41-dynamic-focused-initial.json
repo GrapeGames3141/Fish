@@ -1,0 +1,27 @@
+{
+  "label": "v41-dynamic-focused-initial",
+  "started": "2026-09-10T13:55:52.0570744-05:00",
+  "finished": "2026-09-10T13:55:53.2252373-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--script",
+    "res://tests/dynamic_tension_test.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-dynamic-tension-v41",
+  "rootPid": 111428,
+  "observedPids": [
+    111428
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\dynamic-tension-v41\\validation\\v41-dynamic-focused-initial.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\dynamic-tension-v41\\validation\\v41-dynamic-focused-initial.stderr.log",
+  "stderrMarker": "SCRIPT ERROR: Parse Error: Cannot infer the type of \"center_span\" variable because the value doesn't have a set type.",
+  "error": null
+}

@@ -1,0 +1,16 @@
+{
+  "label": "primary-v41-focused",
+  "rootPid": 123844,
+  "observedPids": [
+    123844
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/dynamic_tension_test.gd"
+  ],
+  "started": "2026-09-10T14:08:18.5336583-05:00"
+}

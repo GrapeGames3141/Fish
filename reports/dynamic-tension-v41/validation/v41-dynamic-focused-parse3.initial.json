@@ -1,0 +1,16 @@
+{
+  "label": "v41-dynamic-focused-parse3",
+  "rootPid": 58628,
+  "observedPids": [
+    58628
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--script",
+    "res://tests/dynamic_tension_test.gd"
+  ],
+  "started": "2026-09-10T13:58:29.0046542-05:00"
+}

@@ -1,0 +1,30 @@
+{
+  "label": "primary-v41-export",
+  "started": "2026-09-10T14:08:19.8501337-05:00",
+  "finished": "2026-09-10T14:09:51.4740486-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--audio-driver",
+    "Dummy",
+    "--export-debug",
+    "Android Gate 1 Debug",
+    "E:\\AI Projects\\games\\haptic fish\\build\\android\\Hooked-0.8.1-tension1-arm64-debug.apk"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-dynamic-tension-v41\\primary-export",
+  "rootPid": 96096,
+  "observedPids": [
+    96096
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\dynamic-tension-v41\\validation\\primary-v41-export.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\dynamic-tension-v41\\validation\\primary-v41-export.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

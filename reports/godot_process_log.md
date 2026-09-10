@@ -447,3 +447,33 @@ check, window list, and stdout/stderr.
 - Final cleanup inventory confirmed all diagnostic-owned roots (`50544`,
   `83652`, `87468`, `111396`, `114108`, `123492`) absent, with no Godot/WerFault
   process or corresponding crash dialog. No cleanup termination was needed.
+
+## Dynamic tension v41 — 2026-09-10
+
+- `v41-dynamic-focused-initial`: root `111428`, exit `1`; parse-only harness
+  issue (untyped aggregate spans), no task process/window remained.
+- `v41-dynamic-focused-parse2`: root `54748`, exit `1`; the first high-edge
+  fixture crossed the base edge before asserting the intended between-edge state.
+  This is superseded harness evidence, not a gameplay fault.
+- `v41-dynamic-focused-final`: root `123044`, command
+  `Godot_v4.7.1-stable_win64.exe --headless --path E:\AI Projects\games\haptic fish --script res://tests/dynamic_tension_test.gd`, isolated cache
+  `E:\CodexCache\haptic-fish-dynamic-tension-v41`, exit `0`, no helper stderr
+  marker, cleanup PID, remaining task process, or window.
+- `v41-domain-full` / `v41-domain-full-rerun`: roots `108092` / `120004`, exit
+  `1`; both isolated a `20.0000000000001` frame-accumulation comparison on
+  Flathead Standard 60Hz. Final `v41-domain-full-final` root `125876` ran
+  14:05:30–14:06:30 CDT, exit `0`, no helper marker/window/remaining process;
+  established 12 ObjectDB / 5-resource teardown notices are retained.
+- `v41-tarpon-livecue-final`: root `68428`, 14:07:56–14:08:12 CDT, exit `0`, no
+  stderr marker, cleanup PID, remaining task process, or window.
+- `v41-import-final`: root `126548`, 14:10:49–14:10:58 CDT, exit `0`, no stderr
+  marker, cleanup PID, remaining task process, or window.
+- Primary focused/domain/export: roots `123844` / `120872` / `96096`, all exit
+  `0`, no helper stderr marker, remaining task PID, or window. The export's
+  late owned Gradle daemon `35804` (parent `100664`) was confirmed idle from the
+  haptic-fish project build log and explicitly stopped around 14:14; the final
+  inventory had no Godot/java/aapt2/WerFault process or crash dialog.
+- Primary still captures all exited `0` with no remaining task PID/window:
+  Standard Tarpon wide/narrow/left/right roots `116228` / `124364` / `123504` /
+  `49952`; Expert wide/narrow/Safe-180/Reduced roots `103856` / `121148` /
+  `123932` / `59052`; Bluegill baseline root `119352`.

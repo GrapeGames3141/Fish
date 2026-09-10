@@ -1,0 +1,19 @@
+{
+  "label": "primary-v41-export",
+  "rootPid": 96096,
+  "observedPids": [
+    96096
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--audio-driver",
+    "Dummy",
+    "--export-debug",
+    "Android Gate 1 Debug",
+    "E:\\AI Projects\\games\\haptic fish\\build\\android\\Hooked-0.8.1-tension1-arm64-debug.apk"
+  ],
+  "started": "2026-09-10T14:08:19.8501337-05:00"
+}

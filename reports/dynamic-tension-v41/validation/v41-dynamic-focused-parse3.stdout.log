@@ -1,0 +1,4 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+DYNAMIC_TENSION {"profile_cases":5184,"tarpon":{"center_span":0.0690930983892666,"green_width_max":0.27390919115694,"green_width_min":0.243184261121919,"high_critical_span":0.0950348913026144,"low_critical_span":0.0532326555506954}}
+PASS: dynamic tension v41

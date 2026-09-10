@@ -1,0 +1,16 @@
+{
+  "label": "v41-tarpon-livecue-final",
+  "rootPid": 68428,
+  "observedPids": [
+    68428
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--script",
+    "res://tests/tarpon_diagnostic.gd"
+  ],
+  "started": "2026-09-10T14:07:56.5303824-05:00"
+}
