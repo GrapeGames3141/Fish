@@ -1,0 +1,30 @@
+{
+  "device": "Pixel 9 Pro",
+  "transport": "paired wireless ADB",
+  "fromVersionCode": 37,
+  "toVersionCode": 39,
+  "installCommand": "adb install -r",
+  "installResult": "Success",
+  "savePreserved": {
+    "path": "files/cast_and_crank_save.json",
+    "sha256Before": "3ddc5c9efcb9ff05e5e56215a09c305f40dd3d96c2a056f9952bf0e694103e38",
+    "sha256After": "3ddc5c9efcb9ff05e5e56215a09c305f40dd3d96c2a056f9952bf0e694103e38"
+  },
+  "vibrateGranted": true,
+  "launch": {
+    "component": "com.tak.castandcrank/com.godot.game.GodotAppLauncher",
+    "status": "ok",
+    "cold": true,
+    "totalTimeMs": 2035,
+    "appPid": 9381,
+    "stableAfterSeconds": 30
+  },
+  "installedBaseApkSha256": "C0FDCE844EC93541CEFE5A0C062ECF105E8C2B56B0AFDF695F5F0EFE877650F9",
+  "scopedLog": {
+    "godotScriptError": false,
+    "androidRuntimeFatal": false,
+    "nativeCrash": false,
+    "observedNonfatal": "GodotAppLauncher BufferQueueProducer dequeueBuffer: BufferQueue has been abandoned"
+  },
+  "notClaimed": ["error_free_log", "human_device_visual_approval", "device_performance_approval", "physical_haptic_approval", "gameplay_feel_approval"]
+}

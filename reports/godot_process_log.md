@@ -314,3 +314,72 @@ check, window list, and stdout/stderr.
 - Final full deterministic [receipt](header-v36/validation/v36-domain-final3.json): root PID `94952`, exit 0, no remaining task PIDs/windows, and `PASS: Cast & Crank Gate 1 domain tests`. Its stderr retains only the established 12 ObjectDB / 5-resource shutdown notices.
 - Six selected 720×1280 desktop captures each exited 0 with no remaining task PIDs/windows: [Ready](header-v36/validation/v36-capture-ready.json), [Willow line-out](header-v36/validation/v36-capture-willow-line-out.json), [Bite](header-v36/validation/v36-capture-bite.json), [safe-top fight](header-v36/validation/v36-capture-fight-high-safe180.json), [catch](header-v36/validation/v36-capture-catch.json), and [Waters](header-v36/validation/v36-capture-waters-safe180.json). No phone screenshots were taken. Physical device, haptic, and human aesthetic acceptance remain pending.
 - Independent primary [domain receipt](header-v36/validation/primary-v36-domain.json): root PID `110284`, exit 0, no remaining task PIDs/windows; stderr contains only the documented 12 ObjectDB / 5-resource teardown notices. Signed primary [export receipt](header-v36/validation/primary-v36-export.json): root PID `93064`, exit 0, empty stderr, no remaining task PIDs/windows. The verified task Gradle daemon `122516` was stopped after its project ownership check; unrelated Godot PID `65276` was explicitly untouched. APK: `build/android/Hooked-0.7.2-header1-arm64-debug.apk`, 65,409,743 bytes, SHA-256 `AF60708C8B836AC6E1AA3674E76FB903D013558CF12228AFA300709833D3EDA0`; arm64-only, min SDK 24, target SDK 36, VIBRATE, existing signer verified, 830 ZIP entries with no forbidden evidence/mockup/private-config content. The 44 pre-existing generated Android file hashes are unchanged. Pixel discovery was empty; no install, Drive copy, remote push, or phone screenshot was performed for this UI-only checkpoint.
+
+# Metal location header v39 — validation in progress (2026-09-09)
+
+- Initial primary parser/import receipt `primary-v39-import` (root PID `109732`)
+  exited with a Godot parser error at `main.gd:788`: the new
+  `quiet_location_sign` local inferred from an untyped controller property.
+  It left no task PIDs or windows. This is recorded as superseded, not a
+  successful render or domain result.
+- The local has since been explicitly typed `bool` with a numeric cast for the
+  dynamic notice value. Corrected import [receipt](metal-header-v39/validation/primary-v39-import-fixed.json)
+  (root PID `60672`) exited 0 with empty stderr marker and no remaining task
+  PIDs/windows.
+- The full deterministic [domain receipt](metal-header-v39/validation/primary-v39-domain.json)
+  (root PID `118492`) exited 0 with `PASS: Cast & Crank Gate 1 domain tests`.
+  Its stderr has only the established 12 ObjectDB / 5-resource teardown notices.
+- The primary agent visually accepted three clean 720×1280 captures with no
+  remaining task PIDs/windows: [quiet Hatteras line-out](metal-header-v39/validation/primary-v39-line-out.json)
+  (root `69808`), [safe-top-91 Ready](metal-header-v39/validation/primary-v39-ready-safe91.json)
+  (root `111168`), and [safe-top-180 fight](metal-header-v39/validation/primary-v39-fight-safe180.json)
+  (root `54120`). Their gallery index is
+  [here](metal-header-v39/gallery/README.md). Catch capture, export, package
+  audit, and physical Pixel install remain pending at this checkpoint.
+- A first optional Hatteras catch capture [receipt](metal-header-v39/validation/primary-v39-catch.json)
+  reached its 60-second wrapper limit. Root PID `127720` was the only cleanup
+  PID; no task process/window remained and stdout contained only engine/GPU
+  startup text (no script error or stack). It is retained as an inconclusive
+  timed-out capture, not evidence of a gameplay regression or a release gate.
+- Following the user's darker-metal refinement, the primary agent accepted the
+  clean dark-gunmetal final captures: [line-out](metal-header-v39/validation/primary-v39-dark-line-out.json)
+  root `70844`, [safe-top-91 Ready](metal-header-v39/validation/primary-v39-dark-ready-safe91.json)
+  root `100004`, and [safe-top-180 fight](metal-header-v39/validation/primary-v39-dark-fight-safe180.json)
+  root `107616`. Each exited 0 with empty stderr marker and no remaining task
+  PIDs/windows. Earlier light-pewter captures are superseded. The technically
+  clean `primary-v39-dark-catch` capture is excluded from evidence because it
+  unexpectedly captured Settings; suspected desktop-input interference was not
+  traced. The offscreen fixture retry is pending instead of any gameplay change.
+- The offscreen retry [receipt](metal-header-v39/validation/primary-v39-dark-catch-offscreen.json)
+  (root `58408`) exited 0 with clean stderr and no remaining task processes or
+  windows. The primary agent accepted the resulting `dark-catch-final.png`:
+  it shows the intended Hatteras catch, retained 61.6 cm result, and no cast
+  distance caption. The post-refinement full domain [receipt](metal-header-v39/validation/primary-v39-dark-domain.json)
+  (root `111880`) also exited 0 with `PASS: Cast & Crank Gate 1 domain tests`
+  and only the established teardown notices.
+- The first unchanged-source export [receipt](metal-header-v39/validation/primary-v39-export.json)
+  reached its 240-second wrapper limit while Gradle was compiling, with no
+  stderr marker, build failure, or produced APK. Task-owned root `42484` and
+  observed worker chain `106780`, `106212`, `125232`, `102940`, `77788`, and
+  `126260` were cleaned. A stop exit-race for already-gone `106212` appears in
+  the tool terminal output (the JSON receipt lists only cleanup IDs). The
+  subsequent Godot/Java/aapt2/WerFault inventory was empty.
+  This is timeout provenance only; the unchanged-source 600-second retry is
+  pending before any build claim.
+- The unchanged-source retry [receipt](metal-header-v39/validation/primary-v39-export-retry.json)
+  ran `20:40:26–20:43:20`, root `126764`, and exited 0 with empty stderr/no
+  remaining task process or window. Its observed project-owned chain was
+  `126764→108672→113660→80032`, with owned aapt2 child `51248`; idle Gradle
+  daemon `80032` was explicitly stopped after logfile ownership confirmation.
+  Final Godot/Java/aapt2/WerFault inventory was empty.
+- APK/package and Pixel update facts are in
+  [release audit](metal-header-v39/release-audit-v39.md) and
+  [Pixel receipt](metal-header-v39/pixel-install-v39.json). The in-place
+  wireless `adb install -r` updated the paired Pixel 9 Pro from v37 to v39
+  while preserving the save hash. Launcher cold start was `Status: ok`,
+  `TotalTime: 2035ms`, with app PID `9381` still present roughly 30 seconds
+  later; installed base APK hash matches the audited artifact. The scoped app
+  log has no Godot script error, AndroidRuntime fatal, or native crash marker,
+  but one nonfatal abandoned BufferQueueProducer message is retained rather
+  than claiming an error-free log. No phone screenshot, uninstall/data clear,
+  Drive copy, or remote push occurred.

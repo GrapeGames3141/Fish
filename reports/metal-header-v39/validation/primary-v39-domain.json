@@ -1,0 +1,27 @@
+{
+  "label": "primary-v39-domain",
+  "started": "2026-09-09T20:23:17.0120091-05:00",
+  "finished": "2026-09-09T20:23:47.2519669-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-metal-v39\\domain",
+  "rootPid": 118492,
+  "observedPids": [
+    118492
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-domain.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-domain.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

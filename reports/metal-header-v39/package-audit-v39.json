@@ -1,0 +1,32 @@
+{
+  "artifact": "build/android/Hooked-0.7.5-sign1-arm64-debug.apk",
+  "bytes": 65518255,
+  "sha256": "C0FDCE844EC93541CEFE5A0C062ECF105E8C2B56B0AFDF695F5F0EFE877650F9",
+  "package": "com.tak.castandcrank",
+  "versionCode": 39,
+  "versionName": "0.7.5-sign1",
+  "minSdk": 24,
+  "targetSdk": 36,
+  "architectures": ["arm64-v8a"],
+  "permissionsVerified": ["android.permission.VIBRATE"],
+  "signing": {
+    "schemeV2": true,
+    "certificateSha256": "c26373b2320fa530be93f5b6d255a4c8e10e6aa4476e430dedb6106a4de865dc"
+  },
+  "fontLicenseAudit": {
+    "fontEntryBytes": 68282,
+    "fontEntryCompressedBytes": 68270,
+    "oflEntryBytes": 4383,
+    "oflEntryCompressedBytes": 2048,
+    "oflSourceSha256": "F2B3029ABA64C378BF0963B62945EEE15E564FE4330B934C8F2EB058282B5E83"
+  },
+  "packageExclusionsVerified": ["reports", "tests", "docs", "tools", "concepts", "screenshots", "build", "gif", "mp4", "private_config"],
+  "sourceVerification": {
+    "mainGdSha256": "A490D8FE15FEFD1FB504A0AE3C78284D1D533E5658538E930CD04EE502E4D928",
+    "matchesPostExportSource": true
+  },
+  "runtimeLibrary": {
+    "libgodotUncompressedBytes": 76177376,
+    "libgodotCompressedBytes": 27833653
+  }
+}

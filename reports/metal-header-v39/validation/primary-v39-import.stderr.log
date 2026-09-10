@@ -1,0 +1,4 @@
+SCRIPT ERROR: Parse Error: Cannot infer the type of "quiet_location_sign" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://src/ui/main.gd:788)
+ERROR: Failed to load script "res://src/ui/main.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)

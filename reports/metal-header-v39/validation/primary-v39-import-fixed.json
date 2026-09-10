@@ -1,0 +1,27 @@
+{
+  "label": "primary-v39-import-fixed",
+  "started": "2026-09-09T20:22:01.9700103-05:00",
+  "finished": "2026-09-09T20:22:15.5959606-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--editor",
+    "--quit"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-metal-v39\\import",
+  "rootPid": 60672,
+  "observedPids": [
+    60672
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-import-fixed.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-import-fixed.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

@@ -1,5 +1,26 @@
 # Gate 1 — foundation, playable greybox, and concept direction
 
+## Metal location header v39
+
+- Implemented for the next build: the existing full-width fishing rail retains
+  its exact safe-area geometry and icon targets while its left wood plaque now
+  carries measured Cinzel raised-metal location lettering. Quiet `LINE_OUT`
+  and terminal catch center the location in the plaque; guided states reserve
+  a non-overlapping lower line for high-contrast outlined motion guidance.
+- `LINE_OUT` no longer repeats habitat/channel or cast-distance text, and the
+  catch reveal no longer repeats a cast-distance caption. Fish size, records,
+  saves, motion, fight, haptic, water, and Android layout behavior are
+  intentionally unchanged.
+- The authentic OFL Cinzel variable font and unmodified license are bundled
+  with narrow export-license inclusion. Final parser/domain/capture review,
+  signed arm64 `39` / `0.7.5-sign1` package audit, and in-place Pixel 9 Pro
+  update pass; the save hash is preserved across the `adb install -r` update.
+  [Evidence](reports/metal-header-v39/README.md) retains superseded parser,
+  capture, and initial-export timeout receipts. The scoped post-launch log has
+  no script/fatal/native-crash marker but one nonfatal abandoned buffer-queue
+  message; human device visual/performance and physical motion/haptic/gameplay
+  acceptance remain separate.
+
 ## Hatteras shore surf v38
 
 - Corrected primary review replaces the rejected sharp surf front with a bounded single-coordinate photographic shorewash: 0–28px run-up, low-frequency alongshore lag, safe shoreline fades, and a <=7px broad offshore ridge. The original foam/photo moves rather than an image being swapped or an overlay being drawn. Hatteras short-cast bobber/line uses the same surf offset; Pond/Lake/River remain unchanged and Reduced Motion is still.

@@ -327,14 +327,17 @@ func _apply_capture_scenario() -> void:
 		"wait_after_shadow": session.set_location("willow_pond", 0.0); session.set_encounter_rolls(0.2, 0.4, 0.4, 0.80, 0.30); session.arm_cast(); session.release_cast(0.8); session.elapsed = minf(session.bite_wait_seconds - 0.40, session.shadow_visit_start + session.shadow_visit_duration + 0.35)
 		"willow_reeling_danger": session.set_location("willow_pond", 0.0); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.95; session.rod_load = 0.95; session.cast_quality = 0.86; session.cast_distance_m = 35.5
 		"hatteras_ready": session.set_location("hatteras_inlet", 0.0)
+		"hatteras_ready_safe_top_91": session.set_location("hatteras_inlet", 0.0); view.safe_top_override = 91.0
 		"hatteras_bite": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8); session.state = FishingSession.State.BITE; session.bite_elapsed = 0.20
 		"hatteras_reeling_high": session.set_location("hatteras_inlet", 0.0); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.88; session.rod_load = 0.88; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+		"hatteras_reeling_high_safe_top_180": session.set_location("hatteras_inlet", 0.0); session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.88; session.rod_load = 0.88; session.cast_quality = 0.86; session.cast_distance_m = 35.5; view.safe_top_override = 180.0
 		"pine_ready": session.set_location("pine_lake", 0.0)
 		"cedar_ready": session.set_location("cedar_river", 0.0)
 		"cedar_ready_safe_top_180": session.set_location("cedar_river", 0.0); view.safe_top_override = 180.0
 		"cast_armed": session.arm_cast()
 		"line_out": session.arm_cast(); session.release_cast(0.8)
 		"hatteras_line_out": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8)
+		"hatteras_line_out_safe_top_180": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8); view.safe_top_override = 180.0
 		"hatteras_short_line_out": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.35)
 		"hatteras_reduced_line_out": save.data.settings.reduced_motion = true; session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8)
 		"willow_line_out_t2": session.set_location("willow_pond", 0.0); session.arm_cast(); session.release_cast(0.8); ui_time = 2.0
@@ -464,6 +467,10 @@ func _capture_after_draw() -> void:
 	print("SCREENSHOT_CAPTURED path=%s error=%s" % [capture_path, error]); get_tree().quit(0 if error == OK else 1)
 
 class FishingView extends Control:
+	# Cinzel is a bundled OFL display face used only for the location engraved into
+	# the existing left-hand wood plaque. Dynamic guidance remains the compact
+	# fallback face below it, which keeps the motion copy legible at a glance.
+	const CINZEL_VARIABLE_FONT = preload("res://art/fonts/cinzel/Cinzel[wght].ttf")
 	# Terminal guide contacts from deterministic repack metadata; each strict cell owns one rod.
 	const ROD_DESTINATION := Rect2(-85, 545, 435, 870)
 	const ROD_FRAME_SIZE := Vector2(512, 1024)
@@ -551,10 +558,14 @@ class FishingView extends Control:
 	var world_next_rect := Rect2()
 	var tension_meter_rect := Rect2(30, 112, 540, 18)
 	var font: Font
+	var metal_header_font: FontVariation
 	func _ready() -> void:
 		set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		mouse_filter = Control.MOUSE_FILTER_STOP
 		font = ThemeDB.fallback_font
+		metal_header_font = FontVariation.new()
+		metal_header_font.base_font = CINZEL_VARIABLE_FONT
+		metal_header_font.variation_opentype = {"wght": 680}
 		_refresh_top_nav_geometry()
 		_refresh_modal_layout()
 		queue_redraw()
@@ -771,8 +782,11 @@ class FishingView extends Control:
 		var active := s.state in [FishingSession.State.CAST_ARMED, FishingSession.State.LINE_OUT, FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
 		_refresh_top_nav_geometry()
 		if controller.top_nav_texture: draw_texture_rect_region(controller.top_nav_texture, top_nav_strip_rect, Rect2(0, 172, 2172, 323))
-		# The location uses the actual clear left beam, not the old bolt-overlapping x=42 baseline.
-		_centered_text(s.location_id.replace("_", " ").to_upper(), Vector2(214, chrome_y + 29), 15, Color("332016"))
+		# The location uses the actual clear left beam, not the old bolt-overlapping
+		# x=42 baseline. Its measured raised-metal copy belongs to the authored wood;
+		# no translucent backing or second plate is introduced here.
+		var quiet_location_sign: bool = (s.state == FishingSession.State.LINE_OUT and float(controller.ui_notice_remaining) <= 0.0) or s.state == FishingSession.State.CAUGHT
+		_draw_metal_location_header(s.location_id.replace("_", " ").to_upper(), quiet_location_sign)
 		if active:
 			# Records and Waters stay in their engraved positions while a cast/fight is
 			# active. Small native padlocks communicate the existing notice-only gate
@@ -786,11 +800,13 @@ class FishingView extends Control:
 		draw_arc(shackle_center, 4.5, PI, TAU, 10, lock_color, 2.0, true)
 	func _draw_glance_hint(s: FishingSession) -> void:
 		if controller.ui_notice_remaining > 0.0:
-			_draw_top_hint_lines([_fit_text(controller.ui_notice, 280.0, 15)], 15, Color("332016")); return
+			_draw_top_hint_lines([_fit_text(controller.ui_notice, 280.0, 15)], 15, Color("ece1c8")); return
+		# Once the float is out the plaque becomes a quiet, large location sign. The
+		# selected fish habitat and cast distance are intentionally not repeated here.
+		if s.state == FishingSession.State.LINE_OUT: return
 		var copy := "TILT LEFT, THEN SNAP RIGHT" if controller.motion.left_handed else "TILT RIGHT, THEN SNAP LEFT"
 		match s.state:
 			FishingSession.State.CAST_ARMED: copy = "SNAP RIGHT" if controller.motion.left_handed else "SNAP LEFT"
-			FishingSession.State.LINE_OUT: copy = "%s  •  %.0f m" % [s.fish.habitat_name(s.cast_distance_m), s.cast_distance_m]
 			FishingSession.State.BITE: copy = "FISH ON — WAIT FOR THE PULSES"
 			FishingSession.State.HOOK_WINDOW: copy = "BITE — PULL LEFT" if controller.motion.left_handed else "BITE — PULL RIGHT"
 			FishingSession.State.REELING:
@@ -800,19 +816,51 @@ class FishingView extends Control:
 				else: copy = "HOLD THE MIDDLE"
 			FishingSession.State.CAUGHT: copy = "%s LANDED" % s.fish.display_name.to_upper()
 			FishingSession.State.ESCAPED: copy = s.last_reason.to_upper()
-		# The left plaque owns all native fishing guidance. The fixed two-line layout
-		# stays readable during a bite and never shifts across the cast/fight loop.
+		# The left plaque owns all native fishing guidance. The title has its own
+		# measured upper rect; this compact lower arrangement never overlaps it.
 		if s.state == FishingSession.State.READY:
-			_draw_top_hint_lines(["TILT %s" % ("LEFT" if controller.motion.left_handed else "RIGHT"), "THEN SNAP %s" % ("RIGHT" if controller.motion.left_handed else "LEFT")], 17, Color("332016"))
+			_draw_top_hint_lines([_fit_text("TILT %s, THEN SNAP %s" % [("LEFT" if controller.motion.left_handed else "RIGHT"), ("RIGHT" if controller.motion.left_handed else "LEFT")], 280.0, 17)], 17, Color("ece1c8"))
 		elif s.state == FishingSession.State.HOOK_WINDOW:
-			_draw_top_hint_lines(["BITE", "PULL %s" % ("LEFT" if controller.motion.left_handed else "RIGHT")], 18, Color("332016"))
+			_draw_top_hint_lines([_fit_text("BITE — PULL %s" % ("LEFT" if controller.motion.left_handed else "RIGHT"), 280.0, 17)], 17, Color("ece1c8"))
 		elif s.state == FishingSession.State.BITE:
-			_draw_top_hint_lines(["FISH ON", "WAIT FOR PULSES"], 18, Color("332016"))
-		elif s.state == FishingSession.State.ESCAPED: _draw_top_hint_lines(["FISH GOT AWAY"], 18, Color("332016"))
-		else: _draw_top_hint_lines([_fit_text(copy, 280.0, 17)], 17, Color("332016"))
+			_draw_top_hint_lines(["FISH ON — WAIT FOR PULSES"], 17, Color("ece1c8"))
+		elif s.state == FishingSession.State.ESCAPED: _draw_top_hint_lines(["FISH GOT AWAY"], 17, Color("ece1c8"))
+		else: _draw_top_hint_lines([_fit_text(copy, 280.0, 17)], 17, Color("ece1c8"))
 	func _draw_top_hint_lines(lines: Array, point_size: int, color: Color) -> void:
-		var base_y := _virtual_safe_top() + (62.0 if lines.size() > 1 else 73.0)
-		for index in range(lines.size()): _centered_text(str(lines[index]), Vector2(214, base_y + index * 22.0), point_size, color)
+		var line_count := maxi(1, lines.size())
+		var hint_rect := _top_hint_rect(line_count)
+		var size := point_size if line_count == 1 else mini(point_size, 15)
+		var line_height := hint_rect.size.y / float(line_count)
+		for index in range(lines.size()):
+			var line_rect := Rect2(hint_rect.position + Vector2(0, line_height * index), Vector2(hint_rect.size.x, line_height))
+			_centered_outlined_text_in_rect(str(lines[index]), line_rect, size, color)
+	func _top_location_title_rect(quiet_location_sign := false) -> Rect2:
+		# Clear interior between the left plaque's bolts, measured in canonical 720px
+		# coordinates. The title remains on the same full-width rail at every inset.
+		return Rect2(70, _virtual_safe_top() + (36 if quiet_location_sign else 30), 280, 46 if quiet_location_sign else 31)
+	func _top_hint_rect(line_count: int) -> Rect2:
+		# The remaining lower portion stays deliberately separate from the metal title.
+		# Two short directives get one line each; one-line notices get the full row.
+		return Rect2(70, _virtual_safe_top() + (61 if line_count > 1 else 67), 280, 37 if line_count > 1 else 26)
+	func _metal_location_font_size(value: String, available_width: float) -> int:
+		var display_font: Font = metal_header_font if metal_header_font else font
+		for point_size in range(26, 17, -1):
+			if display_font.get_string_size(value, HORIZONTAL_ALIGNMENT_LEFT, -1, point_size).x <= available_width:
+				return point_size
+		return 18
+	func _draw_metal_location_header(value: String, quiet_location_sign := false) -> void:
+		var rect := _top_location_title_rect(quiet_location_sign)
+		var display_font: Font = metal_header_font if metal_header_font else font
+		var point_size: int = _metal_location_font_size(value, rect.size.x - 6.0)
+		var width: float = display_font.get_string_size(value, HORIZONTAL_ALIGNMENT_LEFT, -1, point_size).x
+		var baseline: Vector2 = Vector2(rect.get_center().x - width * .5, rect.get_center().y + (display_font.get_ascent(point_size) - display_font.get_descent(point_size)) * .5)
+		# A blackened recess and dark gunmetal face sit in the wood. One narrow,
+		# subdued rim is enough to catch the lettering on busy grain; there is no
+		# bright full-face highlight or animated sheen over the metal.
+		draw_string_outline(display_font, baseline + Vector2(1.2, 1.5), value, HORIZONTAL_ALIGNMENT_LEFT, -1, point_size, 2, Color(0.055, 0.045, 0.035, 0.94))
+		draw_string_outline(display_font, baseline, value, HORIZONTAL_ALIGNMENT_LEFT, -1, point_size, 1, Color(0.67, 0.69, 0.65, 0.72))
+		draw_string(display_font, baseline + Vector2(0, 0.7), value, HORIZONTAL_ALIGNMENT_LEFT, -1, point_size, Color("192126"))
+		draw_string(display_font, baseline, value, HORIZONTAL_ALIGNMENT_LEFT, -1, point_size, Color("3b474c"))
 	func _draw_fight_status(s: FishingSession) -> void:
 		if not should_draw_tension_meter(s): return
 		_refresh_tension_meter_geometry()
@@ -874,7 +922,6 @@ class FishingView extends Control:
 		var species := _fit_text(s.fish.display_name.to_upper(), 520.0, 29)
 		_centered_text(species, Vector2(361, 822 + body_shift), 29, Color(0.01, 0.07, 0.08, 0.72)); _centered_text(species, Vector2(360, 820 + body_shift), 29, Color("fff1c4"))
 		_centered_text(status, Vector2(360, 858 + body_shift), 19, Color("f3d979"))
-		_centered_text("%s  •  %.0f m CAST" % [s.location_id.replace("_", " ").to_upper(), s.cast_distance_m], Vector2(360, 892 + body_shift), 16, Color("d7eee4"))
 		catch_continue_rect = Rect2(92, 914 + body_shift, 250, 70); catch_records_rect = Rect2(378, 914 + body_shift, 250, 70)
 		_draw_wood_control(catch_continue_rect); _draw_wood_control(catch_records_rect)
 		_centered_text_in_rect("CONTINUE", catch_continue_rect, 18, Color("fff1c4")); _centered_text_in_rect("RECORDS", catch_records_rect, 18, Color("fff1c4"))
@@ -1391,6 +1438,13 @@ class FishingView extends Control:
 		var ascent := font.get_ascent(font_size)
 		var descent := font.get_descent(font_size)
 		_text(value, Vector2(rect.get_center().x - width * 0.5, rect.get_center().y + (ascent - descent) * 0.5), font_size, color)
+	func _centered_outlined_text_in_rect(value: String, rect: Rect2, font_size: int, color: Color) -> void:
+		var width := font.get_string_size(value, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x
+		var ascent := font.get_ascent(font_size)
+		var descent := font.get_descent(font_size)
+		var baseline := Vector2(rect.get_center().x - width * 0.5, rect.get_center().y + (ascent - descent) * 0.5)
+		draw_string_outline(font, baseline + Vector2(0.8, 1.0), value, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, 2, Color("21160f"))
+		draw_string(font, baseline, value, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size, color)
 	func _fit_text(value: String, width: float, preferred_size: int) -> String:
 		if font.get_string_size(value, HORIZONTAL_ALIGNMENT_LEFT, -1, preferred_size).x <= width: return value
 		var words := value.split(" ")

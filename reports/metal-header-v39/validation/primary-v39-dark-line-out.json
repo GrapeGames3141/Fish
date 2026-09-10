@@ -1,0 +1,32 @@
+{
+  "label": "primary-v39-dark-line-out",
+  "started": "2026-09-09T20:31:48.7971022-05:00",
+  "finished": "2026-09-09T20:32:01.8251656-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\gallery\\dark-line-out.png",
+    "--capture-scenario=hatteras_line_out",
+    "--capture-time=1"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-metal-v39\\line-out",
+  "rootPid": 70844,
+  "observedPids": [
+    70844
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-dark-line-out.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-dark-line-out.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

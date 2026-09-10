@@ -1,0 +1,32 @@
+{
+  "label": "primary-v39-line-out",
+  "started": "2026-09-09T20:23:05.4117808-05:00",
+  "finished": "2026-09-09T20:23:11.1082261-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\gallery\\line-out.png",
+    "--capture-scenario=hatteras_line_out",
+    "--capture-time=1"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-metal-v39\\line-out",
+  "rootPid": 69808,
+  "observedPids": [
+    69808
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-line-out.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-line-out.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

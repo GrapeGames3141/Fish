@@ -1,0 +1,27 @@
+{
+  "label": "primary-v39-import",
+  "started": "2026-09-09T20:20:22.2008183-05:00",
+  "finished": "2026-09-09T20:20:37.1164973-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--editor",
+    "--quit"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-metal-v39\\import",
+  "rootPid": 109732,
+  "observedPids": [
+    109732
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-import.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-import.stderr.log",
+  "stderrMarker": "SCRIPT ERROR: Parse Error: Cannot infer the type of \"quiet_location_sign\" variable because the value doesn't have a set type.",
+  "error": null
+}

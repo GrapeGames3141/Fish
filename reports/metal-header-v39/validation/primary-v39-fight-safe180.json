@@ -1,0 +1,32 @@
+{
+  "label": "primary-v39-fight-safe180",
+  "started": "2026-09-09T20:23:02.4313058-05:00",
+  "finished": "2026-09-09T20:23:09.5594366-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\gallery\\fight-safe180.png",
+    "--capture-scenario=hatteras_reeling_high_safe_top_180",
+    "--capture-time=1"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-metal-v39\\fight-safe180",
+  "rootPid": 54120,
+  "observedPids": [
+    54120
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-fight-safe180.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\metal-header-v39\\validation\\primary-v39-fight-safe180.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}
