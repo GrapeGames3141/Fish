@@ -1,0 +1,32 @@
+{
+  "label": "primary-v37-pine-final",
+  "started": "2026-09-09T18:59:23.7508700-05:00",
+  "finished": "2026-09-09T18:59:27.9171406-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\gallery\\pine-final.png",
+    "--capture-scenario=line_out",
+    "--capture-time=1"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-water-v37",
+  "rootPid": 107920,
+  "observedPids": [
+    107920
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\validation\\primary-v37-pine-final.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\validation\\primary-v37-pine-final.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

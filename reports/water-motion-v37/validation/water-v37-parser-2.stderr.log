@@ -1,0 +1,8 @@
+SCRIPT ERROR: Parse Error: Cannot infer the type of "strength" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://src/ui/water_surface.gd:48)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "drift" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://src/ui/water_surface.gd:49)
+SCRIPT ERROR: Compile Error: Failed to compile depended scripts.
+   at: GDScript::reload (res://src/ui/main.gd:0)
+ERROR: Failed to load script "res://src/ui/main.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)

@@ -1,0 +1,20 @@
+{
+  "label": "primary-v37-ocean-review",
+  "rootPid": 81700,
+  "observedPids": [
+    81700
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\gallery\\primary-ocean-review.png",
+    "--capture-scenario=hatteras_line_out"
+  ],
+  "started": "2026-09-09T18:49:12.5826033-05:00"
+}

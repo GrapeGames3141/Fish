@@ -9,6 +9,7 @@ const FishDefinition = preload("res://src/domain/fish_definition.gd")
 const HapticService = preload("res://src/services/haptic_service.gd")
 const CastCaptureService = preload("res://src/services/cast_capture_service.gd")
 const GameMain = preload("res://src/ui/main.gd")
+const WaterSurface = preload("res://src/ui/water_surface.gd")
 const LeaderboardService = preload("res://src/services/leaderboard_service.gd")
 const PlayGamesConfig = preload("res://addons/play_games/play_games_config.gd")
 
@@ -34,6 +35,7 @@ func _init() -> void:
 	_test_waters_catalog_and_unlocks()
 	_test_catch_record_progression()
 	_test_ui_presentation_contract()
+	_test_water_surface_presentation()
 	_test_ui_controller_interactions()
 	_test_cast_capture_service()
 	_test_injectable_motion()
@@ -52,6 +54,36 @@ func _init() -> void:
 
 func expect(value: bool, message: String) -> void:
 	if not value: failures.append(message)
+
+func _test_water_surface_presentation() -> void:
+	var point := Vector2(500, 760)
+	var samples := {"willow_pond": [], "pine_lake": [], "cedar_river": [], "hatteras_inlet": []}
+	var energy := {"willow_pond": 0.0, "pine_lake": 0.0, "cedar_river": 0.0, "hatteras_inlet": 0.0}
+	var travel := {"willow_pond": 0.0, "pine_lake": 0.0, "cedar_river": 0.0, "hatteras_inlet": 0.0}
+	for frame in range(120):
+		var time := float(frame) / 12.0
+		for location_id in samples:
+			var sample: Dictionary = WaterSurface.sample(location_id, point, time, false)
+			samples[location_id].append(sample.offset)
+			energy[location_id] += sample.offset.length_squared()
+			if frame > 0: travel[location_id] += sample.offset.distance_to(samples[location_id][frame - 1])
+			var cap := 10.01 if location_id == "hatteras_inlet" else 5.01
+			expect(sample.offset.length() <= cap, "water profile %s keeps bobber displacement bounded" % location_id)
+	var pond_rms := sqrt(float(energy.willow_pond) / 120.0)
+	var lake_rms := sqrt(float(energy.pine_lake) / 120.0)
+	var ocean_rms := sqrt(float(energy.hatteras_inlet) / 120.0)
+	var still_a: Dictionary = WaterSurface.sample("hatteras_inlet", point, 2.3, true)
+	var still_b: Dictionary = WaterSurface.sample("hatteras_inlet", point, 8.7, true)
+	expect(WaterSurface.profile_id("willow_pond") == 0 and WaterSurface.profile_id("pine_lake") == 1 and WaterSurface.profile_id("cedar_river") == 2 and WaterSurface.profile_id("hatteras_inlet") == 3, "water presentation maps the four location profiles deterministically")
+	expect(lake_rms > pond_rms, "lake wind chop is stronger than the pond over a deterministic ten-second sample")
+	expect(float(travel.cedar_river) > float(travel.pine_lake), "river current changes faster than lake chop over a deterministic ten-second sample")
+	expect(ocean_rms > lake_rms, "ocean rolling swell has more displacement than lake chop over a deterministic ten-second sample")
+	expect(still_a.offset == Vector2.ZERO and is_zero_approx(still_a.tilt) and is_zero_approx(still_a.submerge) and still_b == still_a, "reduced motion freezes ambient bobber offset, tilt, and submergence at every presentation time")
+	var shader_source := FileAccess.get_file_as_string("res://src/ui/water_surface.gdshader")
+	var surface_source := FileAccess.get_file_as_string("res://src/ui/water_surface.gd")
+	var main_source := FileAccess.get_file_as_string("res://src/ui/main.gd")
+	expect("mask_at(UV - offset)" in shader_source and "texture(TEXTURE, clamp(UV - offset" in shader_source and "p.y / 1280.0" in surface_source and "* perspective" in surface_source, "CPU bobber and shader use the top-down, source/destination-gated displacement convention")
+	expect("var submerged := s.state in [FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]" in main_source and "if not submerged and controller.bobber_texture" in main_source, "float is visible only while line-out and stays hidden in bite, hook-window, and reeling states")
 
 func _max_emitted_amplitude(pulses: Array[Dictionary]) -> float:
 	var maximum := 0.0
@@ -1304,7 +1336,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 36 and export_config.get_value("preset.0.options", "version/name") == "0.7.2-header1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Header package version and visible Android label retain the package identifier")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 37 and export_config.get_value("preset.0.options", "version/name") == "0.7.3-water1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Water-motion package version and visible Android label retain the package identifier")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")

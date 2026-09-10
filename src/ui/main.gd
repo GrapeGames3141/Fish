@@ -11,6 +11,7 @@ const FishDefinition = preload("res://src/domain/fish_definition.gd")
 const LocationDefinition = preload("res://src/domain/location_definition.gd")
 const LeaderboardService = preload("res://src/services/leaderboard_service.gd")
 const PlayGamesConfig = preload("res://addons/play_games/play_games_config.gd")
+const WaterSurface = preload("res://src/ui/water_surface.gd")
 
 var session: FishingSession
 var motion: MotionService
@@ -22,8 +23,12 @@ var cast_capture: CastCaptureService
 var leaderboards: LeaderboardService
 var prior_state := -1
 var view: FishingView
+var water_surface: WaterSurface
 var capture_path := ""
 var capture_scenario := "ready"
+var capture_time_override := -1.0
+var capture_frames := 0
+var capture_fps := 16.0
 var loading_elapsed := 0.0
 var loading_active := true
 var ui_time := 0.0
@@ -64,6 +69,7 @@ func _ready() -> void:
 	save.load_data(); motion.sensitivity = float(save.data.settings.get("sensitivity", 1.0)); motion.left_handed = bool(save.data.settings.get("left_handed", false)); session.set_next_cast_challenge(save.data.settings.get("fight_challenge", FightChallenge.DEFAULT_ID)); session.set_location(str(save.data.get("selected_location_id", "willow_pond")), 0.0)
 	if not motion.set_profile(save.data.get("motion_profile", {})): motion.begin_calibration()
 	ads.initialize(); haptics.set_enabled(bool(save.data.settings.get("haptics", true)))
+	water_surface = WaterSurface.new(); water_surface.controller = self; add_child(water_surface)
 	view = FishingView.new(); view.controller = self; add_child(view)
 	_parse_capture_args()
 	# Capture fixtures must never even initialize the optional native service.
@@ -73,7 +79,9 @@ func _ready() -> void:
 		# Capture fixtures must never inherit or mutate the player's actual progress.
 		save.data = SaveService.default_data()
 		session.set_location("pine_lake", 0.0)
-		_apply_capture_scenario(); loading_active = capture_scenario == "loading"; capture_freeze = capture_scenario != "loading"; call_deferred("_capture_after_draw")
+		_apply_capture_scenario()
+		if capture_time_override >= 0.0: ui_time = capture_time_override
+		loading_active = capture_scenario == "loading"; capture_freeze = capture_scenario != "loading"; call_deferred("_capture_after_draw")
 	elif not motion.is_calibrated(): view.overlay = "calibration"
 
 func _process(delta: float) -> void:
@@ -306,6 +314,9 @@ func _parse_capture_args() -> void:
 	for arg in OS.get_cmdline_user_args():
 		if arg.begins_with("--capture="): capture_path = arg.trim_prefix("--capture=")
 		elif arg.begins_with("--capture-scenario="): capture_scenario = arg.trim_prefix("--capture-scenario=")
+		elif arg.begins_with("--capture-time="): capture_time_override = maxf(0.0, arg.trim_prefix("--capture-time=").to_float())
+		elif arg.begins_with("--capture-frames="): capture_frames = clampi(arg.trim_prefix("--capture-frames=").to_int(), 0, 120)
+		elif arg.begins_with("--capture-fps="): capture_fps = clampf(arg.trim_prefix("--capture-fps=").to_float(), 1.0, 30.0)
 func _apply_capture_scenario() -> void:
 	view.overlay = ""
 	match capture_scenario:
@@ -323,6 +334,9 @@ func _apply_capture_scenario() -> void:
 		"cedar_ready_safe_top_180": session.set_location("cedar_river", 0.0); view.safe_top_override = 180.0
 		"cast_armed": session.arm_cast()
 		"line_out": session.arm_cast(); session.release_cast(0.8)
+		"hatteras_line_out": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8)
+		"willow_line_out_t2": session.set_location("willow_pond", 0.0); session.arm_cast(); session.release_cast(0.8); ui_time = 2.0
+		"hatteras_line_out_t2": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8); ui_time = 2.0
 		"cedar_line_out": session.set_location("cedar_river", 0.0); session.arm_cast(); session.release_cast(0.8)
 		"cedar_line_out_safe_top_180": session.set_location("cedar_river", 0.0); session.arm_cast(); session.release_cast(0.8); view.safe_top_override = 180.0
 		"cedar_line_out_far": session.set_location("cedar_river", 0.0); session.arm_cast(); session.release_cast(1.0)
@@ -430,6 +444,19 @@ func _capture_after_draw() -> void:
 	# Windowed OpenGL can need multiple resize/present frames to resolve imported
 	# full-screen art. Use a fixed settle, then wait for the rendered backbuffer.
 	for frame in range(32): await get_tree().process_frame
+	if capture_frames > 0:
+		DirAccess.make_dir_recursive_absolute(capture_path)
+		var start_time := ui_time
+		var clip_error := OK
+		for frame in range(capture_frames):
+			ui_time = start_time + float(frame) / capture_fps
+			view.queue_redraw(); water_surface.queue_redraw()
+			await get_tree().process_frame; await RenderingServer.frame_post_draw
+			var frame_path := capture_path.path_join("frame-%03d.png" % frame)
+			var frame_error := get_viewport().get_texture().get_image().save_png(frame_path)
+			if frame_error != OK: clip_error = frame_error; break
+		print("WATER_MOTION_CAPTURED directory=%s frames=%d fps=%.1f error=%s" % [capture_path, capture_frames, capture_fps, clip_error])
+		get_tree().quit(0 if clip_error == OK else 1); return
 	await RenderingServer.frame_post_draw
 	var image := get_viewport().get_texture().get_image(); var error := image.save_png(capture_path)
 	print("SCREENSHOT_CAPTURED path=%s error=%s" % [capture_path, error]); get_tree().quit(0 if error == OK else 1)
@@ -601,12 +628,12 @@ class FishingView extends Control:
 		_draw_wood_control(Rect2(130, 932, 460, 96)); _centered_text_in_rect("HOOKED", Rect2(130, 944, 460, 42), 32, Color("fff4cf")); _centered_text_in_rect("MOTION FISHING", Rect2(130, 985, 460, 28), 15, Color("fff4cf"))
 	func _draw_world() -> void:
 		var s: FishingSession = controller.session
-		var background: Texture2D = controller.location_texture(s.location_id)
-		if background: draw_texture_rect(background, Rect2(0, 0, 720, 1280), false)
-		else: draw_rect(Rect2(0, 0, 720, 1280), Color("1c617d"))
 		# Ordinary opaque screens retain only their natural scenery background. They
 		# never reveal the prior rod, old top beam, or world HUD behind their panel.
 		if overlay != "":
+			var background: Texture2D = controller.location_texture(s.location_id)
+			if background: draw_texture_rect(background, Rect2(0, 0, 720, 1280), false)
+			else: draw_rect(Rect2(0, 0, 720, 1280), Color("1c617d"))
 			if overlay == "calibration": _draw_calibration()
 			elif overlay == "settings": _draw_settings()
 			elif overlay == "records": _draw_records()
@@ -632,9 +659,10 @@ class FishingView extends Control:
 			# until a real cast has landed.
 			_draw_ready_photoreal_rod()
 			return
-		var wave := 0.0 if reduced else sin(controller.ui_time * 2.2) * 5.0
 		var landing_blend := 1.0 if reduced else clampf(controller.cast_visual_elapsed / 0.32, 0.0, 1.0)
-		var bobber_pos: Vector2 = controller.presentation_bobber_position(s.cast_distance_m, s.fight_progress, s.state == FishingSession.State.REELING, landing_blend, s.location_id) + Vector2(0, wave)
+		var base_bobber_pos: Vector2 = controller.presentation_bobber_position(s.cast_distance_m, s.fight_progress, s.state == FishingSession.State.REELING, landing_blend, s.location_id)
+		var surface_sample: Dictionary = WaterSurface.sample(s.location_id, base_bobber_pos, controller.ui_time, reduced)
+		var bobber_pos: Vector2 = base_bobber_pos + surface_sample.offset
 		_draw_river_life(s, bobber_pos, reduced)
 		var submerged := s.state in [FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
 		# Keep the external line attached to the stable water-surface contact. The
@@ -643,6 +671,10 @@ class FishingView extends Control:
 		var rod_bend := 0.0 if s.state != FishingSession.State.REELING else clampf(maxf(s.tension, s.rod_load), 0.0, 1.0)
 		var rod_pose := 0.0 if s.state != FishingSession.State.REELING else clampf(s.rod_load * 0.75 + s.tension * 0.25, 0.0, 1.0)
 		var rod_tip := _photoreal_rod_tip(rod_bend, rod_pose)
+		var float_size := lerpf(30.0, 18.0, clampf(s.cast_distance_m / 42.0, 0.0, 1.0))
+		var bobber_tilt: float = float(surface_sample.get("tilt", 0.0))
+		# The visible source eyelet is near y=399 in the 369..857 body crop.
+		var line_target := bobber_pos + Vector2(0, -float_size * 0.544).rotated(bobber_tilt)
 		# Draw the external line behind the rod; the rod atlas owns handle-to-terminal-guide pixels.
 		var mono := Color("e5eee8", 0.60)
 		if submerged: draw_line(rod_tip, bobber_pos, mono, 1.1, true)
@@ -651,14 +683,23 @@ class FishingView extends Control:
 			var curve := PackedVector2Array()
 			for sample in range(9):
 				var t := float(sample) / 8.0
-				curve.append(rod_tip.lerp(bobber_pos, t) + Vector2(0, sag_depth * 4.0 * t * (1.0 - t)))
+				curve.append(rod_tip.lerp(line_target, t) + Vector2(0, sag_depth * 4.0 * t * (1.0 - t)))
 			draw_polyline(curve, mono, 1.0, true)
 		_draw_photoreal_rod(rod_bend, rod_pose)
 		if not submerged and controller.bobber_texture:
 			# The source canvas has generous transparent padding; map the known visible
 			# body region so distance scaling measures the float rather than its canvas.
-			var float_size := lerpf(30.0, 18.0, clampf(s.cast_distance_m / 42.0, 0.0, 1.0))
-			draw_texture_rect_region(controller.bobber_texture, Rect2(bobber_pos - Vector2(float_size * 0.5, float_size * 0.62), Vector2(float_size, float_size * 1.24)), Rect2(496, 369, 383, 488))
+			# Split at the real source divider (y=660): upper cap stays dry; lower
+			# hemisphere retains its own alpha while appearing refracted and dimmer.
+			var upper_h := float_size * 1.24 * (291.0 / 488.0)
+			var local_top := -float_size * .62
+			var canvas_scale := Vector2(get_size().x / 720.0, get_size().y / 1280.0)
+			draw_set_transform(bobber_pos * canvas_scale, bobber_tilt, canvas_scale)
+			draw_texture_rect_region(controller.bobber_texture, Rect2(-float_size * .5, local_top, float_size, upper_h), Rect2(496, 369, 383, 291))
+			draw_texture_rect_region(controller.bobber_texture, Rect2(-float_size * .5, local_top + upper_h, float_size, float_size * .36), Rect2(496, 660, 383, 197), Color(0.42, 0.68, 0.70, 0.62))
+			draw_set_transform(Vector2.ZERO, 0.0, canvas_scale)
+			var water_contact := bobber_pos + Vector2(0, local_top + upper_h).rotated(bobber_tilt)
+			_draw_water_ripple(water_contact, float_size * 0.82, 0.28)
 		if submerged:
 			var pulse := 0.0 if reduced else fmod(controller.ui_time * (5.0 if s.state == FishingSession.State.REELING else 3.0), 1.0)
 			for ring in range(3):
@@ -670,17 +711,6 @@ class FishingView extends Control:
 	func _draw_river_life(s: FishingSession, bobber_pos: Vector2, reduced: bool) -> void:
 		# Code-native life sits only on water; the photographic plate remains the sole
 		# owner of banks and rocks, avoiding a second static layer or alpha seams.
-		if not reduced:
-			for band in range(3):
-				var flow_y := 510.0 + band * 126.0
-				var speed := 18.0
-				var tint := Color(0.82, 0.94, 0.92, 0.11)
-				if s.location_id == "willow_pond": flow_y = 660.0 + band * 74.0; speed = 7.0; tint = Color(0.82, 0.91, 0.74, 0.10)
-				elif s.location_id == "hatteras_inlet": flow_y = 560.0 + band * 112.0; speed = 31.0; tint = Color(0.82, 0.94, 0.98, 0.15)
-				var flow_x := 229.0 + fmod(controller.ui_time * (speed + band * 6.0) + band * 188.0, 334.0)
-				# Low-cost reflection flow is confined to the known open-water bands; it
-				# never moves photographic banks, rocks, or adds duplicate foliage.
-				draw_line(Vector2(flow_x - 24, flow_y), Vector2(flow_x + 24, flow_y + 3), tint, 1.2)
 		if s.state != FishingSession.State.LINE_OUT: return
 		if s.shadow_visit_start < 0.0: return
 		var visit := clampf(inverse_lerp(s.shadow_visit_start, s.shadow_visit_start + s.shadow_visit_duration, s.elapsed), 0.0, 1.0)

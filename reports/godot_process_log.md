@@ -1,5 +1,37 @@
 # Godot Process Log
 
+## Water motion v37 — initial implementation receipts (2026-09-09)
+
+All listed calls used `tools/run_godot_check.ps1`, project
+`E:\\CodexCache\\haptic-fish-project`, engine Godot 4.7.1, and isolated cache
+`E:\\CodexCache\\haptic-fish-water-v37`. Exact arguments, root/observed PIDs,
+stderr markers, window checks, and cleanup are retained under
+`reports/water-motion-v37/validation/`.
+
+- `water-v37-parser-2` is retained as a superseded parser rejection for two
+  inferred local types in `water_surface.gd`; `water-v37-parser-3` and
+  `water-v37-parser-4` each exited 0 with no stderr marker, remaining PIDs, or
+  windows.
+- The first Willow capture is retained as a superseded shader/output-directory
+  rejection. `water-v37-capture-pine-lineout` (root `105296`) exited 0 with no
+  remaining process/window. It produced `gallery/pine-lineout.png`.
+- Primary visual receipts `primary-v37-willow-review` (root `115744`) and
+  `primary-v37-ocean-review` (root `81700`) each exited 0 with empty stderr and
+  no remaining PIDs/windows. Willow's split/submerged float was accepted for
+  this pass.
+- Initial deterministic domain `primary-v37-domain-initial` (root `111396`)
+  exited 0 and printed the suite pass marker. Its only stderr content is the
+  established 12 ObjectDB / 5-resource shutdown diagnostics. The final
+  parser, clip, regression, and export/audit receipts follow.
+
+### Water motion v37 — final runtime evidence (2026-09-09)
+
+- Final parser/import [`primary-v37-parser-review.json`](water-motion-v37/validation/primary-v37-parser-review.json): root `126756`, exit 0, empty stderr marker, remaining PIDs/windows `[]`.
+- Final deterministic domain [`primary-v37-domain-final.json`](water-motion-v37/validation/primary-v37-domain-final.json): root `112776`, exit 0, `PASS: Cast & Crank Gate 1 domain tests`, remaining PIDs/windows `[]`; stderr has only the established 12 ObjectDB / 5-resource shutdown notices.
+- Final 720×1280 still roots—Cedar `117128`, Pine `107920`, Bite `124240`, safe-top fight `116832`, and Reduced Motion `124932`—all exit 0 with no stderr marker, remaining PID, or window. Their receipts are `primary-v37-{cedar,pine,bite,fight,reduced}-final.json` under `water-motion-v37/validation/`.
+- Multi-frame clips: Willow root `119376` and Hatteras root `63480`, each exit 0 with no stderr marker/remaining process/window. Each one process rendered 48 explicit presentation-time frames at 16fps; Sharp then encoded the selected GIFs. The source PNG sequences stay in `E:\\CodexCache\\haptic-fish-water-v37\\{willow,ocean}-frames`.
+- Final export [`primary-v37-export-final.json`](water-motion-v37/validation/primary-v37-export-final.json): root `124252`, exit 0, empty stderr marker, and no remaining root PIDs/windows. The first export attempt is retained as a superseded C:/E: SDK environment mismatch. The final process-scoped E: SDK/JDK/Gradle retry completed with workers `67620`/`117568`; task Gradle daemons `61820` (C: cache) and `122872` (E: cache) were verified against this project then stopped idle. Unrelated Godot PID `65276` was untouched. [`package-audit-v37.md`](water-motion-v37/package-audit-v37.md) records the signed 65,444,082-byte arm64 artifact, SHA-256, archive audit, and exclusions.
+
 ## Rustic UI v32 — journal integration
 
 ### Verified export and Pixel smoke receipt

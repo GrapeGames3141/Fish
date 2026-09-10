@@ -1,0 +1,14 @@
+SHADER ERROR: Using 'return' in the 'fragment' processor function is incorrect.
+   at: (null) (res://src/ui/water_surface.gdshader:17)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/ui/water_surface.gd:18)
+       [1] _ready (res://src/ui/main.gd:69)
+ERROR: Shader compilation failed.
+   at: set_code (drivers/gles3/storage/material_storage.cpp:2695)
+   GDScript backtrace (most recent call first):
+       [0] _ready (res://src/ui/water_surface.gd:18)
+       [1] _ready (res://src/ui/main.gd:69)
+ERROR: Can't save PNG at path: 'E:\AI Projects\games\haptic fish\reports\water-motion-v37\gallery\willow-lineout.png'.
+   at: save_image (drivers/png/resource_saver_png.cpp:56)
+   GDScript backtrace (most recent call first):
+       [0] _capture_after_draw (res://src/ui/main.gd:437)

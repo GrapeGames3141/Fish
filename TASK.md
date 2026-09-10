@@ -1,5 +1,11 @@
 # Gate 1 — foundation, playable greybox, and concept direction
 
+## Water motion v37
+
+- Implemented for the next build: location-specific photographic water plates behind native tackle/UI, with shoreline masks, shared bobber heave/tilt, a genuinely submerged lower float hemisphere, and reduced-motion freezing. Willow/Pine/Cedar/Hatteras respectively use pond, lake, directed-river, and rolling-ocean profiles.
+- User-approved v02 preview is preserved as provenance only; no preview frame/video is shipped. Focused deterministic coverage and a bounded 48-frame capture mode are in place.
+- Final parser/domain, all four location stills, Bite/Reeling float absence, reduced-motion freeze, 48-frame Willow/Hatteras runtime samples, and signed arm64 `37` / `0.7.3-water1` package audit are verified in `reports/water-motion-v37/`. Device/profile review—especially the new ocean aesthetic—remains pending. No install, Drive delivery, push, or physical-feel claim is made by this checkpoint.
+
 ## Continuous wood-header v36
 
 - Normal fishing states share one full-width, safe-area-aware authored wood rail; Records and Waters remain visibly locked during a cast/fight while Settings retains its fixed target.

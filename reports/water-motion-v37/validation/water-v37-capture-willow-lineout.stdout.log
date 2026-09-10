@@ -1,0 +1,10 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 582.53 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce GTX 1070
+
+--res://src/ui/water_surface.gdshader--
+   15 | void fragment() {
+   16 |  vec4 base = texture(TEXTURE, UV);
+E  17->  if (reduced_motion) { COLOR = base; return; }
+   18 |  
+   19 |  float image_y = UV.y;
+SCREENSHOT_CAPTURED path=E:\AI Projects\games\haptic fish\reports\water-motion-v37\gallery\willow-lineout.png error=7

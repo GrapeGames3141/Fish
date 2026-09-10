@@ -1,0 +1,27 @@
+{
+  "label": "primary-v37-parser-review",
+  "started": "2026-09-09T18:54:43.4819727-05:00",
+  "finished": "2026-09-09T18:54:59.5160185-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--editor",
+    "--quit"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-water-v37",
+  "rootPid": 126756,
+  "observedPids": [
+    126756
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\validation\\primary-v37-parser-review.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\validation\\primary-v37-parser-review.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

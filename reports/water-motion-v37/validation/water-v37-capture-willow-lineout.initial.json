@@ -1,0 +1,20 @@
+{
+  "label": "water-v37-capture-willow-lineout",
+  "rootPid": 120252,
+  "observedPids": [
+    120252
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\gallery\\willow-lineout.png",
+    "--capture-scenario=willow_approach_waterband"
+  ],
+  "started": "2026-09-09T18:41:39.8706853-05:00"
+}

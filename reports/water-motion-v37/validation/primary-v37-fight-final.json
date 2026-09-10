@@ -1,0 +1,32 @@
+{
+  "label": "primary-v37-fight-final",
+  "started": "2026-09-09T18:59:59.0743006-05:00",
+  "finished": "2026-09-09T19:00:03.3108604-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\gallery\\fight-final.png",
+    "--capture-scenario=cedar_reeling_high_safe180",
+    "--capture-time=1"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-water-v37",
+  "rootPid": 116832,
+  "observedPids": [
+    116832
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\validation\\primary-v37-fight-final.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\validation\\primary-v37-fight-final.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

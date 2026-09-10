@@ -1,0 +1,21 @@
+{
+  "label": "primary-v37-bite-final",
+  "rootPid": 124240,
+  "observedPids": [
+    124240
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\gallery\\bite-final.png",
+    "--capture-scenario=hatteras_bite",
+    "--capture-time=1"
+  ],
+  "started": "2026-09-09T18:59:22.2986124-05:00"
+}

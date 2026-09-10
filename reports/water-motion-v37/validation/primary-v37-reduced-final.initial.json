@@ -1,0 +1,23 @@
+{
+  "label": "primary-v37-reduced-final",
+  "rootPid": 124932,
+  "observedPids": [
+    124932
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-water-v37\\reduced-frames",
+    "--capture-scenario=reduced_bite",
+    "--capture-time=0",
+    "--capture-frames=2",
+    "--capture-fps=1"
+  ],
+  "started": "2026-09-09T18:59:57.5951866-05:00"
+}

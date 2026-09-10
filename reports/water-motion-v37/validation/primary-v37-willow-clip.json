@@ -1,0 +1,34 @@
+{
+  "label": "primary-v37-willow-clip",
+  "started": "2026-09-09T18:55:31.5371215-05:00",
+  "finished": "2026-09-09T18:55:55.6143863-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-water-v37\\willow-frames",
+    "--capture-scenario=willow_line_out",
+    "--capture-time=0",
+    "--capture-frames=48",
+    "--capture-fps=16"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-water-v37",
+  "rootPid": 119376,
+  "observedPids": [
+    119376
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\validation\\primary-v37-willow-clip.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\validation\\primary-v37-willow-clip.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

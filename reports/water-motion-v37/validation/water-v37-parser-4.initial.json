@@ -1,0 +1,17 @@
+{
+  "label": "water-v37-parser-4",
+  "rootPid": 92140,
+  "observedPids": [
+    92140
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--editor",
+    "--import",
+    "--quit"
+  ],
+  "started": "2026-09-09T18:43:11.8886864-05:00"
+}

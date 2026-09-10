@@ -1,0 +1,20 @@
+{
+  "label": "primary-v37-willow-review",
+  "rootPid": 115744,
+  "observedPids": [
+    115744
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\water-motion-v37\\gallery\\primary-willow-review.png",
+    "--capture-scenario=willow_line_out"
+  ],
+  "started": "2026-09-09T18:46:35.5246703-05:00"
+}
