@@ -7,8 +7,8 @@ const FightChallenge = preload("res://src/domain/fight_challenge.gd")
 const VERSION := 6
 const MAX_CATCH_HISTORY := 256
 const PATH := "user://cast_and_crank_save.json"
-const PLANNED_FISH_IDS := ["pumpkinseed", "black_crappie", "brown_bullhead", "bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike", "red_drum", "spotted_seatrout", "bluefish"]
-const LOCATION_IDS := ["willow_pond", "pine_lake", "cedar_river", "hatteras_inlet"]
+const PLANNED_FISH_IDS := ["pumpkinseed", "black_crappie", "brown_bullhead", "bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike", "red_drum", "spotted_seatrout", "bluefish", "common_snook", "mangrove_snapper", "atlantic_tarpon", "bowfin", "longnose_gar", "flathead_catfish", "walleye", "striped_bass", "blue_catfish", "mahi_mahi", "yellowfin_tuna", "atlantic_sailfish"]
+const LOCATION_IDS := ["willow_pond", "pine_lake", "cedar_river", "hatteras_inlet", "mangrove_flats", "cypress_bayou", "moonlit_reservoir", "bluewater_offshore"]
 const LEGACY_UNLOCKED_IDS := ["willow_pond", "pine_lake", "cedar_river"]
 var data: Dictionary = default_data()
 var path: String

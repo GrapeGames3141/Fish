@@ -52,10 +52,18 @@ var pine_lake_texture: Texture2D = load("res://art/ui_v1/runtime_source/pine-lak
 var cedar_river_texture: Texture2D = load("res://art/ui_v1/runtime_source/cedar-river-michigan-v01.png")
 var willow_pond_texture: Texture2D = load("res://art/ui_v1/runtime_source/willow-pond-photo-v01.png")
 var hatteras_inlet_texture: Texture2D = load("res://art/ui_v1/runtime_source/hatteras-inlet-photo-v01.png")
+var mangrove_flats_texture: Texture2D = load("res://art/ui_v1/runtime_source/waters-v40/mangrove_flats-photo-v01.png")
+var cypress_bayou_texture: Texture2D = load("res://art/ui_v1/runtime_source/waters-v40/cypress_bayou-photo-v01.png")
+var moonlit_reservoir_texture: Texture2D = load("res://art/ui_v1/runtime_source/waters-v40/moonlit_reservoir-photo-v01.png")
+var bluewater_offshore_texture: Texture2D = load("res://art/ui_v1/runtime_source/waters-v40/bluewater_offshore-photo-v01.png")
 var pine_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/pine-fish-atlas-v02.png")
 var cedar_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/cedar-fish-atlas-v02.png")
 var willow_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/willow-fish-atlas-v01.png")
 var ocean_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/ocean-fish-atlas-v01.png")
+var mangrove_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/waters-v40/mangrove_flats-fish-atlas-v01.png")
+var bayou_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/waters-v40/cypress_bayou-fish-atlas-v01.png")
+var moonlit_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/waters-v40/moonlit_reservoir-fish-atlas-v01.png")
+var offshore_fish_atlas: Texture2D = load("res://art/ui_v1/runtime_source/waters-v40/bluewater_offshore-fish-atlas-v01.png")
 var photoreal_rod_texture: Texture2D = load("res://art/ui_v1/runtime_source/rod-photoreal-alpha-v01.png")
 var bobber_texture: Texture2D = load("res://art/ui_v1/runtime_source/bobber-photoreal-alpha-v01.png")
 var splash_texture: Texture2D = load("res://art/ui_v1/runtime_source/cedar-river-michigan-v01.png")
@@ -223,7 +231,12 @@ static func presentation_bobber_y(distance_m: float, fight_progress: float, is_r
 	var distance_fraction := inverse_lerp(FishingSession.MIN_CAST_DISTANCE_M, FishingSession.MAX_CAST_DISTANCE_M, distance_m)
 	var near_y := 780.0
 	var far_y := 410.0
-	if location_id == "willow_pond": near_y = 820.0; far_y = 570.0
+	match location_id:
+		"willow_pond": near_y = 820.0; far_y = 570.0
+		"mangrove_flats": near_y = 800.0; far_y = 470.0
+		"cypress_bayou": near_y = 800.0; far_y = 510.0
+		"moonlit_reservoir": near_y = 820.0; far_y = 535.0
+		"bluewater_offshore": near_y = 800.0; far_y = 445.0
 	var landed_y := lerpf(near_y, far_y, distance_fraction)
 	if is_reeling: return lerpf(landed_y, 860.0, clampf(fight_progress, 0.0, 1.0))
 	return lerpf(near_y + 6.0, landed_y, clampf(landing_blend, 0.0, 1.0))
@@ -276,6 +289,10 @@ func location_texture(location_id: String) -> Texture2D:
 		"willow_pond": return willow_pond_texture
 		"cedar_river": return cedar_river_texture
 		"hatteras_inlet": return hatteras_inlet_texture
+		"mangrove_flats": return mangrove_flats_texture
+		"cypress_bayou": return cypress_bayou_texture
+		"moonlit_reservoir": return moonlit_reservoir_texture
+		"bluewater_offshore": return bluewater_offshore_texture
 	return pine_lake_texture
 func is_location_unlocked(location_id: String) -> bool:
 	return not LocationDefinition.by_id(location_id).is_empty() and location_id in save.data.get("unlocked_location_ids", [])
@@ -340,6 +357,22 @@ func _apply_capture_scenario() -> void:
 		"hatteras_line_out_safe_top_180": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8); view.safe_top_override = 180.0
 		"hatteras_short_line_out": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.35)
 		"hatteras_reduced_line_out": save.data.settings.reduced_motion = true; session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8)
+		"mangrove_ready": _capture_world_state("mangrove_flats", "ready")
+		"mangrove_line_out": _capture_world_state("mangrove_flats", "line_out")
+		"mangrove_reeling": _capture_world_state("mangrove_flats", "reeling")
+		"mangrove_reduced": _capture_world_state("mangrove_flats", "reduced")
+		"bayou_ready": _capture_world_state("cypress_bayou", "ready")
+		"bayou_line_out": _capture_world_state("cypress_bayou", "line_out")
+		"bayou_reeling": _capture_world_state("cypress_bayou", "reeling")
+		"bayou_reduced": _capture_world_state("cypress_bayou", "reduced")
+		"moonlit_ready": _capture_world_state("moonlit_reservoir", "ready")
+		"moonlit_line_out": _capture_world_state("moonlit_reservoir", "line_out")
+		"moonlit_reeling": _capture_world_state("moonlit_reservoir", "reeling")
+		"moonlit_reduced": _capture_world_state("moonlit_reservoir", "reduced")
+		"offshore_ready": _capture_world_state("bluewater_offshore", "ready")
+		"offshore_line_out": _capture_world_state("bluewater_offshore", "line_out")
+		"offshore_reeling": _capture_world_state("bluewater_offshore", "reeling")
+		"offshore_reduced": _capture_world_state("bluewater_offshore", "reduced")
 		"willow_line_out_t2": session.set_location("willow_pond", 0.0); session.arm_cast(); session.release_cast(0.8); ui_time = 2.0
 		"hatteras_line_out_t2": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8); ui_time = 2.0
 		"cedar_line_out": session.set_location("cedar_river", 0.0); session.arm_cast(); session.release_cast(0.8)
@@ -370,12 +403,29 @@ func _apply_capture_scenario() -> void:
 		"hatteras_reddrum_catch": _capture_named_catch("hatteras_inlet", "red_drum", 61.6)
 		"hatteras_seatrout_catch": _capture_named_catch("hatteras_inlet", "spotted_seatrout", 47.2)
 		"hatteras_bluefish_catch": _capture_named_catch("hatteras_inlet", "bluefish", 55.8)
+		"mangrove_snook_catch": _capture_named_catch("mangrove_flats", "common_snook", 72.4)
+		"mangrove_snapper_catch": _capture_named_catch("mangrove_flats", "mangrove_snapper", 36.8)
+		"mangrove_tarpon_catch": _capture_named_catch("mangrove_flats", "atlantic_tarpon", 143.2)
+		"bayou_bowfin_catch": _capture_named_catch("cypress_bayou", "bowfin", 58.1)
+		"bayou_gar_catch": _capture_named_catch("cypress_bayou", "longnose_gar", 104.6)
+		"bayou_flathead_catch": _capture_named_catch("cypress_bayou", "flathead_catfish", 98.3)
+		"moonlit_walleye_catch": _capture_named_catch("moonlit_reservoir", "walleye", 54.8)
+		"moonlit_striper_catch": _capture_named_catch("moonlit_reservoir", "striped_bass", 87.4)
+		"moonlit_bluecat_catch": _capture_named_catch("moonlit_reservoir", "blue_catfish", 102.7)
+		"offshore_mahi_catch": _capture_named_catch("bluewater_offshore", "mahi_mahi", 96.4)
+		"offshore_yellowfin_catch": _capture_named_catch("bluewater_offshore", "yellowfin_tuna", 142.8)
+		"offshore_sailfish_catch": _capture_named_catch("bluewater_offshore", "atlantic_sailfish", 196.5)
 		"records": _seed_capture_records(); view.overlay = "records"
 		"records_page2": _seed_capture_records_mixed(); view.journal_page_index = 1; view.overlay = "records"
 		"records_page2_full_safe180": _seed_capture_records(); view.journal_page_index = 1; view.safe_top_override = 180.0; view.overlay = "records"
 		"records_mixed": _seed_capture_records_mixed(); view.overlay = "records"
 		"records_empty": _clear_capture_records(); view.overlay = "records"
 		"records_page2_empty": _clear_capture_records(); view.journal_page_index = 1; view.overlay = "records"
+		"records_page3": _seed_capture_records_mixed(); view.journal_page_index = 2; view.overlay = "records"
+		"records_page4": _seed_capture_records(); view.journal_page_index = 3; view.overlay = "records"
+		"records_page3_empty": _clear_capture_records(); view.journal_page_index = 2; view.overlay = "records"
+		"records_page4_empty": _clear_capture_records(); view.journal_page_index = 3; view.overlay = "records"
+		"records_page4_mixed_safe180": _seed_capture_records_mixed(); view.journal_page_index = 3; view.safe_top_override = 180.0; view.overlay = "records"
 		"records_safe_top": _seed_capture_records(); view.safe_top_override = 91.0; view.overlay = "records"
 		"records_safe_top_180": _seed_capture_records(); view.safe_top_override = 180.0; view.overlay = "records"
 		"records_detail": _seed_capture_records(); save.data.best_cm.northern_pike = 88.6; view.journal_fish_id = "northern_pike"; save.data.catch_history = [{"fish_id": "northern_pike", "length_cm": 72.1, "location_id": "cedar_river", "timestamp_utc": 1699900000, "fight_seconds": 18.2, "cast_distance_m": 31.0}, {"fish_id": "northern_pike", "length_cm": 88.6, "location_id": "cedar_river", "timestamp_utc": 1700000000, "fight_seconds": 16.4, "cast_distance_m": 34.0}]; view.overlay = "journal_detail"
@@ -384,6 +434,8 @@ func _apply_capture_scenario() -> void:
 		"field_notes_reddrum_safe180": _seed_capture_records(); save.data.best_cm.red_drum = 61.6; view.journal_fish_id = "red_drum"; save.data.catch_history = [{"fish_id": "red_drum", "length_cm": 61.6, "location_id": "hatteras_inlet", "timestamp_utc": 1700000000, "fight_seconds": 18.4, "cast_distance_m": 36.0}]; view.safe_top_override = 180.0; view.overlay = "journal_detail"
 		"world_offline": _seed_capture_records(); view.overlay = "world_records"
 		"world_page2": _seed_capture_records(); view.world_page_index = 1; view.overlay = "world_records"
+		"world_page3": _seed_capture_records(); view.world_page_index = 2; view.overlay = "world_records"
+		"world_page4": _seed_capture_records(); view.world_page_index = 3; view.overlay = "world_records"
 		"catch_safe_top_180": view.safe_top_override = 180.0; session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; caught_recorded = true
 		"catch_recast_ready": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; session.terminal_elapsed = FishingSession.TERMINAL_RECAST_DWELL_SECONDS; session.terminal_still_elapsed = FishingSession.TERMINAL_STILL_SECONDS; caught_recorded = true
 		"catch_tail_mid": session.set_location("cedar_river", 0.97); session.state = FishingSession.State.CAUGHT; session.catch_length_cm = 89.0; session.cast_distance_m = 36.2; session.terminal_elapsed = 0.32; ui_time = 0.16; caught_recorded = true
@@ -407,7 +459,11 @@ func _apply_capture_scenario() -> void:
 		"locations_cedar": session.set_location("cedar_river", 0.0); view.overlay = "locations"
 		"waters_locked_top": session.set_location("willow_pond", 0.0); save.data.selected_location_id = "willow_pond"; view.overlay = "locations"
 		"waters_locked_bottom": session.set_location("willow_pond", 0.0); save.data.selected_location_id = "willow_pond"; view.overlay = "locations"; view.waters_scroll = 9999.0
-		"waters_unlocked_bottom": _seed_capture_records(); save.data.unlocked_location_ids = ["willow_pond", "pine_lake", "cedar_river", "hatteras_inlet"]; session.set_location("hatteras_inlet", 0.0); save.data.selected_location_id = "hatteras_inlet"; view.overlay = "locations"; view.waters_scroll = 9999.0
+		"waters_unlocked_bottom": _seed_capture_records(); _unlock_all_capture_locations(); session.set_location("bluewater_offshore", 0.0); save.data.selected_location_id = "bluewater_offshore"; view.overlay = "locations"; view.waters_scroll = 9999.0
+		"waters_middle": _seed_capture_records(); _unlock_all_capture_locations(); view.overlay = "locations"; view.waters_scroll = 1300.0
+		"waters_bottom": _seed_capture_records(); _unlock_all_capture_locations(); view.overlay = "locations"; view.waters_scroll = 9999.0
+		"waters_middle_safe180": _seed_capture_records(); _unlock_all_capture_locations(); view.safe_top_override = 180.0; view.overlay = "locations"; view.waters_scroll = 1300.0
+		"waters_bottom_safe180": _seed_capture_records(); _unlock_all_capture_locations(); view.safe_top_override = 180.0; view.overlay = "locations"; view.waters_scroll = 9999.0
 		"waters_locked_safe180": view.safe_top_override = 180.0; session.set_location("willow_pond", 0.0); save.data.selected_location_id = "willow_pond"; view.overlay = "locations"
 		"waters_locked_bottom_safe180": view.safe_top_override = 180.0; session.set_location("willow_pond", 0.0); save.data.selected_location_id = "willow_pond"; view.overlay = "locations"; view.waters_scroll = 9999.0
 		"escaped": session.state = FishingSession.State.ESCAPED; session.last_reason = "The line went slack."
@@ -425,7 +481,10 @@ func _clear_capture_records() -> void:
 	for fish in FishDefinition.all_planned(): save.data.catches[fish.id] = 0; save.data.best_cm[fish.id] = 0.0
 func _seed_capture_records_mixed() -> void:
 	_clear_capture_records()
-	var selected := ["bluegill", "channel_catfish", "northern_pike"]
+	# Capture fixtures never touch a player's save. Seed one caught entry on each
+	# later catalog page so page-three and page-four review both exercise the
+	# caught/uncaught visual mix introduced with the new waters.
+	var selected := ["bluegill", "channel_catfish", "northern_pike", "common_snook", "walleye", "yellowfin_tuna"]
 	for fish in FishDefinition.all_planned():
 		if fish.id in selected:
 			save.data.catches[fish.id] = 2 if fish.id == "bluegill" else 1
@@ -439,6 +498,15 @@ func _capture_named_catch(location_id: String, fish_id: String, length_cm: float
 	for fish in FishDefinition.all_planned():
 		if fish.id == fish_id: session.fish = fish; break
 	session.state = FishingSession.State.CAUGHT; session.catch_length_cm = length_cm; session.last_reason = "%s landed!" % session.fish.display_name; session.cast_quality = 0.88; session.cast_distance_m = 36.2; caught_recorded = true
+func _capture_world_state(location_id: String, state: String) -> void:
+	session.set_location(location_id, 0.0)
+	if state == "line_out" or state == "reduced":
+		if state == "reduced": save.data.settings.reduced_motion = true
+		session.arm_cast(); session.release_cast(0.8)
+	elif state == "reeling":
+		session.state = FishingSession.State.REELING; session.fight_progress = 0.48; session.tension = 0.78; session.rod_load = 0.78; session.cast_quality = 0.86; session.cast_distance_m = 35.5
+func _unlock_all_capture_locations() -> void:
+	save.data.unlocked_location_ids = LocationDefinition.ids().duplicate()
 func _capture_top_nav_press(target: String, safe_top: float) -> void:
 	view.safe_top_override = safe_top; view._refresh_top_nav_geometry()
 	match target:
@@ -504,7 +572,7 @@ class FishingView extends Control:
 	var back_to_fishing_rect := Rect2(420, 18, 264, 64)
 	var location_pine_rect := Rect2()
 	var location_cedar_rect := Rect2()
-	var location_card_rects: Array[Rect2] = [Rect2(), Rect2(), Rect2(), Rect2()]
+	var location_card_rects: Array[Rect2] = []
 	var waters_viewport_rect := Rect2()
 	var waters_scroll := 0.0
 	var waters_drag_start := Vector2.ZERO
@@ -736,10 +804,13 @@ class FishingView extends Control:
 		var shadow := start.lerp(end, visit) + Vector2(0, -travel * 18.0)
 		var body_w := lerpf(30.0, 52.0, travel)
 		var body_h := body_w * 0.32
+		var shadow_alpha := 0.48
+		if s.location_id == "mangrove_flats": shadow_alpha = 0.62
+		elif s.location_id in ["cypress_bayou", "moonlit_reservoir"]: shadow_alpha = 0.24
 		# Tapered body and tail are drawn in canonical screen coordinates, preserving
 		# the parent viewport scale at non-720 captures without a transform reset.
 		var silhouette := PackedVector2Array([shadow + Vector2(-body_w * 0.5, 0), shadow + Vector2(-body_w * 0.18, -body_h), shadow + Vector2(body_w * 0.34, -body_h * 0.62), shadow + Vector2(body_w * 0.50, 0), shadow + Vector2(body_w * 0.34, body_h * 0.62), shadow + Vector2(-body_w * 0.18, body_h), shadow + Vector2(-body_w * 0.58, body_h * 0.52), shadow + Vector2(-body_w * 0.76, 0), shadow + Vector2(-body_w * 0.58, -body_h * 0.52)])
-		draw_colored_polygon(silhouette, Color(0.015, 0.10, 0.11, travel * 0.48))
+		draw_colored_polygon(silhouette, Color(0.015, 0.10, 0.11, travel * shadow_alpha))
 	func _draw_water_ripple(center: Vector2, radius: float, alpha: float) -> void:
 		var points := PackedVector2Array()
 		for point in range(25):
@@ -776,7 +847,10 @@ class FishingView extends Control:
 			var source_y1 := PHOTOREAL_ROD_SOURCE_SIZE.y * v1
 			var points := PackedVector2Array([_photoreal_rod_point(Vector2(0, source_y0), bend, pose), _photoreal_rod_point(Vector2(PHOTOREAL_ROD_SOURCE_SIZE.x, source_y0), bend, pose), _photoreal_rod_point(Vector2(PHOTOREAL_ROD_SOURCE_SIZE.x, source_y1), bend, pose), _photoreal_rod_point(Vector2(0, source_y1), bend, pose)])
 			var uvs := PackedVector2Array([Vector2(0, v0), Vector2(1, v0), Vector2(1, v1), Vector2(0, v1)])
-			draw_polygon(points, PackedColorArray([Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE]), uvs, controller.photoreal_rod_texture)
+			# Keep the held tackle readable at night without putting a translucent veil
+			# over the scene. Daylight art is modestly cooled and dimmed only here.
+			var tackle_tint := Color(0.60, 0.67, 0.76, 1.0) if controller.session.location_id == "moonlit_reservoir" else Color.WHITE
+			draw_polygon(points, PackedColorArray([tackle_tint, tackle_tint, tackle_tint, tackle_tint]), uvs, controller.photoreal_rod_texture)
 	func _draw_top_chrome(s: FishingSession) -> void:
 		var chrome_y := _virtual_safe_top()
 		var active := s.state in [FishingSession.State.CAST_ARMED, FishingSession.State.LINE_OUT, FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]
@@ -1030,6 +1104,7 @@ class FishingView extends Control:
 		for index in range(LocationDefinition.all().size()): content_height += _waters_card_height(index) + (gap if index > 0 else 0.0)
 		var max_scroll := maxf(0.0, content_height - waters_viewport_rect.size.y)
 		waters_scroll = clampf(waters_scroll, 0.0, max_scroll)
+		location_card_rects.resize(LocationDefinition.all().size())
 		var y := waters_viewport_rect.position.y - waters_scroll
 		for index in range(location_card_rects.size()):
 			var height := _waters_card_height(index)
@@ -1065,7 +1140,8 @@ class FishingView extends Control:
 		if texture:
 			var image_size := texture.get_size()
 			var crop_height := image_size.x / maxf(image_rect.size.x / image_rect.size.y, 0.01)
-			var center := 0.35 if str(location.get("id", "")) == "hatteras_inlet" else (0.40 if str(location.get("id", "")) == "cedar_river" else 0.46)
+			var location_id := str(location.get("id", ""))
+			var center := 0.28 if location_id == "mangrove_flats" else (0.35 if location_id in ["hatteras_inlet", "bluewater_offshore"] else (0.40 if location_id in ["cedar_river", "cypress_bayou"] else (0.44 if location_id == "moonlit_reservoir" else 0.46)))
 			var crop_y := clampf(image_size.y * center - crop_height * 0.5, 0.0, image_size.y - crop_height)
 			_draw_waters_clipped_texture(texture, image_rect, Rect2(0, crop_y, image_size.x, crop_height))
 		var id := str(location.get("id", ""))
@@ -1096,6 +1172,7 @@ class FishingView extends Control:
 		_draw_rustic_clipboard(); _centered_text_in_rect("MOTION DIAGNOSTICS", modal_header_rect, 22, Color("fff4d1")); _centered_text("Tilt attempts: %d" % int(data.cock_attempts), Vector2(360, 465), 20, Color("3b2818")); _centered_text("Completed casts: %d" % int(data.completed_casts), Vector2(360, 510), 20, Color("3b2818")); _centered_text("Fails L/A/P/G/T: %d / %d / %d / %d / %d" % [int(reasons.linear), int(reasons.axis), int(reasons.polarity), int(reasons.gyro), int(reasons.timeout)], Vector2(360, 620), 17, Color("3b2818")); _centered_text("Derived counts only. Raw traces exist only after", Vector2(360, 694), 15, Color("3b2818")); _centered_text("an explicit RECORD 10 CASTS session.", Vector2(360, 722), 15, Color("3b2818")); _centered_text_in_rect("BACK TO MOTION SETUP", motion_back_rect, _modal_footer_font_size("BACK TO MOTION SETUP"), Color("fff4d1"))
 	func _draw_records() -> void:
 		var safe_top := _virtual_safe_top()
+		journal_page_index = clampi(journal_page_index, 0, _records_page_count() - 1)
 		_refresh_records_geometry(safe_top)
 		var page := _journal_page_rect(safe_top)
 		if controller.records_texture:
@@ -1127,8 +1204,11 @@ class FishingView extends Control:
 		_centered_text_in_rect("WORLD RECORDS", records_world_rect, maxi(12, int(16 * page.size.x / 720.0)), Color("fff4d1"))
 		_centered_text_in_rect("BACK TO FISHING", back_to_fishing_rect, maxi(12, int(16 * page.size.x / 720.0)), Color("fff4d1"))
 		_draw_wood_control(records_previous_rect); _draw_wood_control(records_next_rect)
-		_centered_text_in_rect("PREV PAGE" if journal_page_index > 0 else "PAGE 1 / 2", records_previous_rect, 15, Color("fff4d1") if journal_page_index > 0 else Color("b5a789"))
-		_centered_text_in_rect("NEXT PAGE" if journal_page_index < 1 else "PAGE 2 / 2", records_next_rect, 15, Color("fff4d1") if journal_page_index < 1 else Color("b5a789"))
+		var records_pages := _records_page_count()
+		_centered_text_in_rect("PREV PAGE" if journal_page_index > 0 else "PAGE 1 / %d" % records_pages, records_previous_rect, 15, Color("fff4d1") if journal_page_index > 0 else Color("b5a789"))
+		_centered_text_in_rect("NEXT PAGE" if journal_page_index < records_pages - 1 else "PAGE %d / %d" % [records_pages, records_pages], records_next_rect, 15, Color("fff4d1") if journal_page_index < records_pages - 1 else Color("b5a789"))
+	func _records_page_count() -> int:
+		return maxi(1, ceili(float(FishDefinition.all_planned().size()) / 6.0))
 	func _refresh_records_geometry(safe_top: float) -> void:
 		# All record art / text / hit windows are derived from one journal transform.
 		# The tap window intentionally unites its fish, wood name, and paper stats.
@@ -1148,6 +1228,7 @@ class FishingView extends Control:
 		records_next_rect = _journal_map_rect(Rect2(493, 1394, 370, 60), page)
 	func _draw_world_records() -> void:
 		_refresh_world_records_geometry()
+		world_page_index = clampi(world_page_index, 0, _records_page_count() - 1)
 		_draw_rustic_clipboard()
 		_centered_text_in_rect("WORLD RECORDS", modal_header_rect, 22, Color("fff4d1"))
 		var status: String = controller.leaderboards.status if controller.leaderboards != null else "UNAVAILABLE"
@@ -1182,8 +1263,9 @@ class FishingView extends Control:
 		_draw_wood_control(world_retry_rect); _draw_wood_control(world_period_rect)
 		_centered_text_in_rect("CONNECT" if status == "NO_AUTH" else "RETRY", world_retry_rect, 17, Color("fff4d1")); _centered_text_in_rect("WEEKLY" if period == "ALL TIME" else "ALL TIME", world_period_rect, 16, Color("fff4d1")); _centered_text_in_rect("BACK TO RECORDS", world_back_rect, _modal_footer_font_size("BACK TO RECORDS"), Color("fff4d1"))
 		_draw_wood_control(world_previous_rect); _draw_wood_control(world_next_rect)
-		_centered_text_in_rect("PREV PAGE" if world_page_index > 0 else "PAGE 1 / 2", world_previous_rect, 15, Color("fff4d1") if world_page_index > 0 else Color("b5a789"))
-		_centered_text_in_rect("NEXT PAGE" if world_page_index < 1 else "PAGE 2 / 2", world_next_rect, 15, Color("fff4d1") if world_page_index < 1 else Color("b5a789"))
+		var world_pages := _records_page_count()
+		_centered_text_in_rect("PREV PAGE" if world_page_index > 0 else "PAGE 1 / %d" % world_pages, world_previous_rect, 15, Color("fff4d1") if world_page_index > 0 else Color("b5a789"))
+		_centered_text_in_rect("NEXT PAGE" if world_page_index < world_pages - 1 else "PAGE %d / %d" % [world_pages, world_pages], world_next_rect, 15, Color("fff4d1") if world_page_index < world_pages - 1 else Color("b5a789"))
 	func _refresh_world_records_geometry() -> void:
 		_refresh_modal_layout()
 		# Paper content starts below the clipboard's wood header. These fixed virtual
@@ -1284,6 +1366,10 @@ class FishingView extends Control:
 		if fish_id in ["pumpkinseed", "black_crappie", "brown_bullhead"]: return controller.willow_fish_atlas
 		if fish_id in ["rainbow_trout", "smallmouth_bass", "northern_pike"]: return controller.cedar_fish_atlas
 		if fish_id in ["red_drum", "spotted_seatrout", "bluefish"]: return controller.ocean_fish_atlas
+		if fish_id in ["common_snook", "mangrove_snapper", "atlantic_tarpon"]: return controller.mangrove_fish_atlas
+		if fish_id in ["bowfin", "longnose_gar", "flathead_catfish"]: return controller.bayou_fish_atlas
+		if fish_id in ["walleye", "striped_bass", "blue_catfish"]: return controller.moonlit_fish_atlas
+		if fish_id in ["mahi_mahi", "yellowfin_tuna", "atlantic_sailfish"]: return controller.offshore_fish_atlas
 		return controller.pine_fish_atlas
 	func _fish_atlas_region(fish_id: String) -> Rect2:
 		# The pond master intentionally has unequal safe rows; this shared metadata
@@ -1294,6 +1380,8 @@ class FishingView extends Control:
 			"brown_bullhead": return Rect2(0, 1078, 1024, 458)
 			"largemouth_bass", "smallmouth_bass", "spotted_seatrout": return Rect2(0, 512, 1024, 512)
 			"channel_catfish", "northern_pike", "bluefish": return Rect2(0, 1024, 1024, 512)
+			"mangrove_snapper", "longnose_gar", "striped_bass", "yellowfin_tuna": return Rect2(0, 512, 1024, 512)
+			"atlantic_tarpon", "flathead_catfish", "blue_catfish", "atlantic_sailfish": return Rect2(0, 1024, 1024, 512)
 		return Rect2(0, 0, 1024, 512)
 	func _gui_input(event: InputEvent) -> void:
 		var scale := Vector2(720.0 / size.x, 1280.0 / size.y)
@@ -1361,7 +1449,7 @@ class FishingView extends Control:
 				if controller.leaderboards != null and not controller.capture_mode: controller.leaderboards.open_records()
 				return
 			if records_previous_rect.has_point(pos): journal_page_index = maxi(0, journal_page_index - 1); return
-			if records_next_rect.has_point(pos): journal_page_index = mini(1, journal_page_index + 1); return
+			if records_next_rect.has_point(pos): journal_page_index = mini(_records_page_count() - 1, journal_page_index + 1); return
 			for index in range(journal_slot_rects.size()):
 				var fish_index := journal_page_index * 6 + index
 				if fish_index < FishDefinition.all_planned().size() and journal_slot_rects[index].has_point(pos): journal_fish_id = FishDefinition.all_planned()[fish_index].id; journal_history_offset = 0; overlay = "journal_detail"; return
@@ -1377,7 +1465,7 @@ class FishingView extends Control:
 			_refresh_world_records_geometry()
 			if world_back_rect.has_point(pos): overlay = "records"
 			elif world_previous_rect.has_point(pos): world_page_index = maxi(0, world_page_index - 1)
-			elif world_next_rect.has_point(pos): world_page_index = mini(1, world_page_index + 1)
+			elif world_next_rect.has_point(pos): world_page_index = mini(_records_page_count() - 1, world_page_index + 1)
 			elif world_period_rect.has_point(pos):
 				if controller.leaderboards != null: controller.leaderboards.set_period("WEEKLY" if controller.leaderboards.period == "ALL TIME" else "ALL TIME")
 			elif world_retry_rect.has_point(pos):

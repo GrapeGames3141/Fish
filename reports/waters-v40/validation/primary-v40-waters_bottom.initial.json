@@ -1,0 +1,23 @@
+{
+  "label": "primary-v40-waters_bottom",
+  "rootPid": 11696,
+  "observedPids": [
+    11696
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\gallery\\waters_bottom.png",
+    "--capture-scenario=waters_bottom",
+    "--capture-time=1"
+  ],
+  "started": "2026-09-09T22:58:12.5839986-05:00"
+}

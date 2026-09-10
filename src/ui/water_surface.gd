@@ -9,6 +9,10 @@ const MASKS := {
 	"pine_lake": preload("res://art/ui_v1/runtime_source/water-motion-v01/pine-mask.svg"),
 	"cedar_river": preload("res://art/ui_v1/runtime_source/water-motion-v01/cedar-mask.svg"),
 	"hatteras_inlet": preload("res://art/ui_v1/runtime_source/water-motion-v01/hatteras-mask.svg"),
+	"mangrove_flats": preload("res://art/ui_v1/runtime_source/water-motion-v01/mangrove-mask.svg"),
+	"cypress_bayou": preload("res://art/ui_v1/runtime_source/water-motion-v01/bayou-mask.svg"),
+	"moonlit_reservoir": preload("res://art/ui_v1/runtime_source/water-motion-v01/moonlit-mask.svg"),
+	"bluewater_offshore": preload("res://art/ui_v1/runtime_source/water-motion-v01/offshore-mask.svg"),
 }
 
 var controller: Node
@@ -27,10 +31,14 @@ static func profile_id(location_id: String) -> int:
 		"pine_lake": return 1
 		"cedar_river": return 2
 		"hatteras_inlet": return 3
+		"mangrove_flats": return 4
+		"cypress_bayou": return 5
+		"moonlit_reservoir": return 6
+		"bluewater_offshore": return 7
 	return 0
 
 static func profile_name(location_id: String) -> String:
-	return ["pond", "lake", "river", "ocean"][profile_id(location_id)]
+	return ["pond", "lake", "river", "ocean", "mangrove_tide", "bayou", "moonlit_lake", "bluewater"][profile_id(location_id)]
 
 # Canonical Hatteras shoreline controls. These follow the dry foreground edge
 # in the approved plate; surf remains a shader-only presentation layer and does
@@ -79,13 +87,19 @@ static func sample(location_id: String, position: Vector2, time: float, reduced:
 	var perspective := lerpf(.12, 1.0, smoothstep(.40, .90, p.y / 1280.0))
 	var a := _field(p, phase, float(profile))
 	var b := _field(p + Vector2(29.0, -17.0), phase, float(profile))
-	var strength: float = [1.0, 1.18, 1.08, 1.0][profile]
+	var strength: float = [1.0, 1.18, 1.08, 1.0, 0.82, 0.58, 0.76, 1.42][profile]
 	var drift: Vector2 = Vector2(a * 2.15 + b * 1.55, a * 1.15 - b * 1.75) * strength * perspective * .78
 	if profile == 2: drift += Vector2(-1.8 + sin(phase * 3.0 + p.y * .04), 0.35) * perspective
 	if profile == 3:
 		var swell := sin(p.x * .021 + p.y * .038 - phase * 1.4) + sin(p.x * -.014 + p.y * .026 + phase * 2.0 + .8) * .55
 		drift += Vector2(swell * 3.3, swell * 6.6) * perspective
-	drift = drift.limit_length(5.0 if profile < 3 else 10.0)
+	if profile == 4: drift += Vector2(sin(phase * 1.4 + p.y * .018) * .75, .25) * perspective
+	if profile == 5: drift += Vector2(-.45 + sin(phase * .72 + p.y * .012) * .35, .16) * perspective
+	if profile == 6: drift += Vector2(sin(phase * 1.2 + p.x * .014) * 1.2, sin(phase * .9 + p.y * .017) * 1.55) * perspective
+	if profile == 7:
+		var bluewater_swell := sin(p.x * .016 + p.y * .030 - phase * 1.15) + sin(p.x * -.010 + p.y * .021 + phase * 1.65 + .6) * .68
+		drift += Vector2(bluewater_swell * 4.2, bluewater_swell * 8.5) * perspective
+	drift = drift.limit_length(5.0 if profile < 3 else (10.0 if profile == 3 else (4.5 if profile < 7 else 12.5)))
 	var common_drift := drift
 	var shore_offset := Vector2.ZERO if profile != 3 else ocean_surf_offset(p, time, false)
 	if profile == 3: drift += shore_offset

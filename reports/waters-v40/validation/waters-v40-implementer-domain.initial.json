@@ -1,0 +1,16 @@
+{
+  "label": "waters-v40-implementer-domain",
+  "rootPid": 119608,
+  "observedPids": [
+    119608
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/test_runner.gd"
+  ],
+  "started": "2026-09-09T22:50:43.7388541-05:00"
+}

@@ -4,7 +4,7 @@ extends RefCounted
 ## Testable Play Games v2 boundary. It keeps local records independent and never
 ## fabricates online ranks, replays migrated catches, or persists an offline queue.
 const FishDefinition = preload("res://src/domain/fish_definition.gd")
-const FISH_IDS := ["pumpkinseed", "black_crappie", "brown_bullhead", "bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike", "red_drum", "spotted_seatrout", "bluefish"]
+const FISH_IDS := ["pumpkinseed", "black_crappie", "brown_bullhead", "bluegill", "largemouth_bass", "channel_catfish", "rainbow_trout", "smallmouth_bass", "northern_pike", "red_drum", "spotted_seatrout", "bluefish", "common_snook", "mangrove_snapper", "atlantic_tarpon", "bowfin", "longnose_gar", "flathead_catfish", "walleye", "striped_bass", "blue_catfish", "mahi_mahi", "yellowfin_tuna", "atlantic_sailfish"]
 const PERIOD_ALL_TIME := "ALL TIME"
 const PERIOD_WEEKLY := "WEEKLY"
 const STATUS_UNAVAILABLE := "UNAVAILABLE"

@@ -57,9 +57,9 @@ func expect(value: bool, message: String) -> void:
 
 func _test_water_surface_presentation() -> void:
 	var point := Vector2(500, 760)
-	var samples := {"willow_pond": [], "pine_lake": [], "cedar_river": [], "hatteras_inlet": []}
-	var energy := {"willow_pond": 0.0, "pine_lake": 0.0, "cedar_river": 0.0, "hatteras_inlet": 0.0}
-	var travel := {"willow_pond": 0.0, "pine_lake": 0.0, "cedar_river": 0.0, "hatteras_inlet": 0.0}
+	var samples := {"willow_pond": [], "pine_lake": [], "cedar_river": [], "hatteras_inlet": [], "mangrove_flats": [], "cypress_bayou": [], "moonlit_reservoir": [], "bluewater_offshore": []}
+	var energy := {"willow_pond": 0.0, "pine_lake": 0.0, "cedar_river": 0.0, "hatteras_inlet": 0.0, "mangrove_flats": 0.0, "cypress_bayou": 0.0, "moonlit_reservoir": 0.0, "bluewater_offshore": 0.0}
+	var travel := {"willow_pond": 0.0, "pine_lake": 0.0, "cedar_river": 0.0, "hatteras_inlet": 0.0, "mangrove_flats": 0.0, "cypress_bayou": 0.0, "moonlit_reservoir": 0.0, "bluewater_offshore": 0.0}
 	for frame in range(120):
 		var time := float(frame) / 12.0
 		for location_id in samples:
@@ -67,11 +67,12 @@ func _test_water_surface_presentation() -> void:
 			samples[location_id].append(sample.offset)
 			energy[location_id] += sample.offset.length_squared()
 			if frame > 0: travel[location_id] += sample.offset.distance_to(samples[location_id][frame - 1])
-			var cap := 45.01 if location_id == "hatteras_inlet" else 5.01
+			var cap := 45.01 if location_id == "hatteras_inlet" else (12.51 if location_id == "bluewater_offshore" else 5.01)
 			expect(sample.offset.length() <= cap, "water profile %s keeps bobber displacement bounded" % location_id)
 	var pond_rms := sqrt(float(energy.willow_pond) / 120.0)
 	var lake_rms := sqrt(float(energy.pine_lake) / 120.0)
 	var ocean_rms := sqrt(float(energy.hatteras_inlet) / 120.0)
+	var offshore_rms := sqrt(float(energy.bluewater_offshore) / 120.0)
 	var still_a: Dictionary = WaterSurface.sample("hatteras_inlet", point, 2.3, true)
 	var still_b: Dictionary = WaterSurface.sample("hatteras_inlet", point, 8.7, true)
 	var shore_motion := WaterSurface.ocean_surf_weight(Vector2(650, 1200))
@@ -84,10 +85,12 @@ func _test_water_surface_presentation() -> void:
 	var short_cast: Dictionary = WaterSurface.sample("hatteras_inlet", short_cast_point, 2.4, false)
 	var short_common: Vector2 = short_cast.common_offset
 	var short_shore: Vector2 = short_cast.shore_offset
-	expect(WaterSurface.profile_id("willow_pond") == 0 and WaterSurface.profile_id("pine_lake") == 1 and WaterSurface.profile_id("cedar_river") == 2 and WaterSurface.profile_id("hatteras_inlet") == 3, "water presentation maps the four location profiles deterministically")
+	expect(WaterSurface.profile_id("willow_pond") == 0 and WaterSurface.profile_id("pine_lake") == 1 and WaterSurface.profile_id("cedar_river") == 2 and WaterSurface.profile_id("hatteras_inlet") == 3 and WaterSurface.profile_id("mangrove_flats") == 4 and WaterSurface.profile_id("cypress_bayou") == 5 and WaterSurface.profile_id("moonlit_reservoir") == 6 and WaterSurface.profile_id("bluewater_offshore") == 7, "water presentation maps all eight location profiles deterministically")
 	expect(lake_rms > pond_rms, "lake wind chop is stronger than the pond over a deterministic ten-second sample")
 	expect(float(travel.cedar_river) > float(travel.pine_lake), "river current changes faster than lake chop over a deterministic ten-second sample")
 	expect(ocean_rms > lake_rms, "ocean rolling swell has more displacement than lake chop over a deterministic ten-second sample")
+	expect(offshore_rms > lake_rms and float(energy.mangrove_flats) > 0.01 and float(energy.cypress_bayou) > 0.01 and float(energy.moonlit_reservoir) > 0.01, "new flats, bayou, moonlit, and bluewater profiles animate with distinct bounded motion")
+	expect(WaterSurface.sample("bluewater_offshore", point, 2.3, false).shore_offset == Vector2.ZERO and WaterSurface.sample("hatteras_inlet", point, 2.3, false).shore_offset != Vector2.ZERO, "Hatteras alone retains shoreline wash while Bluewater uses open-ocean swell")
 	expect((short_cast.offset - short_common).is_equal_approx(short_shore) and short_shore.is_equal_approx(WaterSurface.ocean_surf_offset(short_cast_point, 2.4, false)), "Hatteras short-cast bobber and line share the exact bounded offshore shore-surf displacement")
 	expect(still_a.offset == Vector2.ZERO and is_zero_approx(still_a.tilt) and is_zero_approx(still_a.submerge) and still_b == still_a, "reduced motion freezes ambient bobber offset, tilt, and submergence at every presentation time")
 	expect(shore_motion > 0.5 and swash_motion > 0.1 and is_zero_approx(dry_sand) and is_zero_approx(dry_grass), "Hatteras shore controls animate bottom-right water and a narrow foam swash while leaving foreground sand and grass dry")
@@ -127,7 +130,11 @@ func _leaderboard_config(internal_testboard := false) -> Dictionary:
 		"pumpkinseed": "mock-board-pumpkinseed", "black_crappie": "mock-board-crappie", "brown_bullhead": "mock-board-bullhead",
 		"bluegill": "mock-board-bluegill", "largemouth_bass": "mock-board-largemouth", "channel_catfish": "mock-board-catfish",
 		"rainbow_trout": "mock-board-trout", "smallmouth_bass": "mock-board-smallmouth", "northern_pike": "mock-board-pike",
-		"red_drum": "mock-board-reddrum", "spotted_seatrout": "mock-board-seatrout", "bluefish": "mock-board-bluefish"
+		"red_drum": "mock-board-reddrum", "spotted_seatrout": "mock-board-seatrout", "bluefish": "mock-board-bluefish",
+		"common_snook": "mock-board-snook", "mangrove_snapper": "mock-board-snapper", "atlantic_tarpon": "mock-board-tarpon",
+		"bowfin": "mock-board-bowfin", "longnose_gar": "mock-board-gar", "flathead_catfish": "mock-board-flathead",
+		"walleye": "mock-board-walleye", "striped_bass": "mock-board-striper", "blue_catfish": "mock-board-bluecat",
+		"mahi_mahi": "mock-board-mahi", "yellowfin_tuna": "mock-board-yellowfin", "atlantic_sailfish": "mock-board-sailfish"
 	}}
 
 func _board_event(request_id: int, generation: int, fish_id: String, period: String, empty := false, account_id := "player-a") -> Dictionary:
@@ -138,15 +145,15 @@ func _board_event(request_id: int, generation: int, fish_id: String, period: Str
 func _test_leaderboard_service() -> void:
 	var owner_json := JSON.stringify(_leaderboard_config())
 	var resolved_owner: Dictionary = PlayGamesConfig.configuration_from_json(owner_json)
-	expect(PlayGamesConfig.is_valid(resolved_owner) and str(resolved_owner.game_id) == "1234567890" and PlayGamesConfig.FISH_IDS.size() == 12, "owner JSON resolves one validated twelve-board configuration for both export and runtime")
+	expect(PlayGamesConfig.is_valid(resolved_owner) and str(resolved_owner.game_id) == "1234567890" and PlayGamesConfig.FISH_IDS.size() == 24, "owner JSON resolves one validated twenty-four-board configuration for both export and runtime")
 	expect(PlayGamesConfig.matches_build_receipt(resolved_owner, {"configured": true, "game_id": "1234567890", "sha256": "ABCD"}, "abcd") and not PlayGamesConfig.matches_build_receipt(resolved_owner, {"configured": true, "game_id": "123", "sha256": "ABCD"}, "abcd"), "configured export receipt must match the resolved owner game ID and AAR hash")
 	if FileAccess.file_exists(PlayGamesConfig.OWNER_CONFIG_PATH):
 		expect(PlayGamesConfig.matches_bundled_aar(PlayGamesConfig.as_dictionary(), "res://addons/play_games/bin/cast-and-crank-play-games-release.aar", "res://addons/play_games/bin/build_receipt.json"), "owner configuration, helper-built AAR hash receipt, and runtime PCK injection gate agree before a configured export")
 	var invalid := LeaderboardService.new(MockPlayGamesBridge.new(), {"game_id": "0", "leaderboards": {}})
 	invalid.open_records()
-	expect(invalid.status == LeaderboardService.STATUS_UNAVAILABLE, "leaderboards stay unavailable until one numeric game ID and all twelve distinct board IDs are owner-configured")
+	expect(invalid.status == LeaderboardService.STATUS_UNAVAILABLE, "leaderboards stay unavailable until one numeric game ID and all twenty-four distinct board IDs are owner-configured")
 	var duplicate := _leaderboard_config(); duplicate.leaderboards.northern_pike = duplicate.leaderboards.bluegill
-	expect(not LeaderboardService._valid_configuration(duplicate), "leaderboard configuration rejects duplicate board IDs instead of accepting a twelve-entry dictionary")
+	expect(not LeaderboardService._valid_configuration(duplicate), "leaderboard configuration rejects duplicate board IDs instead of accepting a twenty-four-entry dictionary")
 	var mock := MockPlayGamesBridge.new()
 	var service := LeaderboardService.new(mock, _leaderboard_config())
 	service.open_records()
@@ -161,7 +168,7 @@ func _test_leaderboard_service() -> void:
 	var board_calls: Array[Dictionary] = []
 	for call in mock.calls:
 		if str(call.method) == "requestLeaderboard": board_calls.append(call)
-	expect(board_calls.size() == LeaderboardService.FISH_IDS.size() and service.account_generation == 2, "authenticated account requests top and player scores for all twelve fish with a fresh account generation")
+	expect(board_calls.size() == LeaderboardService.FISH_IDS.size() and service.account_generation == 2, "authenticated account requests top and player scores for all twenty-four fish with a fresh account generation")
 	var first_request := board_calls[0]
 	mock.emit_payload(_board_event(int(first_request.request_id), 1, str(first_request.fish_id), "ALL TIME"))
 	expect(service.board_for(str(first_request.fish_id)).is_empty(), "stale account-generation board callbacks cannot overwrite the current player cache")
@@ -174,7 +181,7 @@ func _test_leaderboard_service() -> void:
 	var weekly_calls: Array[Dictionary] = []
 	for call in mock.calls:
 		if str(call.method) == "requestLeaderboard" and bool(call.weekly): weekly_calls.append(call)
-	expect(weekly_calls.size() == LeaderboardService.FISH_IDS.size(), "weekly selector requests all twelve boards, not only Bluegill")
+	expect(weekly_calls.size() == LeaderboardService.FISH_IDS.size(), "weekly selector requests all twenty-four boards, not only Bluegill")
 	for call in weekly_calls: mock.emit_payload(_board_event(int(call.request_id), 2, str(call.fish_id), "WEEKLY", true))
 	expect(service.status == LeaderboardService.STATUS_EMPTY and service.board_for("northern_pike").get("empty", false), "empty weekly boards render as an honest online empty state")
 	service.open_records()
@@ -479,6 +486,11 @@ func _test_save_round_trip() -> void:
 	var migrated_v5 := SaveService.new(path); migrated_v5.load_data(); migrated_v5.save_data()
 	var reloaded_v5 := SaveService.new(path); reloaded_v5.load_data()
 	expect(reloaded_v5.data.version == SaveService.VERSION and reloaded_v5.data.unlocked_location_ids == ["willow_pond", "pine_lake", "cedar_river"] and reloaded_v5.data.selected_location_id == "cedar_river" and is_equal_approx(float(reloaded_v5.data.settings.sensitivity), 1.6) and not bool(reloaded_v5.data.settings.haptics) and not bool(reloaded_v5.data.settings.audio) and bool(reloaded_v5.data.settings.reduced_motion) and bool(reloaded_v5.data.settings.left_handed) and reloaded_v5.data.calibrated and int(reloaded_v5.data.catches.northern_pike) == 2 and is_equal_approx(float(reloaded_v5.data.best_cm.northern_pike), 82.0) and reloaded_v5.data.catch_history.size() == 1, "genuine v5 saves grandfather three prior waters and preserve selected water, settings, calibration, totals, bests, and valid history through reload")
+	var v6_before_waters := FileAccess.open(path, FileAccess.WRITE)
+	v6_before_waters.store_string(JSON.stringify({"version": 6, "selected_location_id": "hatteras_inlet", "unlocked_location_ids": ["willow_pond", "pine_lake", "cedar_river", "hatteras_inlet"], "catches": {"bluegill": 4, "red_drum": 2}, "best_cm": {"bluegill": 29.5, "red_drum": 68.0}}))
+	v6_before_waters.close()
+	var migrated_v6 := SaveService.new(path); migrated_v6.load_data()
+	expect(migrated_v6.data.version == SaveService.VERSION and migrated_v6.data.selected_location_id == "hatteras_inlet" and migrated_v6.data.unlocked_location_ids == ["willow_pond", "pine_lake", "cedar_river", "hatteras_inlet"] and int(migrated_v6.data.catches.bluegill) == 4 and int(migrated_v6.data.catches.common_snook) == 0 and is_zero_approx(float(migrated_v6.data.best_cm.atlantic_sailfish)), "v6 saves preserve earned original waters and progress while additive new catalog fields begin empty")
 	var malformed_history := FileAccess.open(path, FileAccess.WRITE)
 	malformed_history.store_string(JSON.stringify({"version": SaveService.VERSION, "catches": {"bluegill": 2}, "best_cm": {"bluegill": 25.0}, "catch_history": [{"fish_id": "bluegill", "length_cm": 25.04, "location_id": "pine_lake", "timestamp_utc": 1700000000, "fight_seconds": 11.26, "cast_distance_m": 21.24}, {"fish_id": "unknown", "length_cm": 99.0, "location_id": "pine_lake", "timestamp_utc": 1700000001}, {"fish_id": "bluegill", "length_cm": 0.0, "location_id": "pine_lake", "timestamp_utc": 1700000002}, {"fish_id": "bluegill", "length_cm": 18.0, "location_id": "ocean", "timestamp_utc": 1700000003}, {"fish_id": "bluegill", "length_cm": 18.0, "location_id": "pine_lake", "timestamp_utc": 0}]}))
 	malformed_history.close()
@@ -532,15 +544,15 @@ func _fish_by_id(fish_id: String) -> FishDefinition:
 
 func _test_waters_catalog_and_unlocks() -> void:
 	var fresh := SaveService.default_data()
-	expect(fresh.selected_location_id == "willow_pond" and fresh.unlocked_location_ids == ["willow_pond"] and FishDefinition.all_planned().size() == 12, "fresh v6 save starts at Willow and the catalog contains all twelve fish")
+	expect(fresh.selected_location_id == "willow_pond" and fresh.unlocked_location_ids == ["willow_pond"] and FishDefinition.all_planned().size() == 24, "fresh v6 save starts at Willow and the catalog contains all twenty-four fish")
 	var catalog_location_ids := {}; var catalog_fish_ids := {}
 	for location in LocationDefinition.all():
 		var location_id := str(location.get("id", "")); var species: Array = location.get("species_ids", [])
 		catalog_location_ids[location_id] = true
 		for fish_id in species: catalog_fish_ids[str(fish_id)] = true
 		expect(location_id in SaveService.LOCATION_IDS and species.size() == 3 and LocationDefinition.by_id(location_id) == location, "catalog location has one known ID and exactly three listed species: %s" % location_id)
-	expect(catalog_location_ids.size() == 4 and catalog_fish_ids.size() == 12 and catalog_fish_ids.keys().all(func(fish_id): return fish_id in SaveService.PLANNED_FISH_IDS), "catalog location and fish membership is unique and complete")
-	for location_id in ["willow_pond", "pine_lake", "cedar_river", "hatteras_inlet"]:
+	expect(catalog_location_ids.size() == 8 and catalog_fish_ids.size() == 24 and catalog_fish_ids.keys().all(func(fish_id): return fish_id in SaveService.PLANNED_FISH_IDS), "catalog location and fish membership is unique and complete")
+	for location_id in SaveService.LOCATION_IDS:
 		for distance in [12.0, 24.0, 36.0]:
 			var seen := {}
 			for roll_step in range(40): seen[FishDefinition.select_weighted(location_id, float(roll_step) / 40.0, distance).id] = true
@@ -553,9 +565,17 @@ func _test_waters_catalog_and_unlocks() -> void:
 	for fish_id in ["bluegill", "largemouth_bass", "channel_catfish"]: progress.record_catch(fish_id, 35.0)
 	expect("cedar_river" in progress.data.unlocked_location_ids and not "hatteras_inlet" in progress.data.unlocked_location_ids, "all six prior species unlock Cedar but not Hatteras")
 	for fish_id in ["rainbow_trout", "smallmouth_bass", "northern_pike"]: progress.record_catch(fish_id, 35.0)
-	expect("hatteras_inlet" in progress.data.unlocked_location_ids, "all nine earlier fish unlock Hatteras without fake catches")
+	expect("hatteras_inlet" in progress.data.unlocked_location_ids and not "mangrove_flats" in progress.data.unlocked_location_ids, "all nine earlier fish unlock Hatteras without fake catches")
+	for fish_id in ["red_drum", "spotted_seatrout", "bluefish"]: progress.record_catch(fish_id, 55.0)
+	expect("mangrove_flats" in progress.data.unlocked_location_ids and not "cypress_bayou" in progress.data.unlocked_location_ids, "all twelve prior species unlock Mangrove Flats without inventing a new catch")
+	for fish_id in ["common_snook", "mangrove_snapper", "atlantic_tarpon"]: progress.record_catch(fish_id, 75.0)
+	expect("cypress_bayou" in progress.data.unlocked_location_ids and not "moonlit_reservoir" in progress.data.unlocked_location_ids, "all fifteen prior species unlock Cypress Bayou")
+	for fish_id in ["bowfin", "longnose_gar", "flathead_catfish"]: progress.record_catch(fish_id, 75.0)
+	expect("moonlit_reservoir" in progress.data.unlocked_location_ids and not "bluewater_offshore" in progress.data.unlocked_location_ids, "all eighteen prior species unlock Moonlit Reservoir")
+	for fish_id in ["walleye", "striped_bass", "blue_catfish"]: progress.record_catch(fish_id, 75.0)
+	expect("bluewater_offshore" in progress.data.unlocked_location_ids, "all twenty-one prior species unlock Bluewater Offshore")
 	var reloaded_progress := SaveService.new(progress.path); reloaded_progress.load_data()
-	expect(reloaded_progress.data.unlocked_location_ids == ["willow_pond", "pine_lake", "cedar_river", "hatteras_inlet"], "earned water unlocks persist after reload")
+	expect(reloaded_progress.data.unlocked_location_ids == SaveService.LOCATION_IDS, "earned eight-water unlocks persist after reload")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(progress.path))
 
 func _test_ui_presentation_contract() -> void:
@@ -698,10 +718,14 @@ func _test_ui_controller_interactions() -> void:
 	expect(view.journal_page_index == 1, "Records next-page control exposes the second six-fish page")
 	view._refresh_records_geometry(0.0); view._handle_press(view.journal_slot_rects[0].get_center())
 	expect(view.overlay == "journal_detail" and view.journal_fish_id == FishDefinition.all_planned()[6].id, "Records page two opens the seventh catalog fish without out-of-bounds indexing")
+	view.overlay = "records"; view._refresh_records_geometry(0.0); view._handle_press(view.records_next_rect.get_center()); view._handle_press(view.records_next_rect.get_center())
+	expect(view.journal_page_index == 3, "Records reaches the fourth six-fish page")
+	view._refresh_records_geometry(0.0); view._handle_press(view.journal_slot_rects[2].get_center())
+	expect(view.overlay == "journal_detail" and view.journal_fish_id == FishDefinition.all_planned()[20].id, "Records page four opens the twenty-first catalog fish")
 	view.overlay = "records"; view._refresh_records_geometry(0.0); view._handle_press(view.records_next_rect.get_center())
-	expect(view.journal_page_index == 1, "Records next-page control is clamped on its final page")
+	expect(view.journal_page_index == 3, "Records next-page control is clamped on the fourth and final page")
 	view._handle_press(view.records_previous_rect.get_center())
-	expect(view.journal_page_index == 0, "Records previous-page control returns to page one")
+	expect(view.journal_page_index == 2, "Records previous-page control returns from page four")
 	for notes_safe_top in [0.0, 91.0, 180.0]:
 		view.safe_top_override = notes_safe_top; view.overlay = "journal_detail"; view._refresh_field_notes_geometry()
 		var notes_valid: bool = view.journal_detail_fish_rect.position.y >= notes_safe_top and view.journal_detail_note_rect.end.y < view.journal_detail_back_rect.position.y and not view.journal_detail_back_rect.intersects(view.journal_detail_next_rect)
@@ -711,8 +735,9 @@ func _test_ui_controller_interactions() -> void:
 	var world_bridge := MockPlayGamesBridge.new(); controller.leaderboards = LeaderboardService.new(world_bridge, _leaderboard_config())
 	view.overlay = "world_records"; view.world_page_index = 0; view._refresh_world_records_geometry(); view._handle_press(view.world_next_rect.get_center())
 	expect(view.world_page_index == 1, "World Records next-page control exposes the second six-fish page")
-	view._handle_press(view.world_next_rect.get_center()); expect(view.world_page_index == 1, "World Records next-page control is clamped on its final page")
-	view._handle_press(view.world_previous_rect.get_center()); expect(view.world_page_index == 0, "World Records previous-page control returns to page one")
+	view._handle_press(view.world_next_rect.get_center()); view._handle_press(view.world_next_rect.get_center()); expect(view.world_page_index == 3, "World Records reaches its fourth six-fish page")
+	view._handle_press(view.world_next_rect.get_center()); expect(view.world_page_index == 3, "World Records next-page control is clamped on the fourth and final page")
+	view._handle_press(view.world_previous_rect.get_center()); expect(view.world_page_index == 2, "World Records previous-page control returns from page four")
 	view.overlay = "world_records"; controller.leaderboards.status = LeaderboardService.STATUS_NO_AUTH; view._refresh_world_records_geometry(); view._handle_press(view.world_retry_rect.get_center())
 	expect(not world_bridge.calls.is_empty() and str(world_bridge.calls.back().method) == "signIn", "World Connect invokes explicit sign-in only from NO_AUTH")
 	controller.leaderboards.status = LeaderboardService.STATUS_ERROR; view.overlay = "world_records"; view._refresh_world_records_geometry(); view._handle_press(view.world_retry_rect.get_center())
@@ -754,8 +779,9 @@ func _test_ui_controller_interactions() -> void:
 		view.safe_top_override = waters_safe_top; view.waters_scroll = 0.0; view._refresh_location_card_rects(waters_safe_top)
 		var top_reachable: bool = view.waters_viewport_rect.encloses(view.location_card_rects[0].intersection(view.waters_viewport_rect))
 		view._scroll_waters(9999.0)
-		var bottom_reachable: bool = view.location_card_rects[3].intersects(view.waters_viewport_rect)
-		expect(top_reachable and bottom_reachable and view.back_to_fishing_rect.position.y >= waters_safe_top, "scrolling picker reaches first and fourth water with fixed Back at safe-top %.0f" % waters_safe_top)
+		var last_location_index := LocationDefinition.all().size() - 1
+		var bottom_reachable: bool = view.location_card_rects[last_location_index].intersects(view.waters_viewport_rect)
+		expect(top_reachable and bottom_reachable and view.back_to_fishing_rect.position.y >= waters_safe_top, "scrolling picker reaches first and last water with fixed Back at safe-top %.0f" % waters_safe_top)
 	view.safe_top_override = 0.0; view.waters_scroll = 0.0; controller.save.data.unlocked_location_ids = ["willow_pond", "pine_lake"]; controller.session.set_location("willow_pond", 0.0); view._refresh_location_card_rects(0.0)
 	var pine_before_drag := controller.session.location_id
 	var pine_point: Vector2 = view.location_card_rects[1].get_center()
@@ -1374,7 +1400,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 39 and export_config.get_value("preset.0.options", "version/name") == "0.7.5-sign1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Metal-header package version and visible Android label retain the package identifier")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 40 and export_config.get_value("preset.0.options", "version/name") == "0.8.0-waters2" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Waters v40 package version and visible Android label retain the package identifier")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")
@@ -1392,6 +1418,14 @@ func _test_project_source_settings() -> void:
 		"res://art/ui_v1/runtime_source/cedar-river-clean-v02.png": Vector2i(941, 1672),
 		"res://art/ui_v1/runtime_source/pine-fish-atlas-v02.png": Vector2i(1024, 1536),
 		"res://art/ui_v1/runtime_source/cedar-fish-atlas-v02.png": Vector2i(1024, 1536),
+		"res://art/ui_v1/runtime_source/waters-v40/mangrove_flats-photo-v01.png": Vector2i(948, 1659),
+		"res://art/ui_v1/runtime_source/waters-v40/cypress_bayou-photo-v01.png": Vector2i(948, 1659),
+		"res://art/ui_v1/runtime_source/waters-v40/moonlit_reservoir-photo-v01.png": Vector2i(948, 1659),
+		"res://art/ui_v1/runtime_source/waters-v40/bluewater_offshore-photo-v01.png": Vector2i(948, 1660),
+		"res://art/ui_v1/runtime_source/waters-v40/mangrove_flats-fish-atlas-v01.png": Vector2i(1024, 1536),
+		"res://art/ui_v1/runtime_source/waters-v40/cypress_bayou-fish-atlas-v01.png": Vector2i(1024, 1536),
+		"res://art/ui_v1/runtime_source/waters-v40/moonlit_reservoir-fish-atlas-v01.png": Vector2i(1024, 1536),
+		"res://art/ui_v1/runtime_source/waters-v40/bluewater_offshore-fish-atlas-v01.png": Vector2i(1024, 1536),
 		"res://art/ui_v1/runtime/control-kit-alpha-v01.png": Vector2i(1024, 1536),
 		"res://art/ui_v1/runtime_source/rod-bend-strip-v01.png": Vector2i(1536, 1024),
 		"res://art/ui_v1/runtime_source/rod-bend-repacked-v02.png": Vector2i(1536, 1024),
@@ -1418,12 +1452,12 @@ func _test_project_source_settings() -> void:
 		var transparent_texture := load(transparent_asset) as Texture2D
 		var transparent_image := transparent_texture.get_image() if transparent_texture else Image.new()
 		expect(transparent_image.detect_alpha() != Image.ALPHA_NONE, "runtime animated asset retains alpha: " + transparent_asset)
-	for atlas_asset in ["res://art/ui_v1/runtime_source/pine-fish-atlas-v02.png", "res://art/ui_v1/runtime_source/cedar-fish-atlas-v02.png"]:
+	for atlas_asset in ["res://art/ui_v1/runtime_source/pine-fish-atlas-v02.png", "res://art/ui_v1/runtime_source/cedar-fish-atlas-v02.png", "res://art/ui_v1/runtime_source/waters-v40/mangrove_flats-fish-atlas-v01.png", "res://art/ui_v1/runtime_source/waters-v40/cypress_bayou-fish-atlas-v01.png", "res://art/ui_v1/runtime_source/waters-v40/moonlit_reservoir-fish-atlas-v01.png", "res://art/ui_v1/runtime_source/waters-v40/bluewater_offshore-fish-atlas-v01.png"]:
 		var atlas_texture := load(atlas_asset) as Texture2D
 		var atlas_image := atlas_texture.get_image() if atlas_texture else Image.new()
 		var clear_boundaries := true
 		for y in [511, 512, 1023, 1024]:
-			for x in range(0, 1024, 16):
+			for x in range(1024):
 				if atlas_image.get_pixel(x, y).a != 0.0: clear_boundaries = false
 		expect(not atlas_image.is_empty() and atlas_image.get_size() == Vector2i(1024, 1536) and atlas_image.get_pixel(0, 0).a == 0.0 and atlas_image.get_pixel(512, 768).a > 0.0 and clear_boundaries, "repacked fish atlas has transparent exact-cell boundaries and opaque per-row content: " + atlas_asset)
 	var control_texture := load("res://art/ui_v1/runtime/control-kit-alpha-v01.png") as Texture2D
@@ -1446,7 +1480,7 @@ func _test_project_source_settings() -> void:
 	expect("CAST_COUNT := 10" in capture_source and "ACTIVE_WINDOW_SECONDS := 2.0" in capture_source and "REST_WINDOW_SECONDS := 1.0" in capture_source and "MAX_SAMPLES_PER_CAST" in capture_source and "completed" in capture_source and "accelerometer" in capture_source and "linear" in capture_source and not "print(" in capture_source, "raw samples are bounded and retained only by the explicit capture service without logging")
 	var waters_input_source := main_source.get_slice("func _gui_input(event: InputEvent) -> void:", 1).get_slice("func _scroll_waters", 0)
 	expect(not "HOLD TO CAST" in main_source and not "SET HOOK" in main_source and not "SAFE BYPASS" in main_source and not "cast_rect" in main_source and not "reel_center" in main_source and "if overlay == \"locations\"" in waters_input_source and "InputEventScreenDrag" in waters_input_source and "_handle_waters_drag" in waters_input_source and not "_handle_drag" in main_source and not "reel_fallback" in main_source and "TILT RIGHT, THEN SNAP LEFT" in main_source and "TILT LEFT, THEN SNAP RIGHT" in main_source and not "COCK RIGHT, THEN SNAP LEFT" in main_source and "FISH ON — WAIT FOR THE PULSES" in main_source and "BITE — PULL RIGHT" in main_source and "session.state == FishingSession.State.HOOK_WINDOW" in main_source and "TILT LEFT TO EASE" in main_source and "TILT RIGHT TO PULL" in main_source and "MOTION_FIGHT caught elapsed=" in main_source and "MOTION_FIGHT escaped elapsed=" in main_source and "_record_catch_once" in main_source and "records-screen-rustic-v01.png" in main_source and "rustic-clipboard-blank-v01.png" in main_source and "ROD_TIP_ANCHORS" in main_source and "_rod_tip_for_frame" in main_source and "RECORD 10 CASTS" in main_source and "cast_capture.is_active()" in main_source and "_start_cast_capture" in main_source and not "DIAGNOSTIC_AUTO_CAPTURE_ON_ANDROID" in main_source and "DisplayServer.get_display_safe_area" in main_source and "_virtual_safe_top" in main_source and "set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)" in main_source and "mouse_filter = Control.MOUSE_FILTER_STOP" in main_source and "font = ThemeDB.fallback_font" in main_source and "queue_redraw()" in main_source and "can_recast_from_motion" in main_source, "Tilt instructions stay motion-only in gameplay while Waters alone accepts drag scrolling")
-	expect("willow_pond_texture" in main_source and "hatteras_inlet_texture" in main_source and "cedar_river_texture" in main_source and "willow-fish-atlas-v01.png" in main_source and "ocean-fish-atlas-v01.png" in main_source and "_draw_fish_atlas_contained" in main_source and "_fish_atlas_region" in main_source and "Rect2(0, 0, 1024, 543)" in main_source and "Rect2(0, 543, 1024, 535)" in main_source and "Rect2(0, 1078, 1024, 458)" in main_source and "red_drum" in main_source and "bluefish" in main_source and not "row * 512" in main_source, "all twelve fish use explicit shared atlas regions and correct location art")
+	expect("willow_pond_texture" in main_source and "hatteras_inlet_texture" in main_source and "mangrove_flats_texture" in main_source and "cypress_bayou_texture" in main_source and "moonlit_reservoir_texture" in main_source and "bluewater_offshore_texture" in main_source and "waters-v40/mangrove_flats-fish-atlas-v01.png" in main_source and "waters-v40/bluewater_offshore-fish-atlas-v01.png" in main_source and "_draw_fish_atlas_contained" in main_source and "_fish_atlas_region" in main_source and "atlantic_tarpon" in main_source and "atlantic_sailfish" in main_source and not "row * 512" in main_source, "all twenty-four fish use explicit shared atlas regions and correct location art")
 	var gameplay_chrome_source := main_source.get_slice("func _draw_top_chrome(s: FishingSession) -> void:", 1).get_slice("func _draw_glance_hint", 0)
 	var glance_source := main_source.get_slice("func _draw_glance_hint(s: FishingSession) -> void:", 1).get_slice("func _draw_top_hint_lines", 0)
 	var catch_source := main_source.get_slice("func _draw_catch_reveal(s: FishingSession) -> void:", 1).get_slice("func _draw_escape_card", 0)
@@ -1457,7 +1491,7 @@ func _test_project_source_settings() -> void:
 	expect(not "catch-frame-clean-v01.png" in main_source and not "catch_frame_texture" in main_source and "FIRST CATCH" in main_source and "NEW BEST" in main_source and "MATCHED BEST" in main_source and "catch_prior_best_cm" in main_source, "catch reveal uses a scenic native plaque with prior-record status rather than a trophy frame")
 	var records_source := main_source.get_slice("func _draw_records() -> void:", 1).get_slice("func _fish_definition", 0)
 	expect("records-screen-rustic-v01.png" in main_source and "rustic-clipboard-blank-v01.png" in main_source and "UNDISCOVERED" in records_source and "_draw_fish_atlas_contained" in records_source and "_refresh_records_geometry" in records_source and "journal_fish_rects" in records_source and "journal_slot_rects" in main_source and not "_text(\"CATCH RECORDS\"" in records_source, "Records uses one opaque blank-slot master with shared fish/name/stats/tap geometry")
-	expect("_draw_location_card" in main_source and "pine_lake_texture" in main_source and "cedar_river_texture" in main_source and "locations_pine" in main_source and "locations_cedar" in main_source and "records_empty" in main_source and "_clear_capture_records" in main_source and "pine_bass_catch" in main_source and "pine_catfish_catch" in main_source and "cedar_trout_catch" in main_source and "cedar_smallmouth_catch" in main_source and "cast_armed" in main_source and "line_out" in main_source and "hook_window" in main_source and "reduced_bite" in main_source and "reduced_reeling_high" in main_source and "reduced_catch" in main_source, "capture scenarios cover all species, explicit empty records, motion states, and reduced-motion variants without a save write")
+	expect("_draw_location_card" in main_source and "mangrove_ready" in main_source and "bayou_line_out" in main_source and "moonlit_reeling" in main_source and "offshore_reduced" in main_source and "mangrove_tarpon_catch" in main_source and "bayou_flathead_catch" in main_source and "moonlit_bluecat_catch" in main_source and "offshore_sailfish_catch" in main_source and "records_page3" in main_source and "records_page4" in main_source and "waters_middle_safe180" in main_source and "waters_bottom_safe180" in main_source and "records_empty" in main_source and "_clear_capture_records" in main_source and "cast_armed" in main_source and "line_out" in main_source and "hook_window" in main_source and "reduced_bite" in main_source and "reduced_reeling_high" in main_source and "reduced_catch" in main_source, "capture scenarios cover all twenty-four species, four record pages, water-scroll endpoints, motion states, and reduced-motion variants without a save write")
 	expect("FISH GOT AWAY" in main_source and "Ease forward when warning pulses speed up." in main_source and not "THE LINE WENT SLACK" in main_source, "escape card presents one neutral reason with motion-first recovery guidance")
 	expect("SELECTED" in main_source and "rect.intersection(waters_viewport_rect).grow(-4)" in main_source and "_waters_location_at" in main_source, "location cards retain selected geometry and clipped selection hit routing")
 	var rod_repacked := load("res://art/ui_v1/runtime_source/rod-bend-repacked-v02.png") as Texture2D

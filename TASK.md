@@ -1,5 +1,30 @@
 # Gate 1 — foundation, playable greybox, and concept direction
 
+## Waters v40
+
+- Source implementation adds Mangrove Flats, Cypress Bayou, Moonlit Reservoir,
+  and Bluewater Offshore after the original four waters: 24 fish in all,
+  strict all-earlier-species unlocks at 12/15/18/21, four computed record
+  pages, all-eight-water scroll endpoints, additive v6 save support, and
+  optional offline-ready 24-fish Play Games configuration support. Capture
+  fixtures seed only isolated in-memory review baselines; no live/player save,
+  device, or unlock progression is invented.
+- Generated scenery is one opaque owner per location; live tackle, bobber,
+  header, fish, and native text remain separate. Location-specific water masks
+  exclude banks, dock/post, and boat, with Hatteras-only shorewash. The full
+  source/provenance/approval ledger is [docs/waters-v40.md](docs/waters-v40.md)
+  and evidence is indexed in `reports/waters-v40/`.
+- Parser/domain, visual-capture, and primary independent water-motion gates
+  pass; the signed arm64-only v40 export and in-place Pixel 9 Pro update also
+  pass while preserving the pre-launch save hash. Audit details and explicit
+  pending delivery/acceptance limits are in
+  [reports/waters-v40/release-audit-v40.md](reports/waters-v40/release-audit-v40.md).
+  The local DriveFS copy is hash/size verified without claiming cloud sync;
+  installed-base matching and repeated >30-second Pixel dwell pass, with three
+  nonfatal SurfaceSyncGroup timeouts and one nonfatal BufferQueue warning
+  retained in the audit. Physical motion/haptic feel and human visual acceptance
+  remain separate gates.
+
 ## Metal location header v39
 
 - Implemented for the next build: the existing full-width fishing rail retains

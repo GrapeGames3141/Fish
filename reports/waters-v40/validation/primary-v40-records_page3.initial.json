@@ -1,0 +1,23 @@
+{
+  "label": "primary-v40-records_page3",
+  "rootPid": 102900,
+  "observedPids": [
+    102900
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\gallery\\records_page3.png",
+    "--capture-scenario=records_page3",
+    "--capture-time=1"
+  ],
+  "started": "2026-09-09T22:57:42.2020312-05:00"
+}

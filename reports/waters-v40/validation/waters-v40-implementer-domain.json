@@ -1,0 +1,27 @@
+{
+  "label": "waters-v40-implementer-domain",
+  "started": "2026-09-09T22:50:43.7388541-05:00",
+  "finished": "2026-09-09T22:51:47.3502298-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-waters-v40\\domain",
+  "rootPid": 119608,
+  "observedPids": [
+    119608
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\validation\\waters-v40-implementer-domain.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\validation\\waters-v40-implementer-domain.stderr.log",
+  "stderrMarker": "ERROR: 300ms-delayed pull/ease lands atlantic_tarpon for standard at 30Hz / roll 0.37 (state=6 elapsed=23.13)",
+  "error": null
+}

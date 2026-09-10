@@ -1,0 +1,34 @@
+{
+  "label": "primary-v40-final-bayou_gar_catch",
+  "started": "2026-09-09T23:02:59.2478676-05:00",
+  "finished": "2026-09-09T23:03:03.0392690-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\gallery\\bayou_gar_catch-final.png",
+    "--capture-scenario=bayou_gar_catch",
+    "--capture-time=1"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-waters-v40\\primary-final-bayou_gar_catch",
+  "rootPid": 66836,
+  "observedPids": [
+    66836
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\validation\\primary-v40-final-bayou_gar_catch.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\validation\\primary-v40-final-bayou_gar_catch.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

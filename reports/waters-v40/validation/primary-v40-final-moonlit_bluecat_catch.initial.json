@@ -1,0 +1,23 @@
+{
+  "label": "primary-v40-final-moonlit_bluecat_catch",
+  "rootPid": 115944,
+  "observedPids": [
+    115944
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\gallery\\moonlit_bluecat_catch-final.png",
+    "--capture-scenario=moonlit_bluecat_catch",
+    "--capture-time=1"
+  ],
+  "started": "2026-09-09T23:03:14.6041490-05:00"
+}

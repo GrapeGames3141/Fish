@@ -1,0 +1,36 @@
+{
+  "label": "primary-v40-motion-moonlit_line_out",
+  "started": "2026-09-09T23:07:31.3584410-05:00",
+  "finished": "2026-09-09T23:07:49.7922987-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-waters-v40\\motion-frames\\moonlit_line_out",
+    "--capture-scenario=moonlit_line_out",
+    "--capture-time=0",
+    "--capture-frames=32",
+    "--capture-fps=8"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-waters-v40\\primary-motion-moonlit_line_out",
+  "rootPid": 60160,
+  "observedPids": [
+    60160
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\validation\\primary-v40-motion-moonlit_line_out.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\validation\\primary-v40-motion-moonlit_line_out.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

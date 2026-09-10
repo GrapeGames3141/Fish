@@ -1,0 +1,1 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="1280" viewBox="0 0 720 1280"><defs><filter id="f"><feGaussianBlur stdDeviation="3"/></filter></defs><rect width="720" height="1280" fill="#000"/><path filter="url(#f)" fill="#fff" d="M270 330 Q382 304 500 330 Q566 380 615 468 Q676 535 720 560 V1280 H130 Q126 1100 145 950 Q168 786 188 660 Q212 505 270 330Z"/></svg>

@@ -1,0 +1,25 @@
+{
+  "label": "primary-v40-motion-offshore_reduced",
+  "rootPid": 58508,
+  "observedPids": [
+    58508
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-waters-v40\\motion-frames\\offshore_reduced",
+    "--capture-scenario=offshore_reduced",
+    "--capture-time=0",
+    "--capture-frames=32",
+    "--capture-fps=8"
+  ],
+  "started": "2026-09-09T23:08:24.3579957-05:00"
+}

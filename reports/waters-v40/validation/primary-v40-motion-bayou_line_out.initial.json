@@ -1,0 +1,25 @@
+{
+  "label": "primary-v40-motion-bayou_line_out",
+  "rootPid": 106088,
+  "observedPids": [
+    106088
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-waters-v40\\motion-frames\\bayou_line_out",
+    "--capture-scenario=bayou_line_out",
+    "--capture-time=0",
+    "--capture-frames=32",
+    "--capture-fps=8"
+  ],
+  "started": "2026-09-09T23:07:14.9086440-05:00"
+}

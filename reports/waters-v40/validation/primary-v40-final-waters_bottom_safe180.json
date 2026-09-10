@@ -1,0 +1,34 @@
+{
+  "label": "primary-v40-final-waters_bottom_safe180",
+  "started": "2026-09-09T23:03:41.5779339-05:00",
+  "finished": "2026-09-09T23:03:45.5605750-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\gallery\\waters_bottom_safe180-final.png",
+    "--capture-scenario=waters_bottom_safe180",
+    "--capture-time=1"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-waters-v40\\primary-final-waters_bottom_safe180",
+  "rootPid": 76944,
+  "observedPids": [
+    76944
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\validation\\primary-v40-final-waters_bottom_safe180.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\validation\\primary-v40-final-waters_bottom_safe180.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

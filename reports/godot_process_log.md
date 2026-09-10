@@ -383,3 +383,38 @@ check, window list, and stdout/stderr.
   but one nonfatal abandoned BufferQueueProducer message is retained rather
   than claiming an error-free log. No phone screenshot, uninstall/data clear,
   Drive copy, or remote push occurred.
+
+## Waters v40 implementer gates — 2026-09-09
+
+- Import/parser [receipt](waters-v40/validation/waters-v40-implementer-import-final.json):
+  root `102444`, 23:03:16–23:03:30 CDT, exit `0`, no stderr marker, task
+  windows, cleanup, or remaining process. It used the isolated E: cache
+  `E:\CodexCache\haptic-fish-waters-v40\import-final`.
+- The first tuned domain [receipt](waters-v40/validation/waters-v40-implementer-domain-tuned.json)
+  (root `115072`) completed with exit `1` because four newly added asset
+  assertions expected the prompt target size instead of the selected generated
+  plate dimensions. It found no parser or gameplay failure and no owned
+  process/window remained. This receipt is superseded diagnostic evidence.
+- Final deterministic domain [receipt](waters-v40/validation/waters-v40-implementer-domain-final.json):
+  root `5340`, 23:05:14–23:05:59 CDT, exit `0`, clean helper marker, no task
+  window/cleanup/remaining process. Stdout ends `PASS: Cast & Crank Gate 1
+  domain tests`; the established Godot teardown notices (`12 ObjectDB`, `5
+  resources`) remain recorded in stderr. No implementer capture, export,
+  device install, or Drive operation occurred.
+
+## Waters v40 primary helper gates — 2026-09-09
+
+- The complete primary receipt inventory, including every final still/motion,
+  domain, and export helper receipt plus each adjacent startup PID snapshot, is
+  indexed at [reports/waters-v40/primary-helper-receipts.md](waters-v40/primary-helper-receipts.md).
+- Independent domain [receipt](waters-v40/validation/primary-v40-domain-final.json)
+  root `125304` passed in 43.7 seconds. Its only notices are the established
+  12 ObjectDB / 5-resource teardown baseline.
+- Export [receipt](waters-v40/validation/primary-v40-export-final.json) root
+  `69044` passed in 149.9 seconds. Its owned chain was Godot `69044` → cmd
+  `106920` → Gradle wrapper `122304` → Gradle daemon `94912`; all except the
+  idle owned daemon exited naturally. The daemon's current build log identified
+  `E:\CodexCache\haptic-fish-project`, so `94912` was explicitly stopped.
+  The compact afterward inventory had no Godot/WerFault/java/aapt2 process or
+  crash dialog. Pixel launch/dwell and DriveFS hash facts are in the v40 release
+  audit; no screenshot or physical-feel claim is made.

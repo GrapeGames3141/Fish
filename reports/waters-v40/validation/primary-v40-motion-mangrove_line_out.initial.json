@@ -1,0 +1,25 @@
+{
+  "label": "primary-v40-motion-mangrove_line_out",
+  "rootPid": 93512,
+  "observedPids": [
+    93512
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-waters-v40\\motion-frames\\mangrove_line_out",
+    "--capture-scenario=mangrove_line_out",
+    "--capture-time=0",
+    "--capture-frames=32",
+    "--capture-fps=8"
+  ],
+  "started": "2026-09-09T23:06:58.4299886-05:00"
+}

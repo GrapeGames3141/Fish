@@ -1,0 +1,23 @@
+{
+  "label": "primary-v40-waters_locked_bottom_safe180",
+  "rootPid": 113896,
+  "observedPids": [
+    113896
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\gallery\\waters_locked_bottom_safe180.png",
+    "--capture-scenario=waters_locked_bottom_safe180",
+    "--capture-time=1"
+  ],
+  "started": "2026-09-09T22:58:16.8680749-05:00"
+}

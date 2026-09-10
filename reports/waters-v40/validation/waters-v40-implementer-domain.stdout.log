@@ -1,0 +1,12 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MOTION_FAIL stage=snap reason=timeout count=1
+V35_FIGHT_TIMINGS {"expert_reactive":{"max":38.5333333333337,"min":10.0333333333333},"expert_strong":{"max":22.7333333333333,"min":1.53333333333333},"relaxed_reactive":{"max":39.2499999999991,"min":10.9},"relaxed_strong":{"max":31.7000000000007,"min":10.0000000000001},"standard_reactive":{"max":40.2749999999984,"min":9.73333333333342},"standard_strong":{"max":32.6416666666655,"min":9.96666666666664}}
+MOTION_CAST quality=1.00 distance_m=40.0 snap_projection=104.83 axis_match=1.00 polarity=1.00 gyro=0.72 reversal_s=0.120 cock_projection=12.95
+MOTION_FIGHT caught elapsed=0.00 progress=0.00 tension=0.12
+MOTION_CAST quality=1.00 distance_m=40.0 snap_projection=104.83 axis_match=1.00 polarity=1.00 gyro=0.72 reversal_s=0.120 cock_projection=12.95
+MOTION_FAIL stage=snap reason=timeout count=1
+MOTION_FAIL stage=cock reason=polarity count=1
+MOTION_FAIL stage=snap reason=timeout count=1
+MOTION_FAIL stage=snap reason=timeout count=1
+FAIL: 82 test assertions

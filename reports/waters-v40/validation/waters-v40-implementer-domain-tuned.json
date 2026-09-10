@@ -1,0 +1,27 @@
+{
+  "label": "waters-v40-implementer-domain-tuned",
+  "started": "2026-09-09T23:03:43.6475706-05:00",
+  "finished": "2026-09-09T23:04:30.6478715-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-waters-v40\\domain-tuned",
+  "rootPid": 115072,
+  "observedPids": [
+    115072
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\validation\\waters-v40-implementer-domain-tuned.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\waters-v40\\validation\\waters-v40-implementer-domain-tuned.stderr.log",
+  "stderrMarker": "ERROR: runtime UI asset has the expected dimensions: res://art/ui_v1/runtime_source/waters-v40/mangrove_flats-photo-v01.png",
+  "error": null
+}

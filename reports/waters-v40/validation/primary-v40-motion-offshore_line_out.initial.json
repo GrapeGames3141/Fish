@@ -1,0 +1,25 @@
+{
+  "label": "primary-v40-motion-offshore_line_out",
+  "rootPid": 55868,
+  "observedPids": [
+    55868
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-waters-v40\\motion-frames\\offshore_line_out",
+    "--capture-scenario=offshore_line_out",
+    "--capture-time=0",
+    "--capture-frames=32",
+    "--capture-fps=8"
+  ],
+  "started": "2026-09-09T23:07:49.8006714-05:00"
+}
