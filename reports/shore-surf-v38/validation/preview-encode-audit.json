@@ -1,0 +1,164 @@
+{
+  "dimensions": [
+    720,
+    1280
+  ],
+  "frames": 120,
+  "fps": 20,
+  "source": "E:/CodexCache/haptic-fish-surf-v38/ocean-frames2",
+  "checks": [
+    {
+      "frame": 20,
+      "region": "sky",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 20,
+      "region": "dune",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 20,
+      "region": "dry_sand",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 20,
+      "region": "grass",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 20,
+      "region": "hand_reel",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 20,
+      "region": "bottom_right_water",
+      "max": 167,
+      "mean": 38.26374358974359,
+      "changed": 19282
+    },
+    {
+      "frame": 20,
+      "region": "foam_front",
+      "max": 168,
+      "mean": 28.385506072874495,
+      "changed": 64132
+    },
+    {
+      "frame": 60,
+      "region": "sky",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 60,
+      "region": "dune",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 60,
+      "region": "dry_sand",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 60,
+      "region": "grass",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 60,
+      "region": "hand_reel",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 60,
+      "region": "bottom_right_water",
+      "max": 150,
+      "mean": 36.627384615384614,
+      "changed": 19251
+    },
+    {
+      "frame": 60,
+      "region": "foam_front",
+      "max": 171,
+      "mean": 31.121808367071527,
+      "changed": 64467
+    },
+    {
+      "frame": 100,
+      "region": "sky",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 100,
+      "region": "dune",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 100,
+      "region": "dry_sand",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 100,
+      "region": "grass",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 100,
+      "region": "hand_reel",
+      "max": 0,
+      "mean": 0,
+      "changed": 0
+    },
+    {
+      "frame": 100,
+      "region": "bottom_right_water",
+      "max": 164,
+      "mean": 38.33030769230769,
+      "changed": 19269
+    },
+    {
+      "frame": 100,
+      "region": "foam_front",
+      "max": 168,
+      "mean": 27.44927125506073,
+      "changed": 63891
+    }
+  ],
+  "gif": {
+    "bytes": 39951260
+  },
+  "mp4": {
+    "bytes": 3795636
+  }
+}

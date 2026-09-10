@@ -1,5 +1,10 @@
 # Gate 1 — foundation, playable greybox, and concept direction
 
+## Hatteras shore surf v38
+
+- Corrected primary review replaces the rejected sharp surf front with a bounded single-coordinate photographic shorewash: 0–28px run-up, low-frequency alongshore lag, safe shoreline fades, and a <=7px broad offshore ridge. The original foam/photo moves rather than an image being swapped or an overlay being drawn. Hatteras short-cast bobber/line uses the same surf offset; Pond/Lake/River remain unchanged and Reduced Motion is still.
+- The first full-screen capture passed mechanically but was visually rejected for foreground foam foldovers; the corrected 120-frame source capture is provisionally accepted for photographic texture and indexed in `reports/shore-surf-v38/`. Final parser/domain, short-cast, reduced-motion, inland-regression, browser playback, and signed arm64 `38` / `0.7.4-surf1` package audit pass. Device performance and user aesthetic validation remain pending. No install, Drive delivery, or push is claimed.
+
 ## Water motion v37
 
 - Implemented for the next build: location-specific photographic water plates behind native tackle/UI, with shoreline masks, shared bobber heave/tilt, a genuinely submerged lower float hemisphere, and reduced-motion freezing. Willow/Pine/Cedar/Hatteras respectively use pond, lake, directed-river, and rolling-ocean profiles.

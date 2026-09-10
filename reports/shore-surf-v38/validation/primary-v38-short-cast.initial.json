@@ -1,0 +1,21 @@
+{
+  "label": "primary-v38-short-cast",
+  "rootPid": 84776,
+  "observedPids": [
+    84776
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\shore-surf-v38\\gallery\\hatteras-short-cast.png",
+    "--capture-scenario=hatteras_short_line_out",
+    "--capture-time=3"
+  ],
+  "started": "2026-09-09T19:41:59.2960646-05:00"
+}

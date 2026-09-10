@@ -1,0 +1,12 @@
+SCRIPT ERROR: Parse Error: Cannot infer the type of "mapped" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:91)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "mapped_x" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:92)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "mapped_y" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:93)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "dx" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:94)
+SCRIPT ERROR: Parse Error: Cannot infer the type of "dy" variable because the value doesn't have a set type.
+   at: GDScript::reload (res://tests/test_runner.gd:95)
+ERROR: Failed to load script "res://tests/test_runner.gd" with error "Parse error".
+   at: load (modules/gdscript/gdscript_resource_format.cpp:46)

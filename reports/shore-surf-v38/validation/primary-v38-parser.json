@@ -1,0 +1,27 @@
+{
+  "label": "primary-v38-parser",
+  "started": "2026-09-09T19:29:58.5622400-05:00",
+  "finished": "2026-09-09T19:30:11.5794704-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--editor",
+    "--quit"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-surf-v38",
+  "rootPid": 117672,
+  "observedPids": [
+    117672
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\shore-surf-v38\\validation\\primary-v38-parser.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\shore-surf-v38\\validation\\primary-v38-parser.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

@@ -1,5 +1,19 @@
 # Godot Process Log
 
+## Hatteras shore surf v38 (2026-09-09)
+
+All calls used `tools/run_godot_check.ps1`, Godot 4.7.1, project
+`E:\\CodexCache\\haptic-fish-project`, and isolated
+`E:\\CodexCache\\haptic-fish-surf-v38` profiles. Exact commands, worker PIDs,
+stderr markers, and cleanup inventories are retained in
+`reports/shore-surf-v38/validation/`.
+
+- Parser `primary-v38-parser` root `117672` and initial domain `primary-v38-domain` root `119804` each exited 0 with no remaining task PID/window. Initial domain stderr has only the established 12 ObjectDB / 5-resource teardown diagnostics.
+- `primary-v38-ocean-clip1` root `102208` exited 0 mechanically, but its frame 020 was visually rejected for marbled/stretch-fold foreground foam. It is retained as rejected provenance, not aesthetic acceptance.
+- `primary-v38-domain2` root `121304` exited 1 from an explicit GDScript inference error in the new mapping test. The typed-variable repair is verified by final domain `primary-v38-domain-final` root `116536`, exit 0, `PASS: Cast & Crank Gate 1 domain tests`, no remaining PID/window, and only the established teardown diagnostics.
+- Corrected 120-frame/20fps surf clip `primary-v38-ocean-clip2` root `1760`, reduced Hatteras clip root `96224`, Willow regression root `114744`, and short-cast root `84776` each exited 0 with empty stderr markers and no remaining task PIDs/windows. The pixel audit records moving bottom-right water/foam while sky, dune, dry sand, grass, and hand/reel ROIs remain exactly unchanged.
+- Final export `primary-v38-export`: root `102300`, 19:43:05–19:44:10, exit 0, empty stderr, no remaining task PID/window. Its verified chain was root `102300` → cmd `117852` → Java wrapper `127776` → E: Gradle daemon `109496`; the idle task daemon was stopped after ownership verification. No WerFault/task PID remained; unrelated Godot `65276` was untouched. [`package-audit-v38.md`](shore-surf-v38/package-audit-v38.md) records the signed arm64 artifact and exclusions. No v38 install, Drive copy, or push occurred; device performance and human visual approval remain pending.
+
 ## Water motion v37 — initial implementation receipts (2026-09-09)
 
 All listed calls used `tools/run_godot_check.ps1`, project

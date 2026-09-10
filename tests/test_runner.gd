@@ -67,22 +67,49 @@ func _test_water_surface_presentation() -> void:
 			samples[location_id].append(sample.offset)
 			energy[location_id] += sample.offset.length_squared()
 			if frame > 0: travel[location_id] += sample.offset.distance_to(samples[location_id][frame - 1])
-			var cap := 10.01 if location_id == "hatteras_inlet" else 5.01
+			var cap := 45.01 if location_id == "hatteras_inlet" else 5.01
 			expect(sample.offset.length() <= cap, "water profile %s keeps bobber displacement bounded" % location_id)
 	var pond_rms := sqrt(float(energy.willow_pond) / 120.0)
 	var lake_rms := sqrt(float(energy.pine_lake) / 120.0)
 	var ocean_rms := sqrt(float(energy.hatteras_inlet) / 120.0)
 	var still_a: Dictionary = WaterSurface.sample("hatteras_inlet", point, 2.3, true)
 	var still_b: Dictionary = WaterSurface.sample("hatteras_inlet", point, 8.7, true)
+	var shore_motion := WaterSurface.ocean_surf_weight(Vector2(650, 1200))
+	var swash_motion := WaterSurface.ocean_surf_weight(Vector2(400, 1170))
+	var dry_sand := WaterSurface.ocean_surf_weight(Vector2(460, 1258))
+	var dry_grass := WaterSurface.ocean_surf_weight(Vector2(245, 1250))
+	var surf_start := WaterSurface.ocean_surf_offset(Vector2(650, 1200), .001, false)
+	var surf_loop := WaterSurface.ocean_surf_offset(Vector2(650, 1200), 5.999, false)
+	var short_cast_point := Vector2(446, 780)
+	var short_cast: Dictionary = WaterSurface.sample("hatteras_inlet", short_cast_point, 2.4, false)
+	var short_common: Vector2 = short_cast.common_offset
+	var short_shore: Vector2 = short_cast.shore_offset
 	expect(WaterSurface.profile_id("willow_pond") == 0 and WaterSurface.profile_id("pine_lake") == 1 and WaterSurface.profile_id("cedar_river") == 2 and WaterSurface.profile_id("hatteras_inlet") == 3, "water presentation maps the four location profiles deterministically")
 	expect(lake_rms > pond_rms, "lake wind chop is stronger than the pond over a deterministic ten-second sample")
 	expect(float(travel.cedar_river) > float(travel.pine_lake), "river current changes faster than lake chop over a deterministic ten-second sample")
 	expect(ocean_rms > lake_rms, "ocean rolling swell has more displacement than lake chop over a deterministic ten-second sample")
+	expect((short_cast.offset - short_common).is_equal_approx(short_shore) and short_shore.is_equal_approx(WaterSurface.ocean_surf_offset(short_cast_point, 2.4, false)), "Hatteras short-cast bobber and line share the exact bounded offshore shore-surf displacement")
 	expect(still_a.offset == Vector2.ZERO and is_zero_approx(still_a.tilt) and is_zero_approx(still_a.submerge) and still_b == still_a, "reduced motion freezes ambient bobber offset, tilt, and submergence at every presentation time")
+	expect(shore_motion > 0.5 and swash_motion > 0.1 and is_zero_approx(dry_sand) and is_zero_approx(dry_grass), "Hatteras shore controls animate bottom-right water and a narrow foam swash while leaving foreground sand and grass dry")
+	expect(surf_start.distance_to(surf_loop) < 0.05 and is_equal_approx(WaterSurface.ocean_surf_cycle(0.0, false), WaterSurface.ocean_surf_cycle(6.0, false)) and not is_equal_approx(WaterSurface.ocean_surf_cycle(1.0, false), WaterSurface.ocean_surf_cycle(3.0, false)) and is_zero_approx(WaterSurface.ocean_surf_cycle(4.0, true)), "shore surf stays continuous across the six-second phase seam and reduced motion disables it")
+	var mapping_points: Array[Vector2] = [Vector2(400, 1165), Vector2(650, 1200), Vector2(650, 1240)]
+	var mapping_times: Array[float] = [.15, 1.5, 2.4, 3.8, 5.85]
+	for mapping_time: float in mapping_times:
+		for mapping_point: Vector2 in mapping_points:
+			# The shader samples at p-offset, so this finite-difference map catches
+			# local inversions rather than merely asserting a bounded CPU offset.
+			var mapped: Vector2 = mapping_point - WaterSurface.ocean_surf_offset(mapping_point, mapping_time, false)
+			var mapped_x: Vector2 = mapping_point + Vector2.RIGHT - WaterSurface.ocean_surf_offset(mapping_point + Vector2.RIGHT, mapping_time, false)
+			var mapped_y: Vector2 = mapping_point + Vector2.DOWN - WaterSurface.ocean_surf_offset(mapping_point + Vector2.DOWN, mapping_time, false)
+			var dx: Vector2 = mapped_x - mapped
+			var dy: Vector2 = mapped_y - mapped
+			expect(dx.cross(dy) > 0.25 and dx.length() < 1.75 and dy.length() < 1.75, "Hatteras shore sampling map stays locally non-folding at %s, t=%.2f" % [mapping_point, mapping_time])
 	var shader_source := FileAccess.get_file_as_string("res://src/ui/water_surface.gdshader")
 	var surface_source := FileAccess.get_file_as_string("res://src/ui/water_surface.gd")
 	var main_source := FileAccess.get_file_as_string("res://src/ui/main.gd")
 	expect("mask_at(UV - offset)" in shader_source and "texture(TEXTURE, clamp(UV - offset" in shader_source and "p.y / 1280.0" in surface_source and "* perspective" in surface_source, "CPU bobber and shader use the top-down, source/destination-gated displacement convention")
+	var sample_body := surface_source.substr(surface_source.find("static func sample"), surface_source.find("func _draw") - surface_source.find("static func sample"))
+	expect("if (profile == 3)" in shader_source and "ocean_shore_weight(px)" in shader_source and "shore_offset" in shader_source and "28.0 * run_cycle" in shader_source and "if profile == 3: drift += shore_offset" in sample_body, "shore surf is Hatteras-only, uses a bounded single-coordinate shorewash, and gives Hatteras tackle the matching shared offset")
 	expect("var submerged := s.state in [FishingSession.State.BITE, FishingSession.State.HOOK_WINDOW, FishingSession.State.REELING]" in main_source and "if not submerged and controller.bobber_texture" in main_source, "float is visible only while line-out and stays hidden in bite, hook-window, and reeling states")
 
 func _max_emitted_amplitude(pulses: Array[Dictionary]) -> float:
@@ -1336,7 +1363,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 37 and export_config.get_value("preset.0.options", "version/name") == "0.7.3-water1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Water-motion package version and visible Android label retain the package identifier")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 38 and export_config.get_value("preset.0.options", "version/name") == "0.7.4-surf1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Shore-surf package version and visible Android label retain the package identifier")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")

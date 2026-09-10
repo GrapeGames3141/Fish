@@ -1,0 +1,27 @@
+{
+  "label": "primary-v38-domain2",
+  "started": "2026-09-09T19:36:52.5712807-05:00",
+  "finished": "2026-09-09T19:36:54.1066554-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/test_runner.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-surf-v38\\domain",
+  "rootPid": 121304,
+  "observedPids": [
+    121304
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\shore-surf-v38\\validation\\primary-v38-domain2.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\shore-surf-v38\\validation\\primary-v38-domain2.stderr.log",
+  "stderrMarker": "SCRIPT ERROR: Parse Error: Cannot infer the type of \"mapped\" variable because the value doesn't have a set type.",
+  "error": null
+}

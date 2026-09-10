@@ -335,6 +335,8 @@ func _apply_capture_scenario() -> void:
 		"cast_armed": session.arm_cast()
 		"line_out": session.arm_cast(); session.release_cast(0.8)
 		"hatteras_line_out": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8)
+		"hatteras_short_line_out": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.35)
+		"hatteras_reduced_line_out": save.data.settings.reduced_motion = true; session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8)
 		"willow_line_out_t2": session.set_location("willow_pond", 0.0); session.arm_cast(); session.release_cast(0.8); ui_time = 2.0
 		"hatteras_line_out_t2": session.set_location("hatteras_inlet", 0.0); session.arm_cast(); session.release_cast(0.8); ui_time = 2.0
 		"cedar_line_out": session.set_location("cedar_river", 0.0); session.arm_cast(); session.release_cast(0.8)

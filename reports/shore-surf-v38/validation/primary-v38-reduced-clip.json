@@ -1,0 +1,34 @@
+{
+  "label": "primary-v38-reduced-clip",
+  "started": "2026-09-09T19:33:25.0538782-05:00",
+  "finished": "2026-09-09T19:33:29.7604796-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-surf-v38\\reduced-frames",
+    "--capture-scenario=hatteras_reduced_line_out",
+    "--capture-time=0",
+    "--capture-frames=2",
+    "--capture-fps=1"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-surf-v38\\reduced",
+  "rootPid": 96224,
+  "observedPids": [
+    96224
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\shore-surf-v38\\validation\\primary-v38-reduced-clip.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\shore-surf-v38\\validation\\primary-v38-reduced-clip.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

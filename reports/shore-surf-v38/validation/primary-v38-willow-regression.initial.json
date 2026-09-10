@@ -1,0 +1,21 @@
+{
+  "label": "primary-v38-willow-regression",
+  "rootPid": 114744,
+  "observedPids": [
+    114744
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\AI Projects\\games\\haptic fish\\reports\\shore-surf-v38\\gallery\\willow-regression.png",
+    "--capture-scenario=willow_line_out",
+    "--capture-time=1"
+  ],
+  "started": "2026-09-09T19:33:26.5469032-05:00"
+}

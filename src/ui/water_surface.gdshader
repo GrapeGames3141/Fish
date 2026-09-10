@@ -12,6 +12,19 @@ float field(vec2 px, float speed) {
 		+ sin(dot(px, vec2(.084, -.166)) - phase * 7.0 + 2.1) * .54
 		+ sin(dot(px, vec2(.027, .047)) + phase * 2.0 + 2.9) * .48;
 }
+float shore_y(float x) {
+	if (x < 100.0) return mix(930.0, 995.0, x / 100.0);
+	if (x < 200.0) return mix(995.0, 1060.0, (x - 100.0) / 100.0);
+	if (x < 300.0) return mix(1060.0, 1110.0, (x - 200.0) / 100.0);
+	if (x < 400.0) return mix(1110.0, 1150.0, (x - 300.0) / 100.0);
+	if (x < 500.0) return mix(1150.0, 1200.0, (x - 400.0) / 100.0);
+	if (x < 600.0) return mix(1200.0, 1230.0, (x - 500.0) / 100.0);
+	return mix(1230.0, 1280.0, (x - 600.0) / 120.0);
+}
+float ocean_shore_weight(vec2 px) {
+	float depth = shore_y(px.x) - px.y;
+	return smoothstep(-70.0, 0.0, depth) * (1.0 - smoothstep(150.0, 360.0, depth));
+}
 void fragment() {
 	vec4 base = texture(TEXTURE, UV);
 	if (reduced_motion) { COLOR = base; }
@@ -26,7 +39,20 @@ void fragment() {
 	if (profile == 2) shift += vec2(-1.8 + sin(phase * 3.0 + px.y * .04), .35) * perspective;
 	if (profile == 3) { float swell = sin(px.x * .021 + px.y * .038 - phase * 1.4) + sin(px.x * -.014 + px.y * .026 + phase * 2.0 + .8) * .55; shift += vec2(swell * 3.3, swell * 6.6) * perspective; }
 	shift *= min(1.0, (profile == 3 ? 10.0 : 5.0) / max(length(shift), .01));
-	vec2 offset = shift / vec2(720.0, 1280.0);
+	// Hatteras gets a bounded shore-space run-up/backwash mapping. It uses the
+	// source photo once at the final coordinate, avoiding a high-contrast double
+	// image mix that can marble foam during a larger foreground displacement.
+	vec2 shore_offset = vec2(0.0);
+	if (profile == 3) {
+		float depth = shore_y(px.x) - px.y;
+		float shoreline_lag = sin(px.x * .005) * .018;
+		float run_cycle = .5 - .5 * cos((phase / 6.28318530718 + shoreline_lag) * 6.28318530718);
+		float shore_envelope = ocean_shore_weight(px);
+		float offshore_envelope = smoothstep(95.0, 165.0, depth) * (1.0 - smoothstep(420.0, 610.0, depth));
+		float push = 28.0 * run_cycle * shore_envelope + 7.0 * sin((phase / 6.28318530718 + depth * .004 + px.x * .002) * 6.28318530718) * offshore_envelope;
+		shore_offset = normalize(vec2(-.46, 1.0)) * push / vec2(720.0, 1280.0);
+	}
+	vec2 offset = shift / vec2(720.0, 1280.0) + shore_offset;
 	// Sampling against the forward shared displacement makes reflected photo
 	// features travel with the CPU bobber's positive offset, rather than opposite.
 	float gate = smoothstep(.10, .92, min(mask_at(UV), mask_at(UV - offset)));

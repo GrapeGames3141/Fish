@@ -1,0 +1,34 @@
+{
+  "label": "primary-v38-ocean-clip1",
+  "started": "2026-09-09T19:30:56.0229689-05:00",
+  "finished": "2026-09-09T19:31:54.4018128-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-surf-v38\\ocean-frames1",
+    "--capture-scenario=hatteras_line_out",
+    "--capture-time=0",
+    "--capture-frames=120",
+    "--capture-fps=20"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-surf-v38\\render",
+  "rootPid": 102208,
+  "observedPids": [
+    102208
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\shore-surf-v38\\validation\\primary-v38-ocean-clip1.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\shore-surf-v38\\validation\\primary-v38-ocean-clip1.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

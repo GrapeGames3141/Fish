@@ -1,0 +1,23 @@
+{
+  "label": "primary-v38-ocean-clip2",
+  "rootPid": 1760,
+  "observedPids": [
+    1760
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--resolution",
+    "720x1280",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-surf-v38\\ocean-frames2",
+    "--capture-scenario=hatteras_line_out",
+    "--capture-time=0",
+    "--capture-frames=120",
+    "--capture-fps=20"
+  ],
+  "started": "2026-09-09T19:36:54.0192047-05:00"
+}
