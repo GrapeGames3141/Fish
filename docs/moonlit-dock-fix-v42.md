@@ -51,3 +51,29 @@ leak; and the first dense test exposed only a test-harness bounds error.
 Primary sparse edge check `primary-moonlit-edge-regression` (root `106480`)
 passed its 17 patches but is superseded by the full classified-pixel review.
 None is used for final acceptance.
+
+## 0.8.2-dock1 build and delivery
+
+- Fresh import root `127252` and full domain root `43752` passed. The latter
+  includes the updated export contract for code `42` / `0.8.2-dock1`; its only
+  shutdown notices are the established ObjectDB/resource baseline.
+- The first export root `54516` failed before producing an APK because
+  `ANDROID_HOME` and inherited `ANDROID_SDK_ROOT` pointed to different SDKs.
+  The retry set both to the established E: SDK and passed: root `111388`,
+  75.0 seconds, no stderr marker. Its idle task-owned Gradle daemon `126376`
+  was explicitly stopped after export.
+- `Hooked-0.8.2-dock1-arm64-debug.apk` is 76,232,403 bytes, SHA-256
+  `A42B7F57E9D2ACB4A760613EA5589A2582FF47BE99D48DBD8B88C9A0B969CB75`.
+  Manifest/signature audit confirms Hooked / `com.tak.castandcrank` / code 42
+  / `0.8.2-dock1`, SDK 24/36, arm64 only, VIBRATE, and valid v2 signing with
+  the preexisting debug certificate. The embedded imported Moonlit mask hash
+  `954ECE73BBE5DAAD82DBD497B029B9C072B5065169C217B95906FECA2DFE86BC` matches
+  the current local import; the 868-entry APK contains no forbidden evidence
+  or owner payload.
+- Primary installed the update on the Pixel 9 Pro with its player save SHA
+  unchanged, confirmed a successful cold launch/main loop and a roughly
+  40-second alive dwell, then copied the APK to the designated DriveFS folder
+  with matching byte/hash verification. This is a verified local DriveFS copy,
+  not a cloud-sync claim. No phone screenshot or human physical-feel approval
+  is claimed. See the standalone
+  [delivery note](../reports/moonlit-dock-fix-v42/README-0.8.2-dock1.md).

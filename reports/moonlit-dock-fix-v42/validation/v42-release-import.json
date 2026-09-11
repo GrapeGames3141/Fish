@@ -1,0 +1,25 @@
+{
+  "label": "v42-release-import",
+  "started": "2026-09-10T22:30:33.0373523-05:00",
+  "finished": "2026-09-10T22:30:45.9093343-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--editor",
+    "--import"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-moonlit-dock-release-v42\\import-appdata",
+  "rootPid": 127252,
+  "observedPids": [
+    127252
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-release-import.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-release-import.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

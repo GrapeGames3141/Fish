@@ -1405,7 +1405,7 @@ func _test_project_source_settings() -> void:
 	expect(export_config.get_value("preset.0.options", "permissions/internet"), "Internet permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/access_network_state"), "network-state permission enabled")
 	expect(export_config.get_value("preset.0.options", "permissions/vibrate"), "Android VIBRATE permission enabled")
-	expect(int(export_config.get_value("preset.0.options", "version/code")) == 41 and export_config.get_value("preset.0.options", "version/name") == "0.8.1-tension1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Tension v41 package version and visible Android label retain the package identifier")
+	expect(int(export_config.get_value("preset.0.options", "version/code")) == 42 and export_config.get_value("preset.0.options", "version/name") == "0.8.2-dock1" and export_config.get_value("preset.0.options", "package/name") == "Hooked", "Dock v42 package version and visible Android label retain the package identifier")
 	expect(export_config.get_value("preset.0.options", "package/signed"), "debug package requests signing")
 	expect(export_config.get_value("preset.0.options", "gradle_build/compress_native_libraries"), "native libraries are compressed")
 	expect(export_config.get_value("preset.0.options", "architectures/arm64-v8a") and not export_config.get_value("preset.0.options", "architectures/armeabi-v7a") and not export_config.get_value("preset.0.options", "architectures/x86") and not export_config.get_value("preset.0.options", "architectures/x86_64"), "debug package exports arm64 only")

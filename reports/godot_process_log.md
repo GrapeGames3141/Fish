@@ -521,3 +521,15 @@ check, window list, and stdout/stderr.
   1,696,296-pixel classified-wood scan with zero changed/max delta, zero
   sampled post/edge delta, and 1,494 nearby-water changes at max `228`; its
   final scoped inventory had no Godot/WerFault process.
+- Release import `v42-release-import`: root `127252`, exit `0`, no stderr
+  marker/window/remaining task PID. Full version-contract domain gate
+  `v42-release-domain`: root `43752`, exit `0`; stdout reports the normal pass
+  and stderr only the established ObjectDB/resource shutdown notices.
+- First export `v42-release-export`: root `54516`, exit `1`, preserved as an
+  environment diagnostic. Android SDK variables conflicted (`ANDROID_HOME` E:
+  SDK versus inherited `ANDROID_SDK_ROOT` C: SDK), so Gradle stopped before an
+  APK existed. Retry `v42-release-export-sdkfix`: root `111388`, exit `0`, with
+  both variables explicitly set to the established E: SDK; it produced the
+  signed 0.8.2-dock1 arm64 APK. Task-owned Gradle daemon `126376`, started by
+  the export chain, was verified idle and explicitly stopped; no Godot/java/
+  aapt2/WerFault task process remained.

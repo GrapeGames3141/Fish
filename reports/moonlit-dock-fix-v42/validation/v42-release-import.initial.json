@@ -1,0 +1,14 @@
+{
+  "label": "v42-release-import",
+  "rootPid": 127252,
+  "observedPids": [
+    127252
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--editor",
+    "--import"
+  ],
+  "started": "2026-09-10T22:30:33.0373523-05:00"
+}

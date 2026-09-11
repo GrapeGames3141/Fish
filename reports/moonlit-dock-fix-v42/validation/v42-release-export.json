@@ -1,0 +1,30 @@
+{
+  "label": "v42-release-export",
+  "started": "2026-09-10T22:33:05.3269089-05:00",
+  "finished": "2026-09-10T22:33:57.6609289-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--audio-driver",
+    "Dummy",
+    "--export-debug",
+    "Android Gate 1 Debug",
+    "E:\\AI Projects\\games\\haptic fish\\build\\android\\Hooked-0.8.2-dock1-arm64-debug.apk"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-moonlit-dock-release-v42\\export-appdata",
+  "rootPid": 54516,
+  "observedPids": [
+    54516
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-release-export.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-release-export.stderr.log",
+  "stderrMarker": "ERROR: Export: Building of Android project failed, check output for the error:",
+  "error": null
+}

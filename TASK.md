@@ -222,5 +222,8 @@ The user authorized generation and integration of this first ImageGen UI pass. H
   post/stepped-dock pixel regression pass: wood samples stay exactly static,
   nearby open water still moves in normal motion, and Reduced Motion water is
   static. See [details](docs/moonlit-dock-fix-v42.md) and
-  `reports/moonlit-dock-fix-v42/`. No export, install, Drive delivery, or
-  physical-device/human visual approval is claimed.
+  `reports/moonlit-dock-fix-v42/`. The signed v42 APK was exported, package
+  audited, installed in place on the Pixel with the save hash preserved, and
+  locally copied to DriveFS with byte/hash verification. Sustained human visual
+  and physical motion/haptic approval remain separate; no phone screenshot or
+  cloud-sync completion is claimed.
