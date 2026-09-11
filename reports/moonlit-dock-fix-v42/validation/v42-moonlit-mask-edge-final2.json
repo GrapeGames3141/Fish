@@ -1,0 +1,31 @@
+{
+  "label": "v42-moonlit-mask-edge-final2",
+  "started": "2026-09-10T21:16:57.0144850-05:00",
+  "finished": "2026-09-10T21:17:00.7328274-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--script",
+    "res://tests/moonlit_dock_mask_test.gd",
+    "--",
+    "--before-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-before",
+    "--after-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-after-edge-final",
+    "--reduced-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-reduced-final"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-moonlit-dock-fix-v42\\probe-edge-final2-appdata",
+  "rootPid": 113496,
+  "observedPids": [
+    113496
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-mask-edge-final2.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-mask-edge-final2.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

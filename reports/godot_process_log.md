@@ -484,3 +484,40 @@ check, window list, and stdout/stderr.
   shutdown emitted a destroyed-mutex FORTIFY error. PID absent at final check;
   no relaunch or engine/gameplay changes. See
   [install evidence](dynamic-tension-v41/pixel-install-v41.md).
+
+## Moonlit dock mask fix v42 — 2026-09-10
+
+- `v42-moonlit-before-motion`: root `100192`, capture command recorded in
+  `reports/moonlit-dock-fix-v42/validation/v42-moonlit-before-motion.json`,
+  exit `0`, no helper stderr marker, window, remaining task PID, or cleanup.
+- First after-capture root `38684` is retained as superseded because it reused
+  a stale imported SVG texture. Root `122436` followed fresh import root
+  `8064`, but its intermediate contour still leaked at measured dock-edge
+  pixels; it is superseded for that reason. Initial probe root `126788` failed
+  only its broad-ROI harness assertion; it is likewise superseded.
+- `v42-moonlit-import-edge-final` root `115164` and captures `73644` / `92564`
+  passed only the earlier sparse edge suite. They are superseded after the
+  denser exact-pixel review found an intermediate diagonal leak. The first
+  dense probe also emitted x=-1 bounds errors because it expanded an x=0
+  classified source pixel into a 3x3 patch; that harness receipt is retained
+  but not acceptance evidence.
+- Primary sparse `primary-moonlit-edge-regression`: root `106480`, exit `0`.
+  It passed the earlier 17 selected patches, but is superseded by the full
+  classified-pixel review that caught an in-between dock-edge leak.
+- `v42-moonlit-import-postcap-final`: root `114752`, `--headless --editor
+  --import`, exit `0`; stdout confirms `moonlit-mask.svg` was reimported before
+  the accepted captures. `v42-moonlit-after-postcap-final` root `119124` and
+  `v42-moonlit-reduced-postcap-final` root `114708` each captured 24 frames at
+  8 fps, exit `0`, with no helper stderr marker/window/remaining task PID.
+- Final parameterized exact-pixel regression
+  `v42-moonlit-mask-postcap-final`: root `125964`, exit `0`, no helper stderr
+  marker/window/remaining task PID/cleanup. It read all 24 normal and all 24
+  Reduced Motion frames from isolated
+  `E:\CodexCache\haptic-fish-moonlit-dock-fix-v42` paths. The unrelated
+  3d-print-battler Godot processes observed separately were not task-owned and
+  were not touched.
+- Primary independent `primary-moonlit-final`: root `111428`, exit `0`,
+  empty stderr, no remaining task PID/window. It repeated the accepted
+  1,696,296-pixel classified-wood scan with zero changed/max delta, zero
+  sampled post/edge delta, and 1,494 nearby-water changes at max `228`; its
+  final scoped inventory had no Godot/WerFault process.

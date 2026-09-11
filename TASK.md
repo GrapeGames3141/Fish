@@ -212,3 +212,15 @@ The user authorized generation and integration of this first ImageGen UI pass. H
   the main loop; Android then reported task removal and the log contained a
   native engine-shutdown error. Installation is verified, sustained runtime and
   physical-feel acceptance are not. No phone screenshot or Drive copy occurred.
+
+## Moonlit dock mask fix v42 — 2026-09-10
+
+- The Moonlit Reservoir water-mask contour alone now follows the complete
+  lower-left dock/post silhouette with a water-side safety margin. The shared
+  shader, other waters, gameplay, package, and Android output are unchanged.
+- Fresh 24-frame normal and Reduced Motion captures plus a tight measured
+  post/stepped-dock pixel regression pass: wood samples stay exactly static,
+  nearby open water still moves in normal motion, and Reduced Motion water is
+  static. See [details](docs/moonlit-dock-fix-v42.md) and
+  `reports/moonlit-dock-fix-v42/`. No export, install, Drive delivery, or
+  physical-device/human visual approval is claimed.

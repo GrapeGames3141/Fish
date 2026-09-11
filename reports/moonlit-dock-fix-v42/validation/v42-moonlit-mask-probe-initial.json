@@ -1,0 +1,27 @@
+{
+  "label": "v42-moonlit-mask-probe-initial",
+  "started": "2026-09-10T21:06:30.0094827-05:00",
+  "finished": "2026-09-10T21:06:43.8483795-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--script",
+    "res://tests/moonlit_dock_mask_test.gd"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-moonlit-dock-fix-v42\\probe-appdata",
+  "rootPid": 126788,
+  "observedPids": [
+    126788
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-mask-probe-initial.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-mask-probe-initial.stderr.log",
+  "stderrMarker": "ERROR: new contour removes prior deck motion rather than merely reducing it",
+  "error": null
+}

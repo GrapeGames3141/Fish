@@ -1,0 +1,16 @@
+{
+  "label": "v42-moonlit-import-contour-final",
+  "rootPid": 8064,
+  "observedPids": [
+    8064
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--editor",
+    "--quit"
+  ],
+  "started": "2026-09-10T21:09:21.9243012-05:00"
+}

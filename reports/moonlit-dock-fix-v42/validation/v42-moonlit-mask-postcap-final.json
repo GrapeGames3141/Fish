@@ -1,0 +1,31 @@
+{
+  "label": "v42-moonlit-mask-postcap-final",
+  "started": "2026-09-10T21:29:02.6594886-05:00",
+  "finished": "2026-09-10T21:29:14.1134629-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--script",
+    "res://tests/moonlit_dock_mask_test.gd",
+    "--",
+    "--before-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-before",
+    "--after-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-after-postcap-final",
+    "--reduced-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-reduced-postcap-final"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-moonlit-dock-fix-v42\\probe-postcap-final-appdata",
+  "rootPid": 125964,
+  "observedPids": [
+    125964
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-mask-postcap-final.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-mask-postcap-final.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

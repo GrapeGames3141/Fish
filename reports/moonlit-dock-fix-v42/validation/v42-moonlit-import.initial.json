@@ -1,0 +1,16 @@
+{
+  "label": "v42-moonlit-import",
+  "rootPid": 57844,
+  "observedPids": [
+    57844
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--editor",
+    "--quit"
+  ],
+  "started": "2026-09-10T21:07:43.3995633-05:00"
+}

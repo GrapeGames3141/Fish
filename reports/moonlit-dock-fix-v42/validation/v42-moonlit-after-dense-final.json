@@ -1,0 +1,35 @@
+{
+  "label": "v42-moonlit-after-dense-final",
+  "started": "2026-09-10T21:22:02.0281956-05:00",
+  "finished": "2026-09-10T21:22:19.5801178-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-moonlit-dock-fix-v42\\raw-after-dense-final",
+    "--capture-scenario=moonlit_ready",
+    "--capture-frames=24",
+    "--capture-fps=8"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-moonlit-dock-fix-v42\\after-dense-final-appdata",
+  "rootPid": 86656,
+  "observedPids": [
+    86656
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-after-dense-final.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-after-dense-final.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

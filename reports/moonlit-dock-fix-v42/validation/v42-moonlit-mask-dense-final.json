@@ -1,0 +1,33 @@
+{
+  "label": "v42-moonlit-mask-dense-final",
+  "started": "2026-09-10T21:23:16.7569162-05:00",
+  "finished": "2026-09-10T21:24:47.3422948-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--script",
+    "res://tests/moonlit_dock_mask_test.gd",
+    "--",
+    "--before-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-before",
+    "--after-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-after-dense-final",
+    "--reduced-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-reduced-dense-final"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-moonlit-dock-fix-v42\\probe-dense-final-appdata",
+  "rootPid": 121036,
+  "observedPids": [
+    121036
+  ],
+  "completed": false,
+  "exitCode": null,
+  "cleanupPids": [
+    121036
+  ],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-mask-dense-final.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-mask-dense-final.stderr.log",
+  "stderrMarker": "ERROR: Index p_x = -1 is out of bounds (width = 720).",
+  "error": null
+}

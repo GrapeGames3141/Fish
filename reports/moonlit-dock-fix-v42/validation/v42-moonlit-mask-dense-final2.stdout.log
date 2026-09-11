@@ -1,0 +1,4 @@
+Godot Engine v4.7.1.stable.official.a13da4feb - https://godotengine.org
+
+MOONLIT_DOCK_MASK {"after":{"edge":{"changed":0,"max_delta":0.0,"samples":3672},"post":{"changed":0,"max_delta":0.0,"samples":864},"reduced":false,"water":{"changed":1494,"max_delta":227.999999709427,"samples":1728},"wood":{"changed":158,"max_delta":1.00000041536987,"samples":15226056}},"before":{"edge":{"changed":1316,"max_delta":149.000004418194,"samples":3672},"post":{"changed":0,"max_delta":0.0,"samples":864},"reduced":false,"water":{"changed":1494,"max_delta":227.999999709427,"samples":1728},"wood":{"changed":226039,"max_delta":164.000003524125,"samples":15226056}},"frames":24,"reduced":{"edge":{"changed":0,"max_delta":0.0,"samples":3672},"post":{"changed":0,"max_delta":0.0,"samples":864},"reduced":true,"water":{"changed":0,"max_delta":0.0,"samples":1728},"wood":{"changed":0,"max_delta":0.0,"samples":15226056}}}
+FAIL: 1 Moonlit dock-mask assertions

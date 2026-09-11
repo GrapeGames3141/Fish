@@ -1,0 +1,20 @@
+{
+  "label": "primary-moonlit-final",
+  "rootPid": 111428,
+  "observedPids": [
+    111428
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\CodexCache\\haptic-fish-project",
+    "--script",
+    "res://tests/moonlit_dock_mask_test.gd",
+    "--",
+    "--before-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-before",
+    "--after-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-after-postcap-final",
+    "--reduced-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-reduced-dense-final"
+  ],
+  "started": "2026-09-10T21:29:29.2417112-05:00"
+}

@@ -1,0 +1,35 @@
+{
+  "label": "v42-moonlit-reduced-edge-final",
+  "started": "2026-09-10T21:15:07.0640910-05:00",
+  "finished": "2026-09-10T21:15:25.0366040-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-moonlit-dock-fix-v42\\raw-reduced-final",
+    "--capture-scenario=moonlit_reduced",
+    "--capture-frames=24",
+    "--capture-fps=8"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-moonlit-dock-fix-v42\\reduced-edge-final-appdata",
+  "rootPid": 92564,
+  "observedPids": [
+    92564
+  ],
+  "completed": true,
+  "exitCode": 0,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-reduced-edge-final.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-reduced-edge-final.stderr.log",
+  "stderrMarker": null,
+  "error": null
+}

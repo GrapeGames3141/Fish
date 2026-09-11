@@ -1,0 +1,14 @@
+{
+  "label": "v42-moonlit-import-postcap-final",
+  "rootPid": 114752,
+  "observedPids": [
+    114752
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--editor",
+    "--import"
+  ],
+  "started": "2026-09-10T21:27:17.8704518-05:00"
+}

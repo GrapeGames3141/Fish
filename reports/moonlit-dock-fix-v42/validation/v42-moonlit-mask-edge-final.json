@@ -1,0 +1,31 @@
+{
+  "label": "v42-moonlit-mask-edge-final",
+  "started": "2026-09-10T21:15:44.9444944-05:00",
+  "finished": "2026-09-10T21:15:47.6910296-05:00",
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--headless",
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--script",
+    "res://tests/moonlit_dock_mask_test.gd",
+    "--",
+    "--before-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-before",
+    "--after-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-after-edge-final",
+    "--reduced-root=E:/CodexCache/haptic-fish-moonlit-dock-fix-v42/raw-reduced-final"
+  ],
+  "appdata": "E:\\CodexCache\\haptic-fish-moonlit-dock-fix-v42\\probe-edge-final-appdata",
+  "rootPid": 38612,
+  "observedPids": [
+    38612
+  ],
+  "completed": true,
+  "exitCode": 1,
+  "cleanupPids": [],
+  "remainingTaskPids": [],
+  "windows": [],
+  "stdout": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-mask-edge-final.stdout.log",
+  "stderr": "E:\\AI Projects\\games\\haptic fish\\reports\\moonlit-dock-fix-v42\\validation\\v42-moonlit-mask-edge-final.stderr.log",
+  "stderrMarker": "ERROR: Moonlit dock edge stays pixel-static across all measured board steps",
+  "error": null
+}

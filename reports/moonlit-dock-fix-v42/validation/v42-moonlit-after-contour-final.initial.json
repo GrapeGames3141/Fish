@@ -1,0 +1,24 @@
+{
+  "label": "v42-moonlit-after-contour-final",
+  "rootPid": 122436,
+  "observedPids": [
+    122436
+  ],
+  "engine": "E:\\CodexCache\\godot-android-4.7.1\\godot\\Godot_v4.7.1-stable_win64.exe",
+  "arguments": [
+    "--path",
+    "E:\\AI Projects\\games\\haptic fish",
+    "--resolution",
+    "720x1280",
+    "--position",
+    "9000,9000",
+    "--audio-driver",
+    "Dummy",
+    "--",
+    "--capture=E:\\CodexCache\\haptic-fish-moonlit-dock-fix-v42\\raw-after-final",
+    "--capture-scenario=moonlit_ready",
+    "--capture-frames=24",
+    "--capture-fps=8"
+  ],
+  "started": "2026-09-10T21:09:36.9997471-05:00"
+}
