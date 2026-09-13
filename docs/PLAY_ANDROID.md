@@ -58,6 +58,11 @@ base64 -w0 release.keystore | tr -d '\r\n' > keystore.b64
 - Runs the domain test suite, then exports and signs the AAB
 - Uploads to the Play **`alpha`** track, which is the Play API name for the
   default **Closed testing** track
+- Uploads with `status: draft`, because Play rejects any other status while the
+  app has never published a release. **After you roll out the first closed
+  testing release from the Console, change that to `status: completed`** in
+  `.github/workflows/deploy-android.yml` so later builds reach testers with no
+  manual step
 - `versionCode` is the GitHub run number and `versionName` is `1.<run number>`,
   so every run is monotonic and Play never rejects a duplicate
 - It publishes no GitHub Actions artifact; the AAB only goes to Play
@@ -73,7 +78,10 @@ it breaks the export template.
 - [ ] Create the app `Hooked` and claim package `com.grapegames.hooked`
 - [ ] Grant the CI service account **Release manager** on the app
 - [ ] Testing → **Closed testing** → create a track and a tester list
-- [ ] Push to `main` once so CI uploads build 1 to the closed track
+- [x] Push to `main` once so CI uploads build 1 to the closed track
+- [ ] Console → Closed testing → review the uploaded draft release and **roll it
+      out**, which takes the app out of draft state
+- [ ] Flip the workflow's `status: draft` to `status: completed` afterwards
 - [ ] Copy the closed-testing **opt-in URL** and share it with testers
 - [ ] Main store listing: paste [`docs/PLAY_LISTING.md`](PLAY_LISTING.md)
 - [ ] Upload `builds/store/hooked/` icon, feature graphic and screenshots

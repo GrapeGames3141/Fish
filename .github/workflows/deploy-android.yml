@@ -155,4 +155,8 @@ jobs:
           releaseFiles: builds/android/${{ env.ARTIFACT_STEM }}.aab
           # "alpha" is the Play API name for the default Closed testing track.
           tracks: alpha
-          status: completed
+          # A Play app that has never published a release is a "draft app", and
+          # Google rejects any other status on one. After the first closed-testing
+          # release is rolled out from the Console, switch this to "completed" so
+          # later runs go live to testers without a manual step.
+          status: draft
