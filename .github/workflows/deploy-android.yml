@@ -154,5 +154,5 @@ jobs:
           packageName: ${{ env.RELEASE_PACKAGE }}
           releaseFiles: builds/android/${{ env.ARTIFACT_STEM }}.aab
           # "alpha" is the Play API name for the default Closed testing track.
-          track: alpha
+          tracks: alpha
           status: completed
