@@ -1,0 +1,44 @@
+name: Domain tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: "4.7.1"
+  GODOT_CHANNEL: stable
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Cache Godot import cache
+        uses: actions/cache@v4
+        with:
+          path: .godot
+          key: godot-import-${{ runner.os }}-${{ env.GODOT_VERSION }}-${{ hashFiles('art/**/*.import', 'project.godot', 'export_presets.cfg') }}
+          restore-keys: |
+            godot-import-${{ runner.os }}-${{ env.GODOT_VERSION }}-
+            godot-import-${{ runner.os }}-
+
+      - name: Install Godot
+        run: |
+          set -euo pipefail
+          TAG="${GODOT_VERSION}-${GODOT_CHANNEL}"
+          ZIP="Godot_v${TAG}_linux.x86_64.zip"
+          curl -fsSL -o "/tmp/$ZIP" \
+            "https://github.com/godotengine/godot-builds/releases/download/${TAG}/${ZIP}"
+          unzip -qo "/tmp/$ZIP" -d /tmp/godot
+          mkdir -p "$HOME/.local/bin"
+          install -m 755 "/tmp/godot/Godot_v${TAG}_linux.x86_64" "$HOME/.local/bin/godot"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Run domain tests
+        run: |
+          set -euo pipefail
+          godot --headless --path "$PWD" --import
+          godot --headless --path "$PWD" --script res://tests/test_runner.gd

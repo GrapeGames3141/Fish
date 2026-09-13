@@ -1,12 +1,22 @@
 .godot/
 .godot-task-cache/
 /build/
+/builds/android/
 android/build/.gradle/
 android/build/build/
 android/build/.cxx/
 android/build/outputs/
 # Generated Godot Android library archives; export rebuilds these from source.
 android/build/libs/**/*.aar
+# Godot writes these into the tracked Android template during an export.
+android/build/.build_version
+android/build/assetPackInstallTime/
+android/build/src/release/
+android/build/res/drawable/
+android/build/res/mipmap*/
+# Play overlay copies staged by scripts/ci/godot-export-android.sh.
+android/build/play-release.gradle
+android/build/proguard-godot-play.pro
 android/.gradle/
 reports/runtime/*.log
 reports/runtime/**/*.log
@@ -18,6 +28,7 @@ reports/runtime/*.txt
 *.import
 !art/ui_v1/runtime_source/*.png.import
 !art/ui_v1/runtime/*.png.import
+!art/ui_v1/android/*.png.import
 addons/admob/downloads/
 addons/admob/ios/
 platform/play_games_native/.gradle/

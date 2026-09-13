@@ -533,3 +533,52 @@ check, window list, and stdout/stderr.
   signed 0.8.2-dock1 arm64 APK. Task-owned Gradle daemon `126376`, started by
   the export chain, was verified idle and explicitly stopped; no Godot/java/
   aapt2/WerFault task process remained.
+
+## Play closed-testing enablement — 2026-09-12
+
+Linux workstation, not the historical `E:` Windows host. Godot
+`4.7.1.stable.official.a13da4feb` from `/home/pat/.local/bin/godot`, project
+`/home/pat/dev/Fish`, Android SDK `/home/pat/Android/Sdk` with `ANDROID_HOME`
+and `ANDROID_SDK_ROOT` explicitly set to that same path, JDK 21 at
+`/usr/lib/jvm/java-21-openjdk-amd64`.
+
+- Import gate: `godot --headless --path /home/pat/dev/Fish --import`, exit `0`.
+  It populated `.godot/imported` (153 entries); a prior windowed capture attempt
+  had produced no image because the import cache did not yet exist, and that run
+  was killed (PIDs `1501969`, `1501971`) with no artifact claimed.
+- Store screenshot captures: nine windowed `--capture=` runs at `720x1280`
+  through `tools/capture_store_screenshots.sh` plus two reframes, each printing
+  `SCREENSHOT_CAPTURED ... error=0`. They wrote only into
+  `builds/store/hooked/Phone screenshots/`. Captures use the harness's in-memory
+  default save and frozen clock, so no player progress was read or written.
+- Export 1 (`export.log`): `scripts/ci/godot-export-android.sh` with no keystore.
+  Godot logged `Code Signing: Could not find release keystore`, and the script
+  exited `1` from its own artifact validation rather than reporting success —
+  the intended failure path.
+- Export 2 (`export2.log`): same script with a throwaway validation keystore
+  generated under the session scratchpad (never committed, not the release key).
+  `BUILD SUCCESSFUL`, exit `0`, producing a signed 67,535,152-byte
+  `builds/android/Hooked.aab`. Standalone Bundletool 1.16.0 confirms package
+  `com.grapegames.hooked`, versionCode `7`, versionName `1.7`, minSdk `24`,
+  targetSdk `36`, `INTERNET` and `VIBRATE` present, and
+  `com.google.android.gms.ads.APPLICATION_ID` equal to Google's sample ID
+  `ca-app-pub-3940256099942544~3347511713`. No device install, launch, phone
+  screenshot, or physical motion/haptic claim was made.
+- That run exposed a real defect: the script replaced this repo's **tracked**
+  `android/build` template, dirtying 63 files. The template install is now
+  non-destructive (it restores only the gitignored `libs/` engine AAR when
+  absent), and the files Godot rewrites at export time are snapshotted with
+  `tar` and restored on exit.
+- Exports 3 and 4 re-ran the corrected script, each `BUILD SUCCESSFUL` with
+  exit `0`. They narrowed the residue from 63 tracked template files to one
+  (`android/build/gradlew`, a mode change), which was fixed by snapshotting
+  before the step that chmods it. A direct backup/restore round trip then showed
+  three mutated files and mode `775` returning to clean and mode `664`.
+- Fixed alongside it: the script derived its root from `$0`, which resolves
+  wrongly when the file is sourced — as the CI test step does to reuse
+  `install_godot`. It now uses `BASH_SOURCE[0]`.
+- The validation AAB was deleted after inspection; it was signed with the
+  throwaway key and is not a shippable artifact.
+
+The Gradle daemon started by these exports was left running by the toolchain;
+no Godot process from these invocations remained.
